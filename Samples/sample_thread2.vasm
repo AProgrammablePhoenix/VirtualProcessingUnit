@@ -1,0 +1,47 @@
+decl unsigned_number edx_before_value 4
+decl unsigned_number edx 0
+decl unsigned_number offset 5
+decl unsigned_number count 6
+decl unsigned_number ax_jmp 6
+decl unsigned_number bx_iter 0
+decl unsigned_number bx_cmp 10
+
+decl string thread2_message From THREAD 2!
+decl string thread2_merge_space  
+decl string thread2_terminated Thread2 terminated
+
+getEDX edx
+setSR thread2_message
+setEDX edx_before_value
+println 0
+mulEDX EDX
+mulEDX EDX
+setAX offset
+setBX count
+substring 0
+println 0
+pushSR 0
+setSR thread2_merge_space
+mergeString 0
+pushSR 0
+setCX count
+toString CX
+mergeString 0
+setBX bx_cmp
+push BX
+setBX bx_iter
+push BX
+ijmp 0
+setAX ax_jmp
+println 0
+cmp 0
+pop BX
+inc BX
+push BX
+jl 0
+gca 0
+pop RAX
+toString RAX
+println 0
+setSR thread2_terminated
+println 0
