@@ -10,7 +10,7 @@ add_library(registers STATIC
 			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp")
 
 add_library(memory STATIC
-			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp")
+			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" "Memory/mem_arrays.cpp" "Memory/mem_arrays.h")
 
 add_library(virtual_engine STATIC
 			"Actions/actions_symbols.h"  "Actions/action_decl.h" "Actions/action_decl.cpp" "Actions/v_engine.h"
