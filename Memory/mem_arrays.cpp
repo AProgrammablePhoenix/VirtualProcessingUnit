@@ -139,7 +139,7 @@ dyn_unum_array::dyn_unum_array(regs* _registers) {
 	}
 }
 void dyn_unum_array::getAt(unsigned long long index) {
-	if (!this->initialized) {
+	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->registers->rdx->set(this->container[index]);
 		}
