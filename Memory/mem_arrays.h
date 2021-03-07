@@ -51,7 +51,19 @@ private:
 	std::string values_type = "";
 };
 
-struct dyn_str_array {
+template<typename T>
+struct dyn_array_int {
+public:
+	virtual void getAt(unsigned long long index);
+	virtual void setAt(unsigned long long index);
+	virtual void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<T> container;
+	std::string values_type = "";
+};
+struct dyn_str_array : dyn_array_int<std::string> {
 public:
 	dyn_str_array();
 	dyn_str_array(regs* _registers);
@@ -64,7 +76,7 @@ private:
 	std::vector<std::string> container;
 	std::string values_type = "";
 };
-struct dyn_unum_array {
+struct dyn_unum_array : dyn_array_int<unsigned long long> {
 public:
 	dyn_unum_array();
 	dyn_unum_array(regs* registers);
@@ -85,6 +97,7 @@ public:
 	void makeArray(std::string name, std::string type, unsigned long long size);
 	void getArray(std::string arr_name, unsigned long long index);
 	void setArray(std::string arr_name, unsigned long long index);
+	void getDynSize(std::string arr_name);
 
 	std::string getArrayType(std::string arr_name);
 private:
@@ -92,6 +105,10 @@ private:
 
 	std::map<std::string, str_mem_array> string_arrays;
 	std::map<std::string, unum_mem_array> unsigned_number_arrays;
+
+	std::map<std::string, dyn_str_array> dyn_string_arrays;
+	std::map<std::string, dyn_unum_array> dyn_unsigned_number_arrays;
+
 	std::map<std::string, void*> arrays_table;
 	std::map<std::string, std::string> types_table;
 };
