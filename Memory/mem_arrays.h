@@ -51,6 +51,33 @@ private:
 	std::string values_type = "";
 };
 
+struct dyn_str_array {
+public:
+	dyn_str_array();
+	dyn_str_array(regs* _registers);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<std::string> container;
+	std::string values_type = "";
+};
+struct dyn_unum_array {
+public:
+	dyn_unum_array();
+	dyn_unum_array(regs* registers);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<unsigned long long> container;
+	std::string values_types = "";
+};
+
 struct mem_arrays {
 public:
 	mem_arrays();

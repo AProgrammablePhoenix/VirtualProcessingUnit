@@ -76,6 +76,82 @@ void unum_mem_array::setAt(unsigned long long index) {
 	}
 }
 
+dyn_str_array::dyn_str_array() {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+	}
+}
+dyn_str_array::dyn_str_array(regs* _registers) {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+		this->registers = _registers;
+		this->values_type = "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >";
+		this->initialized = true;
+	}
+}
+void dyn_str_array::getAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->registers->sr->set(this->container[index]);
+		}
+	}
+}
+void dyn_str_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->container[index] = this->registers->sr->get();
+		}
+		else {
+			this->container.push_back(this->registers->sr->get());
+		}
+	}
+}
+void dyn_str_array::getSize() {
+	this->registers->rdx->set(this->container.size());
+}
+
+dyn_unum_array::dyn_unum_array() {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+	}
+}
+dyn_unum_array::dyn_unum_array(regs* _registers) {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+		this->registers = _registers;
+		this->values_types = "unsigned __int64";
+		this->initialized = true;
+	}
+}
+void dyn_unum_array::getAt(unsigned long long index) {
+	if (!this->initialized) {
+		if (index < this->container.size()) {
+			this->registers->rdx->set(this->container[index]);
+		}
+	}
+}
+void dyn_unum_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->container[index] = this->registers->rdx->get();
+		}
+		else {
+			this->container.push_back(this->registers->rdx->get());
+		}
+	}
+}
+void dyn_unum_array::getSize() {
+	this->registers->rdx->set(this->container.size());
+}
+
 mem_arrays::mem_arrays() {
 	this->registers = NULL;
 }
