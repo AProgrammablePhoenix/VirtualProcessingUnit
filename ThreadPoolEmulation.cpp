@@ -24,7 +24,7 @@ std::vector<std::string> scripts = std::vector<std::string>();
 
 void allocateNewProcessMem() {
 	regs* regs_ptr = new regs;
-	memory* mem_ptr = new memory;
+	memory* mem_ptr = new memory(regs_ptr);
 	process_memory* proc_mem = new process_memory;
 
 	if (!regs_ptr || !mem_ptr || !proc_mem) {
