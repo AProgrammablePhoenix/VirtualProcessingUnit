@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.1:
-- [ ] Arrays (static and dynamic ones) implementation
+- [x] Arrays (static and dynamic ones) implementation
 - [ ] rewritable variables to store in a more simplified way values, instead of always using Stack or Registers.
