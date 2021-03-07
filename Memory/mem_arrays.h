@@ -54,9 +54,15 @@ private:
 template<typename T>
 struct dyn_array_int {
 public:
-	virtual void getAt(unsigned long long index);
-	virtual void setAt(unsigned long long index);
-	virtual void getSize();
+	virtual void getAt(unsigned long long index) {
+		return;
+	}
+	virtual void setAt(unsigned long long index) {
+		return;
+	}
+	virtual void getSize() {
+		return;
+	}
 private:
 	regs* registers = NULL;
 	bool initialized = false;
