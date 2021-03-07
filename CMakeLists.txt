@@ -1,7 +1,4 @@
-﻿# CMakeList.txt : projet CMake pour ThreadPoolEmulation, incluez la source et définissez
-# la logique spécifique au projet ici.
-#
-cmake_minimum_required (VERSION 3.8)
+﻿cmake_minimum_required (VERSION 3.8)
 
 project ("ThreadPoolEmulation")
 
@@ -20,7 +17,7 @@ add_library(virtual_engine STATIC
 add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h")
 
-# Ajoutez une source à l'exécutable de ce projet.
+
 add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h"  )
 
 target_link_libraries(ThreadPoolEmulation registers)
