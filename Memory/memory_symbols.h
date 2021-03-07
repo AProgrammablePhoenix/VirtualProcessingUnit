@@ -22,11 +22,17 @@ enum memory_actions {
 
 #pragma warning (pop)
 
+// Memory stack symbols
 void pushMem(registries_def reg, regs* registers, memory* mem);
 void popMem(registries_def reg, regs* registers, memory* mem);
 
 void pushMemSR(void* unused_p, regs* registers, memory* mem);
 void popMemSR(void* unused_p, regs* registers, memory* mem);
+
+// Memory arrays symbols
+void m_declArray(void* unused_p, regs* registers, memory* mem);
+void m_setAt(void* unused_p, regs* registers, memory* mem);
+void m_getAt(void* unused_p, regs* registers, memory* mem);
 
 /*
 struct memory_symbols {

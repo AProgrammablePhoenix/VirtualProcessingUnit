@@ -5,6 +5,8 @@
 #include <vector>
 #include <any>
 
+#include "mem_arrays.h"
+
 #pragma warning (push)
 
 struct m_container {
@@ -30,7 +32,8 @@ private:
 
 struct memory {
 public:
-	memory() {
+	memory(regs* _registers) {
+		this->_arrays = mem_arrays(_registers);
 		this->init();
 	}
 
@@ -82,7 +85,9 @@ public:
 			this->_memory[addr].set(data, length);
 		}
 	}
+	mem_arrays _arrays;
 private:
+	regs* registers;
 	std::vector<m_container> _memory;
 
 	void init() {

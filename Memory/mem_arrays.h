@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -24,6 +26,7 @@ private:
 };
 struct str_mem_array : mem_array_int<std::string> {
 public:
+	str_mem_array();
 	str_mem_array(regs* _registers, unsigned long long size);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
@@ -36,6 +39,7 @@ private:
 };
 struct unum_mem_array : mem_array_int<unsigned long long> {
 public:
+	unum_mem_array();
 	unum_mem_array(regs* _registers, unsigned long long size);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
@@ -49,10 +53,13 @@ private:
 
 struct mem_arrays {
 public:
+	mem_arrays();
 	mem_arrays(regs* _registers);
 	void makeArray(std::string name, std::string type, unsigned long long size);
 	void getArray(std::string arr_name, unsigned long long index);
 	void setArray(std::string arr_name, unsigned long long index);
+
+	std::string getArrayType(std::string arr_name);
 private:
 	regs* registers;
 

@@ -139,6 +139,10 @@ enum virtual_actions {
 	pushSR = 0x003F01,
 	popSR = 0x004001,
 
+	declArray = 0x004100,
+	setAt = 0x004110,
+	getAt = 0x004120,
+
 	// Process
 	ijmp = 0x003017,
 	jmp = 0x003018,
@@ -159,13 +163,13 @@ enum virtual_actions {
 	ret = 0x0030AC
 };
 
-extern void* a_db[0x004001 + 1];
+extern void* a_db[0x004120 + 1];
 
 struct actions_engine {
 public:
 	actions_engine() {
 		this->self_regs = new regs;
-		this->self_mem = new memory;
+		this->self_mem = new memory(this->self_regs);
 
 		if (!this->self_regs || !this->self_mem) {
 			std::cout << "Error while allocating new process memory" << std::endl;
@@ -347,6 +351,10 @@ private:
 
 		a_db[virtual_actions::pushSR] = pushMemSR;
 		a_db[virtual_actions::popSR] = popMemSR;
+
+		a_db[virtual_actions::declArray] = m_declArray;
+		a_db[virtual_actions::setAt] = m_setAt;
+		a_db[virtual_actions::getAt] = m_getAt;
 #pragma endregion
 #pragma region process
 		a_db[virtual_actions::ijmp] = p_inverseJmpSign;
