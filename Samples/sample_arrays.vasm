@@ -1,6 +1,24 @@
-; [CALL] (load ../../../Samples/sample_arrays.vasm)
-decl string unsigned_number_array unsigned __int64
-decl string string_array class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+; expected output:
+; 5
+; 2
+; 10
+; I'm an array
+; of strings.
+; 0
+; 1
+; 2
+; 3
+; 4
+; 5
+; 6
+; 7
+; 8
+; 9
+
+decl string unsigned_number_array static unsigned __int64
+decl string string_array static class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+
+decl string dyn_unum_array dynamic unsigned __int64
 
 decl unsigned_number array1_0 5
 decl unsigned_number array1_1 2
@@ -12,6 +30,8 @@ decl string array2_0 I'm an array
 decl string array2_1 of strings.
 decl unsigned_number array2_size 2
 decl string array2_name array2
+
+decl string array3_name dyn_array
 
 decl unsigned_number zero 0
 decl unsigned_number one 1
@@ -116,3 +136,93 @@ setSR array2_name
 pushSR 0
 getAt 0
 println 0
+
+
+; declArray of array3
+setRAX zero
+push RAX
+
+setSR dyn_unum_array
+pushSR 0
+
+setSR array3_name
+declArray 0
+
+decl unsigned_number n_loops 9
+
+; set indexes of array3
+setRAX zero
+push RAX
+setSR array3_name
+pushSR 0
+setRDX zero
+setAt 0
+
+decltag looping
+inc RAX
+push RAX
+setSR array3_name
+pushSR 0
+inc RDX
+setAt 0
+
+inc RAX
+
+push RAX
+setRBX n_loops
+push RBX
+
+cmp 0
+pop RBX
+pop RAX
+
+dec RAX
+
+movRCX RAX
+setRAX two
+jl 0
+
+movRAX RCX
+lcall looping
+
+; fetch all array3 indexes
+setSR array3_name
+getDynSize 0
+movRBX RDX
+setRAX zero
+
+push RAX
+setSR array3_name
+pushSR 0
+getAt 0
+toString RDX
+println 0
+
+decltag fetch_looping
+inc RAX
+push RAX
+setSR array3_name
+pushSR 0
+getAt 0
+toString RDX
+println 0
+
+inc RAX
+
+push RAX
+push RBX
+
+cmp 0
+pop RBX
+pop RAX
+
+dec RAX
+
+movRCX RAX
+setRAX two
+je 0
+
+movRAX RCX
+lcall fetch_looping
+
+hlt 0
