@@ -1,0 +1,118 @@
+; [CALL] (load ../../../Samples/sample_arrays.vasm)
+decl string unsigned_number_array unsigned __int64
+decl string string_array class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+
+decl unsigned_number array1_0 5
+decl unsigned_number array1_1 2
+decl unsigned_number array1_2 10
+decl unsigned_number array1_size 3
+decl string array1_name array1
+
+decl string array2_0 I'm an array
+decl string array2_1 of strings.
+decl unsigned_number array2_size 2
+decl string array2_name array2
+
+decl unsigned_number zero 0
+decl unsigned_number one 1
+decl unsigned_number two 2
+
+; declArray of array1
+setRAX array1_size
+push RAX
+
+setSR unsigned_number_array
+pushSR 0
+
+setSR array1_name
+declArray 0
+
+
+; declArray of array2
+setRAX array2_size
+push RAX
+
+setSR string_array
+pushSR 0
+
+setSR array2_name
+declArray 0
+
+
+; set indexes of array1
+setRAX zero
+push RAX
+setSR array1_name
+pushSR 0
+setRDX array1_0
+setAt 0
+
+setRAX one
+push RAX
+setSR array1_name
+pushSR 0
+setRDX array1_1
+setAt 0
+
+setRAX two
+push RAX
+setSR array1_name
+pushSR 0
+setRDX array1_2
+setAt 0
+
+; set indexes of array2
+setRAX zero
+push RAX
+setSR array2_name
+pushSR 0
+setSR array2_0
+setAt 0
+
+setRAX one
+push RAX
+setSR array2_name
+pushSR 0
+setSR array2_1
+setAt 0
+
+
+; fetch array1 indexes
+setRAX zero
+push RAX
+setSR array1_name
+pushSR 0
+getAt 0
+toString RDX
+println 0
+
+setRAX one
+push RAX
+setSR array1_name
+pushSR 0
+getAt 0
+toString RDX
+println 0
+
+setRAX two
+push RAX
+setSR array1_name
+pushSR 0
+getAt 0
+toString RDX
+println 0
+
+; fetch array2 indexes
+setRAX zero
+push RAX
+setSR array2_name
+pushSR 0
+getAt 0
+println 0
+
+setRAX one
+push RAX
+setSR array2_name
+pushSR 0
+getAt 0
+println 0
