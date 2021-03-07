@@ -33,6 +33,7 @@ void popMemSR(void* unused_p, regs* registers, memory* mem);
 void m_declArray(void* unused_p, regs* registers, memory* mem);
 void m_setAt(void* unused_p, regs* registers, memory* mem);
 void m_getAt(void* unused_p, regs* registers, memory* mem);
+void m_getDynSize(void* unused_p, regs* registers, memory* mem);
 
 /*
 struct memory_symbols {

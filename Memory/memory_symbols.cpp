@@ -94,3 +94,16 @@ void m_getAt(void* unused_p, regs* registers, memory* mem) {
 
 	registers->rax->set(saved_rax);
 }
+
+/* Stack structure before calling:
+*	[...]
+*	ARRAY_NAME in SR
+*	Outputs value in RDX if success
+*/
+void m_getDynSize(void* unused_p, regs* registers, memory* mem) {
+	std::string array_name = registers->sr->get();
+
+	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
+		mem->_arrays.getDynSize(array_name);
+	}
+}
