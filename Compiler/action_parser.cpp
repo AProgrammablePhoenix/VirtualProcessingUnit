@@ -210,6 +210,10 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"pushSR", virtual_actions::pushSR},
 	{"popSR", virtual_actions::popSR},
 
+	{"declArray", virtual_actions::declArray},
+	{"setAt", virtual_actions::setAt},
+	{"getAt", virtual_actions::getAt},
+
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
 	{"cmp", virtual_actions::cmp},
@@ -299,7 +303,7 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename) {
 				parsed.push_back(std::vector<std::string>({"decltag", tagname}));
 				continue;
 			}
-			if (!line.rfind("decl", 0)) {
+			if (!line.rfind("decl ", 0)) {
 				continue;
 			}
 

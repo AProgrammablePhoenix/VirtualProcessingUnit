@@ -14,7 +14,7 @@ struct code_file_decl_form {
 };
 struct tag_decl_form {
 	std::string tagname;
-	unsigned long long value;
+	unsigned long long value = 0;
 };
 
 struct variables_decl {
