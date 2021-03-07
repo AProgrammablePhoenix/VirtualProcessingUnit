@@ -142,6 +142,7 @@ enum virtual_actions {
 	declArray = 0x004100,
 	setAt = 0x004110,
 	getAt = 0x004120,
+	getDynSize = 0x004130,
 
 	// Process
 	ijmp = 0x003017,
@@ -163,7 +164,7 @@ enum virtual_actions {
 	ret = 0x0030AC
 };
 
-extern void* a_db[0x004120 + 1];
+extern void* a_db[0x004130 + 1];
 
 struct actions_engine {
 public:
@@ -355,6 +356,7 @@ private:
 		a_db[virtual_actions::declArray] = m_declArray;
 		a_db[virtual_actions::setAt] = m_setAt;
 		a_db[virtual_actions::getAt] = m_getAt;
+		a_db[virtual_actions::getDynSize] = m_getDynSize;
 #pragma endregion
 #pragma region process
 		a_db[virtual_actions::ijmp] = p_inverseJmpSign;

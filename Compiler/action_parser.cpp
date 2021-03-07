@@ -213,6 +213,7 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"declArray", virtual_actions::declArray},
 	{"setAt", virtual_actions::setAt},
 	{"getAt", virtual_actions::getAt},
+	{"getDynSize", virtual_actions::getDynSize},
 
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
