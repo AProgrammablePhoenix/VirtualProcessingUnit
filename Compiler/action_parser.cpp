@@ -215,6 +215,10 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"getAt", virtual_actions::getAt},
 	{"getDynSize", virtual_actions::getDynSize},
 
+	{"dyndecl", virtual_actions::dyndecl},
+	{"dynset", virtual_actions::dynset},
+	{"dynget", virtual_actions::dynget},
+
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
 	{"cmp", virtual_actions::cmp},
