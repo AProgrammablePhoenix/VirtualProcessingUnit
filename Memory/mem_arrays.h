@@ -85,7 +85,7 @@ private:
 struct dyn_unum_array : dyn_array_int<unsigned long long> {
 public:
 	dyn_unum_array();
-	dyn_unum_array(regs* registers);
+	dyn_unum_array(regs* _registers);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
 	void getSize();
