@@ -4,4 +4,8 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.1:
 - [x] Arrays (static and dynamic ones) implementation
-- [ ] rewritable variables to store in a more simplified way values, instead of always using Stack or Registers.
+- [x] rewritable variables to store in a more simplified way values, instead of always using Stack or Registers.
+####[DONE]
+
+Because the 'towards/to do list' of new functionnalities is completely done/checked, the release package of V1.1-stable will be nearly
+released.
