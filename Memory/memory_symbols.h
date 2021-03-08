@@ -38,7 +38,7 @@ void m_getDynSize(void* unused_p, regs* registers, memory* mem);
 // Memory dynamic variables symbols
 void m_dyndecl(void* unused_p, regs* registers, memory* mem);
 void m_dynset(void* unused_p, regs* registers, memory* mem);
-void m_dynset(void* unused_p, regs* registers, memory* mem);
+void m_dynget(void* unused_p, regs* registers, memory* mem);
 
 /*
 struct memory_symbols {
