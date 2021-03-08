@@ -6,6 +6,7 @@
 #include <any>
 
 #include "mem_arrays.h"
+#include "dyn_vars.h"
 
 #pragma warning (push)
 
@@ -86,6 +87,7 @@ public:
 		}
 	}
 	mem_arrays _arrays;
+	mem_dyn_vars _dynvars;
 private:
 	regs* registers;
 	std::vector<m_container> _memory;

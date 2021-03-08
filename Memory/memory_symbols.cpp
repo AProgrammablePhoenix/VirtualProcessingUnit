@@ -81,8 +81,13 @@ void m_setAt(void* unused_p, regs* registers, memory* mem) {
 	registers->rax->set(saved_rax);
 }
 void m_getAt(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string array_name = registers->sr->get();
+
+	// If array is not an array of strings, this instruction is needed because in this case the value of SR shouldn't be modified by
+	// this method.
+	registers->sr->set(saved_sr);
 
 	unsigned long long saved_rax = registers->rax->get();
 	popMem(registries_def::RAX, registers, mem);
@@ -105,5 +110,52 @@ void m_getDynSize(void* unused_p, regs* registers, memory* mem) {
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
 		mem->_arrays.getDynSize(array_name);
+	}
+}
+
+// Memory dynamic variables symbols
+/* Stack structure before calling:
+*	... VAR_TYPE
+*	With var_name in SR
+*/
+void m_dyndecl(void* unused_p, regs* registers, memory* mem) {
+	std::string var_name = registers->sr->get();
+
+	popMemSR(unused_p, registers, mem);
+	std::string var_type = registers->sr->get();
+
+	if (mem->_dynvars.getVarType(var_name) == "UNDEFINED_VARIABLE") {
+		mem->_dynvars.makeDynVar(var_name, var_type);
+	}
+
+	registers->sr->set(var_name);
+}
+
+/* Stack structure before collaing:
+*	... VAR_NAME
+*	With value to set/get in RDX or SR
+*/
+void m_dynset(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string var_name = registers->sr->get(); 
+
+	registers->sr->set(saved_sr);
+
+	if (mem->_dynvars.getVarType(var_name) != "UNDEFINED_VARIABLE") {
+		mem->_dynvars.dynSetVar(var_name);
+	}
+}
+void m_dynget(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string var_name = registers->sr->get();
+
+	// If variable is not a string, this instruction is needed because in this case the value of SR shouldn't be modified by
+	// this method.
+	registers->sr->set(saved_sr);
+
+	if (mem->_dynvars.getVarType(var_name) != "UNDEFINED_VARIABLE") {
+		mem->_dynvars.dynGetVar(var_name);
 	}
 }
