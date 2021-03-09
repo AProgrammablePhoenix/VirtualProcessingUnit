@@ -1,0 +1,52 @@
+; expected output:
+; 50
+; Hello, I'm a dynamic variable!
+
+decl string unsigned_number_type unsigned __int64
+decl string string_type class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+
+decl unsigned_number var1_value 50
+decl string var1_name var1
+
+decl string var2_value Hello, I'm a dynamic variable!
+decl string var2_name var2
+
+
+; dyndecl of var1
+setSR unsigned_number_type
+pushSR 0
+setSR var1_name
+dyndecl 0
+
+; dyndecl of var2
+setSR string_type
+pushSR 0
+setSR var2_name
+dyndecl 0
+
+
+; set of var1
+setSR var1_name
+pushSR 0
+setRDX var1_value
+dynset 0
+
+; set of var2
+setSR var2_name
+pushSR 0
+setSR var2_value
+dynset 0
+
+; fetch variables values
+; get var1
+setSR var1_name
+pushSR 0
+dynget 0
+toString RDX
+println 0
+
+; get var2
+setSR var2_name
+pushSR 0
+dynget 0
+println 0
