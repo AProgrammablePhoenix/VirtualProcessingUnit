@@ -2,10 +2,6 @@ This project allows you to run an engine which emulates threading behaviour. It 
 Actually, the language used to run tasks is not directly C++, it's VASM (which means Virtual ASM), which is a language that is representing
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
-Towards V1.1:
-- [x] Arrays (static and dynamic ones) implementation
-- [x] rewritable variables to store in a more simplified way values, instead of always using Stack or Registers.
-####[DONE]
-
-Because the 'towards/to do list' of new functionnalities is completely done/checked, the release package of V1.1-stable will be nearly
-released.
+Towards V1.2:
+- [ ] Implement signed number type.
+- [ ] Implement new types conversion (between unsigned and signed numbers and between number types and string type).
