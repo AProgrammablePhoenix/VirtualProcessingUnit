@@ -35,6 +35,7 @@ struct memory {
 public:
 	memory(regs* _registers) {
 		this->_arrays = mem_arrays(_registers);
+		this->_dynvars = mem_dyn_vars(_registers);
 		this->init();
 	}
 

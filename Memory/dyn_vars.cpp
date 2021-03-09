@@ -105,7 +105,7 @@ void mem_dyn_vars::dynSetVar(std::string name) {
 		if (this->types_table[name] == UNUM_TYPE) {
 			((dyn_var_int<unsigned long long>*)this->variables_table[name])->dynset();
 		}
-		else if (this->types_table[name] == UNUM_TYPE) {
+		else if (this->types_table[name] == STR_TYPE) {
 			((dyn_var_int<std::string>*)this->variables_table[name])->dynset();
 		}
 	}
