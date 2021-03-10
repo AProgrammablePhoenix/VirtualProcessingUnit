@@ -9,9 +9,11 @@
 
 #define STATIC_STR_ARRAY "static class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define STATIC_UNUM_ARRAY "static unsigned __int64"
+#define STATIC_SNUM_ARRAY "static __int64"
 
 #define DYNAMIC_STR_ARRAY "dynamic class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define DYNAMIC_UNUM_ARRAY "dynamic unsigned __int64"
+#define DYNAMIC_SNUM_ARRAY "dynamic __int64"
 
 
 str_mem_array::str_mem_array() {
@@ -79,6 +81,40 @@ void unum_mem_array::setAt(unsigned long long index) {
 		if (index < this->container_size) {
 			this->container[index] = this->registers->rdx->get();
 			return;
+		}
+	}
+}
+
+snum_mem_array::snum_mem_array() {
+	if (!this->initialized) {
+		if (this->container != NULL) {
+			delete[] this->container;
+		}
+	}
+}
+snum_mem_array::snum_mem_array(regs* _registers, unsigned long long size) {
+	if (!this->initialized) {
+		if (this->container != NULL) {
+			delete[] this->container;
+		}
+		this->registers = _registers;
+		this->container = new long long[size];
+		this->container_size = size;
+		this->values_type = "__int64";
+		this->initialized = true;
+	}
+}
+void snum_mem_array::getAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container_size) {
+			this->registers->rdx->set((unsigned long long)this->container[index]);
+		}
+	}
+}
+void snum_mem_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container_size) {
+			this->container[index] = (long long)this->registers->rdx->get();
 		}
 	}
 }
@@ -156,6 +192,44 @@ void dyn_unum_array::setAt(unsigned long long index) {
 	}
 }
 void dyn_unum_array::getSize() {
+	this->registers->rdx->set(this->container.size());
+}
+
+dyn_snum_array::dyn_snum_array() {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+	}
+}
+dyn_snum_array::dyn_snum_array(regs* _registers) {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+		this->registers = _registers;
+		this->values_types = "__int64";
+		this->initialized = true;
+	}
+}
+void dyn_snum_array::getAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->registers->rdx->set((unsigned long long)this->container[index]);
+		}
+	}
+}
+void dyn_snum_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->container[index] = (long long)this->registers->rdx->get();
+		}
+		else {
+			this->container.push_back((long long)this->registers->rdx->get());
+		}
+	}
+}
+void dyn_snum_array::getSize() {
 	this->registers->rdx->set(this->container.size());
 }
 

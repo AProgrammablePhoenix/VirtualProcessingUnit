@@ -50,6 +50,19 @@ private:
 	unsigned long long container_size = 0;
 	std::string values_type = "";
 };
+struct snum_mem_array : mem_array_int<long long> {
+public:
+	snum_mem_array();
+	snum_mem_array(regs* _registers, unsigned long long size);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	long long* container = NULL;
+	unsigned long long container_size = 0;
+	std::string values_type = "";
+};
 
 template<typename T>
 struct dyn_array_int {
@@ -95,6 +108,19 @@ private:
 	std::vector<unsigned long long> container;
 	std::string values_types = "";
 };
+struct dyn_snum_array : dyn_array_int<long long> {
+public:
+	dyn_snum_array();
+	dyn_snum_array(regs* _registers);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<long long> container;
+	std::string values_types = "";
+};
 
 struct mem_arrays {
 public:
@@ -111,6 +137,7 @@ private:
 
 	std::map<std::string, str_mem_array> string_arrays;
 	std::map<std::string, unum_mem_array> unsigned_number_arrays;
+	std::map<std::string, snum_mem_array> signed_numbers_arrays;
 
 	std::map<std::string, dyn_str_array> dyn_string_arrays;
 	std::map<std::string, dyn_unum_array> dyn_unsigned_number_arrays;
