@@ -1,4 +1,3 @@
-; [CALL] (load ../../../Samples/sample_signed_nums.vasm)
 ; expected output:
 ; 5
 ; -5
