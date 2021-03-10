@@ -268,6 +268,7 @@ void b_println(void* unused_p, regs* registers, memory* unused_m);
 void b_printEOL(void* unused_p, regs* unused_r, memory* unused_m);
 
 void b_castreg(registries_def receiver, regs* registers, memory* mem);
+void b_recast(void* unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 template<typename ret, typename argT, typename argT2>

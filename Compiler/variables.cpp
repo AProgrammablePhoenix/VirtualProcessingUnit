@@ -210,6 +210,12 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
 					storage.setVariablesTree(parsed[i]);
 				}
+				else if (parsed[i].decl_type == "signed number") {
+					std::stringstream ss(parsed[i].decl_value);
+					long long n_value;
+					ss >> n_value;
+					storage.setVariablesTree(parsed[i]);
+				}
 			}
 		}
 		else {

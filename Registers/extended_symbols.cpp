@@ -80,3 +80,54 @@ void b_castreg(registries_def receiver, regs* registers, memory* mem) {
 		((reg_int<unsigned long long>*)ptr_table.access(receiver))->set((unsigned long long)value);
 	}
 }
+/* STACK before calling:
+*	... RECAST_TYPE VALUE
+*	With output pushed in stack
+* 
+*	RECAST TYPES:
+*	- 0 = unsigned number -> signed number
+*	- 1 = signed_number -> unsigned number
+*	- 2 = signed_number  -> (binary) -> unsigned number
+*	- 3 = unsigned_number -> signed_number -> string
+*/
+void b_recast(void* unused_p, regs* registers, memory* mem) {
+	unsigned long long savedRAX = registers->rax->get();
+
+	popMem(registries_def::RAX, registers, mem);
+	unsigned long long value = registers->rax->get();
+
+	popMem(registries_def::RAX, registers, mem);
+	unsigned long long recast_type = registers->rax->get();
+
+	if (recast_type == 0) {
+		long long n_value = (long long)value;
+		registers->rax->set(n_value);
+		pushMem(registries_def::RAX, registers, mem);
+		registers->rax->set(savedRAX);
+	}
+	else if (recast_type == 1) {
+		unsigned long long n_value = (unsigned long long)((long long)value);
+		registers->rax->set(n_value);
+		pushMem(registries_def::RAX, registers, mem);
+		registers->rax->set(savedRAX);
+	}
+	else if (recast_type == 2) {
+		registers->rax->set(value);
+		pushMem(registries_def::RAX, registers, mem);
+		registers->rax->set(savedRAX);
+	}
+	else if (recast_type == 3) {
+		long long n_value = (long long)value;
+		std::stringstream ss;
+		ss << n_value;
+		std::string output;
+		ss >> output;
+
+		std::string saved_sr = registers->sr->get();
+		registers->sr->set(output);
+		pushMemSR(unused_p, registers, mem);
+
+		registers->sr->set(saved_sr);
+		registers->rax->set(savedRAX);
+	}
+}

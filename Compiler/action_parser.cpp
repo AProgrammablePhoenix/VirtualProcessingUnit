@@ -24,7 +24,7 @@ void process_memory::set(variables_decl* var) {
 			this->unsigned_numbers[headers[i].decl_name] = value;
 			this->data_ptrs[headers[i].decl_name] = &this->unsigned_numbers[headers[i].decl_name];
 		}
-		else if (headers[i].decl_type == "signed_number") {
+		else if (headers[i].decl_type == "signed number") {
 			long long value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
@@ -210,6 +210,7 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"printEOL", virtual_actions::printEOL},
 
 	{"castreg", virtual_actions::castreg},
+	{"recast", virtual_actions::recast},
 
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},
