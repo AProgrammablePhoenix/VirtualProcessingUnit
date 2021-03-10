@@ -141,6 +141,7 @@ private:
 
 	std::map<std::string, dyn_str_array> dyn_string_arrays;
 	std::map<std::string, dyn_unum_array> dyn_unsigned_number_arrays;
+	std::map<std::string, dyn_snum_array> dyn_signed_number_arrays;
 
 	std::map<std::string, void*> arrays_table;
 	std::map<std::string, std::string> types_table;
