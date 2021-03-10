@@ -1,20 +1,48 @@
 ; [CALL] (load ../../../Samples/sample_signed_nums.vasm)
 ; expected output:
 ; 5
-, -5
+; -5
+; -3
+; -8
 
 decl signed_number a 5
 decl signed_number b -5
+decl signed_number c 2
+decl signed_number d -3
 
 decl unsigned_number three 3
 
+; test basic positive signed number assignment
 setRAX a
 toString RAX
 println 0
 
+; test negative signed number assignment
 setAX three
 push AX
 setRAX b
+push RAX
+recast 0
+popSR 0
+println 0
+
+; test addition between positive and negative signed numbers
+setAX three
+push AX
+setRAX b
+setRBX c
+addRAX RBX
+push RAX
+recast 0
+popSR 0
+println 0
+
+; test addition between two negative signed numbers
+setAX three
+push AX
+setRAX b
+setRBX d
+addRAX RBX
 push RAX
 recast 0
 popSR 0
