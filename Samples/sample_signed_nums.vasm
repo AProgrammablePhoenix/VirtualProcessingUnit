@@ -1,0 +1,21 @@
+; [CALL] (load ../../../Samples/sample_signed_nums.vasm)
+; expected output:
+; 5
+, -5
+
+decl signed_number a 5
+decl signed_number b -5
+
+decl unsigned_number three 3
+
+setRAX a
+toString RAX
+println 0
+
+setAX three
+push AX
+setRAX b
+push RAX
+recast 0
+popSR 0
+println 0
