@@ -22,6 +22,7 @@ public:
 	void* getVarPtr(std::string var_name);
 private:
 	std::map<std::string, unsigned long long> unsigned_numbers;
+	std::map<std::string, long long> signed_numbers;
 	std::map<std::string, std::string> stored_strings;
 	std::map<std::string, unsigned long long> stored_tags;
 	std::map<std::string, void*> data_ptrs;

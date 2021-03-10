@@ -24,6 +24,13 @@ void process_memory::set(variables_decl* var) {
 			this->unsigned_numbers[headers[i].decl_name] = value;
 			this->data_ptrs[headers[i].decl_name] = &this->unsigned_numbers[headers[i].decl_name];
 		}
+		else if (headers[i].decl_type == "signed_number") {
+			long long value;
+			std::stringstream ss(headers[i].decl_value);
+			ss >> value;
+			this->signed_numbers[headers[i].decl_name] = value;
+			this->data_ptrs[headers[i].decl_name] = &this->signed_numbers[headers[i].decl_name];
+		}
 	}
 }
 void process_memory::setTags(variables_decl* vars) {

@@ -136,6 +136,14 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 	}
+	else if (line.substr(5, 13) == "signed_number") {
+		decl_data.decl_attr = "defined";
+		decl_data.decl_type = "signed number";
+
+		std::stringstream ss(line.substr(19));
+
+		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
+	}
 	else {
 		decl_data.decl_attr = "undefined";
 		decl_data.decl_type = "undefined";
