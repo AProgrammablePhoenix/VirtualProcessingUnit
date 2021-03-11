@@ -1,4 +1,11 @@
-; [CALL] (load ../../../Samples/sample_signed_nums_arrays.vasm)
+; expected output:
+; -3
+; 5
+; -40
+; -10000
+; -1024
+; -2048
+; 4096
 
 decl string signed_number_array static __int64
 decl string dyn_snums_array dynamic __int64
@@ -26,6 +33,14 @@ push RAX
 setSR signed_number_array
 pushSR 0
 setSR array1_name
+declArray 0
+
+; declArray of array2
+setRAX zero
+push RAX
+setSR dyn_snums_array
+pushSR 0
+setSR array2_name
 declArray 0
 
 ; set indexes of array1
