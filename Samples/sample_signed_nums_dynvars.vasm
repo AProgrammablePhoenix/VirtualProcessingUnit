@@ -1,0 +1,62 @@
+; expected output:
+; -30
+; 50
+
+decl string signed_number_type __int64
+
+decl signed_number var1_value -30
+decl string var1_name var1
+
+decl signed_number var2_value 50
+decl string var2_name var2
+
+decl unsigned_number three 3
+
+; dyndecl of var1
+setSR signed_number_type
+pushSR 0
+setSR var1_name
+dyndecl 0
+
+; dyndecl of var2
+setSR signed_number_type
+pushSR 0
+setSR var2_name
+dyndecl 0
+
+
+; set var1
+setSR var1_name
+pushSR 0
+setRDX var1_value
+dynset 0
+
+; set var2
+setSR var2_name
+pushSR 0
+setRDX var2_value
+dynset 0
+
+
+; fetch variables
+; get var1
+setSR var1_name
+pushSR 0
+dynget 0
+setRAX three
+push RAX
+push RDX
+recast 0
+popSR 0
+println 0
+
+; get var2
+setSR var2_name
+pushSR 0
+dynget 0
+setRAX three
+push RAX
+push RDX
+recast 0
+popSR 0
+println 0
