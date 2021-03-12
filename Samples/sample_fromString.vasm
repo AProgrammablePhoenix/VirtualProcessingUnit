@@ -1,0 +1,60 @@
+; expected output:
+; <input1>
+; <input2>
+; <input3>
+; [With input1, 2 and 3 valid signed numbers]
+
+decl string prompt1 input1: 
+decl string prompt2 input2: 
+decl string prompt3 input3: 
+
+decl unsigned_number swap_id 1
+decl unsigned_number sec_swap_id 3
+
+setSR prompt1
+print 0
+rdstdin 0
+popSR 0
+setRAX swap_id
+push RAX
+pushSR 0
+fromString 0
+pop RBX
+setRAX sec_swap_id
+push RAX
+push RBX
+recast 0
+popSR 0
+println 0
+
+setSR prompt2
+print 0
+rdstdin 0
+popSR 0
+setRAX swap_id
+push RAX
+pushSR 0
+fromString 0
+pop RBX
+setRAX sec_swap_id
+push RAX
+push RBX
+recast 0
+popSR 0
+println 0
+
+setSR prompt3
+print 0
+rdstdin 0
+popSR 0
+setRAX swap_id
+push RAX
+pushSR 0
+fromString 0
+pop RBX
+setRAX sec_swap_id
+push RAX
+push RBX
+recast 0
+popSR 0
+println 0
