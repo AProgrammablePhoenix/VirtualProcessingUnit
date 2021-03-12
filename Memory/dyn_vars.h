@@ -39,13 +39,25 @@ private:
 struct dyn_unum_var : dyn_var_int<unsigned long long> {
 public:
 	dyn_unum_var();
-	dyn_unum_var(regs* registers);
+	dyn_unum_var(regs* _registers);
 	void dynget();
 	void dynset();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
 	unsigned long long content = 0;
+	std::string value_type = "";
+};
+struct dyn_snum_var : dyn_var_int<long long> {
+public:
+	dyn_snum_var();
+	dyn_snum_var(regs* _registers);
+	void dynget();
+	void dynset();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	long long content = 0;
 	std::string value_type = "";
 };
 

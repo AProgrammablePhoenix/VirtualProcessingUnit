@@ -11,6 +11,7 @@
 
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_TYPE "unsigned __int64"
+#define SNUM_TYPE "__int64"
 
 dyn_str_var::dyn_str_var() {
 	if (!this->initialized) {
@@ -65,6 +66,34 @@ void dyn_unum_var::dynget() {
 void dyn_unum_var::dynset() {
 	if (this->initialized) {
 		this->content = this->registers->rdx->get();
+	}
+}
+
+dyn_snum_var::dyn_snum_var() {
+	if (!this->initialized) {
+		if (this->content) {
+			this->content = NULL;
+		}
+	}
+}
+dyn_snum_var::dyn_snum_var(regs* _registers) {
+	if (!this->initialized) {
+		if (this->content) {
+			this->content = NULL;
+		}
+		this->registers = _registers;
+		this->value_type = SNUM_TYPE;
+		this->initialized = true;
+	}
+}
+void dyn_snum_var::dynget() {
+	if (this->initialized) {
+		this->registers->rdx->set((unsigned long long)this->content);
+	}
+}
+void dyn_snum_var::dynset() {
+	if (this->initialized) {
+		this->content = (long long)this->registers->rdx->get();
 	}
 }
 
