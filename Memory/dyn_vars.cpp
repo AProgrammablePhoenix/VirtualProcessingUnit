@@ -111,6 +111,12 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 			this->variables_table[name] = &this->dyn_unsigned_number_vars[name];
 			this->types_table[name] = UNUM_TYPE;
 		}
+		else if (type == SNUM_TYPE) {
+			dyn_snum_var _var = dyn_snum_var(this->registers);
+			this->dyn_signed_number_vars[name] = _var;
+			this->variables_table[name] = &this->dyn_signed_number_vars[name];
+			this->types_table[name] = SNUM_TYPE;
+		}
 		else if (type == STR_TYPE) {
 			dyn_str_var _var = dyn_str_var(this->registers);
 			this->dyn_string_vars[name] = _var;
@@ -124,6 +130,9 @@ void mem_dyn_vars::dynGetVar(std::string name) {
 		if (this->types_table[name] == UNUM_TYPE) {
 			((dyn_var_int<unsigned long long>*)this->variables_table[name])->dynget();
 		}
+		else if (this->types_table[name] == SNUM_TYPE) {
+			((dyn_var_int<long long>*)this->variables_table[name])->dynget();
+		}
 		else if (this->types_table[name] == STR_TYPE) {
 			((dyn_var_int<std::string>*)this->variables_table[name])->dynget();
 		}
@@ -133,6 +142,9 @@ void mem_dyn_vars::dynSetVar(std::string name) {
 	if (this->variables_table.count(name)) {
 		if (this->types_table[name] == UNUM_TYPE) {
 			((dyn_var_int<unsigned long long>*)this->variables_table[name])->dynset();
+		}
+		else if (this->types_table[name] == SNUM_TYPE) {
+			((dyn_var_int<long long>*)this->variables_table[name])->dynset();
 		}
 		else if (this->types_table[name] == STR_TYPE) {
 			((dyn_var_int<std::string>*)this->variables_table[name])->dynset();

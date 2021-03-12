@@ -75,6 +75,7 @@ private:
 
 	std::map<std::string, dyn_str_var> dyn_string_vars;
 	std::map<std::string, dyn_unum_var> dyn_unsigned_number_vars;
+	std::map<std::string, dyn_snum_var> dyn_signed_number_vars;
 
 	std::map<std::string, void*> variables_table;
 	std::map<std::string, std::string> types_table;
