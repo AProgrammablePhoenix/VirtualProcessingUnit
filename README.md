@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.2:
-- [ ] Implement signed number type.
+- [x] Implement signed number type.
 - [ ] Implement new types conversion (between unsigned and signed numbers and between number types and string type).
