@@ -132,6 +132,7 @@ enum virtual_actions {
 
 	castreg = 0x003A16,
 	recast = 0x003A17,
+	fromString = 0x003A18,
 
 	// Memory
 	push = 0x003F00,
@@ -349,6 +350,7 @@ private:
 
 		a_db[virtual_actions::castreg] = b_castreg;
 		a_db[virtual_actions::recast] = b_recast;
+		a_db[virtual_actions::fromString] = b_fromString;
 #pragma endregion
 
 #pragma region mem

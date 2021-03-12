@@ -211,6 +211,7 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"castreg", virtual_actions::castreg},
 	{"recast", virtual_actions::recast},
+	{"fromString", virtual_actions::fromString},
 
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},

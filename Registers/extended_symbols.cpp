@@ -80,6 +80,7 @@ void b_castreg(registries_def receiver, regs* registers, memory* mem) {
 		((reg_int<unsigned long long>*)ptr_table.access(receiver))->set((unsigned long long)value);
 	}
 }
+
 /* STACK before calling:
 *	... RECAST_TYPE VALUE
 *	With output pushed in stack
@@ -89,6 +90,10 @@ void b_castreg(registries_def receiver, regs* registers, memory* mem) {
 *	- 1 = signed_number -> unsigned number
 *	- 2 = signed_number  -> (binary) -> unsigned number
 *	- 3 = unsigned_number -> signed_number -> string
+* 
+*	Excluded conversions:
+*	- unsigned_number -> string (reason: handled by "toString" instruction
+*	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
 void b_recast(void* unused_p, regs* registers, memory* mem) {
 	unsigned long long savedRAX = registers->rax->get();
@@ -129,5 +134,43 @@ void b_recast(void* unused_p, regs* registers, memory* mem) {
 
 		registers->sr->set(saved_sr);
 		registers->rax->set(savedRAX);
+	}
+}
+
+/* STACK before calling:
+*	... CAST_TYPE VALUE
+*	With output pushed in stack
+*
+*	CAST TYPES:
+*	- 0 = string -> unsigned number
+*	- 1 = string -> signed number
+*/
+void b_fromString(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	unsigned long long saved_rax = registers->rax->get();
+
+	popMemSR(unused_p, registers, mem);
+	std::string value = registers->sr->get();
+
+	popMem(registries_def::RAX, registers, mem);
+	unsigned long long cast_type = registers->rax->get();
+
+	if (cast_type == 0) {
+		std::stringstream ss(value);
+		unsigned long long n_value = NULL;
+		ss >> n_value;
+		registers->rax->set(n_value);
+		pushMem(registries_def::RAX, registers, mem);
+		registers->rax->set(saved_rax);
+		registers->sr->set(saved_sr);
+	}
+	else if (cast_type == 1) {
+		std::stringstream ss(value);
+		long long n_value = NULL;
+		ss >> n_value;
+		registers->rax->set(n_value);
+		pushMem(registries_def::RAX, registers, mem);
+		registers->rax->set(saved_rax);
+		registers->sr->set(saved_sr);
 	}
 }
