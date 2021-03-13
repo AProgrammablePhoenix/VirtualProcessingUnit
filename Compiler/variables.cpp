@@ -217,10 +217,11 @@ variables_decl build_variables_decl_tree(std::string filename) {
 			else {
 				if (parsed[i].decl_type == "string") {
 					unsigned char* uc_s = new unsigned char[parsed[i].decl_value.size() + 1];
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 					memcpy_s(uc_s, parsed[i].decl_value.size() + 1, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #else
-					memcpy(uc_s, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
+					std::memcpy(uc_s, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #endif
 					storage.set(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
 					storage.setVariablesTree(parsed[i]);
