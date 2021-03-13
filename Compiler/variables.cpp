@@ -3,7 +3,9 @@
 #include <string>
 #include <map>
 #include <sstream>
-#include <memory.h>
+
+#include <stdio.h>
+#include <cstring>
 
 #include "../Memory/memory_decl.h"
 #include "variables.h"
