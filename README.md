@@ -4,4 +4,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.2:
 - [x] Implement signed number type.
-- [ ] Implement new types conversion (between unsigned and signed numbers and between number types and string type).
+- [x] Implement new types conversion (between unsigned and signed numbers and between number types and string type).
