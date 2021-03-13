@@ -3,7 +3,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <any>
 
 #include "mem_arrays.h"
 #include "dyn_vars.h"

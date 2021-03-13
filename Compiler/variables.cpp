@@ -214,6 +214,7 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					std::stringstream ss(parsed[i].decl_value);
 					long long n_value;
 					ss >> n_value;
+					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
 					storage.setVariablesTree(parsed[i]);
 				}
 			}

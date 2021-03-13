@@ -6,6 +6,9 @@
 
 #include "../Memory/memory_decl.h"
 
+// a user variable can't start with a variable name like that
+#define RES_VAR_TAG "__sys_"
+
 struct code_file_decl_form {
 	std::string decl_attr;
 	std::string decl_type;
@@ -40,6 +43,8 @@ public:
 	void setTagsBranch(tag_decl_form branch);
 	tag_decl_form getTagBranch(std::string tagname);
 	std::vector<tag_decl_form> getTagsTree();
+
+	unsigned long long sys_vars_count = 0;
 private:
 	std::map<std::string, m_container> vars;
 	std::map<std::string, code_file_decl_form> variables_tree;

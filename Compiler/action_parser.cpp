@@ -248,7 +248,95 @@ std::map<std::string, virtual_actions> symbols_converter =
 #pragma endregion
 };
 
-std::vector<std::vector<std::string>> parseCodeLines(std::string filename) {
+std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
+	std::string content = argument.substr(3, argument.size() - 5);
+	std::string prefix = std::string(1, content[0]);
+	if (prefix == "_") {
+		if (content.size() > 2) {
+			prefix += content[1];
+		}
+	}
+
+	try {
+		if (prefix == "N") { // Unsigned number
+			std::string s_val = content.substr(1);
+
+			unsigned long long value;
+			std::stringstream ss(s_val);
+			ss >> value;
+			std::stringstream().swap(ss);
+			
+			ss << std::hex << vars->sys_vars_count;
+			std::string var_name = RES_VAR_TAG + ss.str();
+			std::stringstream().swap(ss);
+
+			code_file_decl_form decl_form;
+			decl_form.decl_attr = "defined";
+			decl_form.decl_name = var_name;
+			decl_form.decl_type = "unsigned number";
+			ss << value;
+			ss >> decl_form.decl_value;
+			std::stringstream().swap(ss);
+
+			vars->set(var_name, (unsigned char*)value);
+			vars->setVariablesTree(decl_form);
+			vars->sys_vars_count += 1;
+			return var_name;
+		}
+		else if (prefix == "_N") { // Signed number
+			std::string s_val = content.substr(2);
+
+			long long value;
+			std::stringstream ss(s_val);
+			ss >> value;
+			std::stringstream().swap(ss);
+
+			ss << std::hex << vars->sys_vars_count;
+			std::string var_name = RES_VAR_TAG + ss.str();
+			std::stringstream().swap(ss);
+
+			code_file_decl_form decl_form;
+			decl_form.decl_attr = "defined";
+			decl_form.decl_name = var_name;
+			decl_form.decl_type = "signed number";
+			ss << value;
+			ss >> decl_form.decl_value;
+			std::stringstream().swap(ss);
+
+			vars->set(var_name, (unsigned char*)value);
+			vars->setVariablesTree(decl_form);
+			vars->sys_vars_count += 1;
+			return var_name;
+		}
+		else if (prefix == "S") {
+			std::string value = content.substr(2, content.size() - 3); // String compiletime decl has a form of ${{S"<your string>"}}.
+			std::stringstream ss;
+
+			ss << std::hex << vars->sys_vars_count;
+			std::string var_name = RES_VAR_TAG + ss.str();
+			std::stringstream().swap(ss);
+
+			code_file_decl_form decl_form;
+			decl_form.decl_attr = "defined";
+			decl_form.decl_name = var_name;
+			decl_form.decl_type = "string";
+			decl_form.decl_value = value;
+			std::stringstream().swap(ss);
+
+			unsigned char* uc_s = new unsigned char[value.size() + 1];
+			memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
+			vars->set(var_name, uc_s, value.size() + 1);
+			vars->setVariablesTree(decl_form);
+			return var_name;
+		}
+	}
+	catch (const std::out_of_range&) {
+		std::cout << "Invalid compiletime value declaration: " << content << std::endl;
+		std::cout << "Replaced by NULL" << std::endl;
+		return "NULL";
+	}
+}
+std::vector<std::vector<std::string>> parseCodeLines(std::string filename, variables_decl* vars) {
 	std::ifstream file(filename);
 	std::vector<std::vector<std::string>> parsed;
 	std::string line;
@@ -270,6 +358,12 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename) {
 			std::stringstream ss(line);
 			std::string action, argument;
 			ss >> action >> std::ws >> argument;
+			argument =  line.substr(action.size() + 1);
+
+			if (!argument.find("${{", 0) && argument.find("}}", argument.size() - 2) > 2
+				&& argument.find("}}", argument.size() - 2 < argument.size())) {
+				argument = processCompiletimeArg(argument, vars);
+			}
 
 			parsed.push_back(std::vector<std::string>({action, argument}));
 		}
@@ -371,7 +465,7 @@ std::vector<void*> convertVariables(std::vector<std::vector<std::string>> cleane
 
 void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem) {
 	variables_decl vars = build_variables_decl_tree(filename);
-	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
 	purgeParsed(&converted_actions, &parsed);
