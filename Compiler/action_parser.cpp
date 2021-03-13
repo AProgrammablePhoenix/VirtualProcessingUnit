@@ -6,6 +6,9 @@
 #include <sstream>
 #include <filesystem>
 
+#include <stdio.h>
+#include <cstring>
+
 #include "../Actions/threading.h"
 #include "../Memory/memory_decl.h"
 #include "variables.h"
@@ -331,7 +334,11 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			std::stringstream().swap(ss);
 
 			unsigned char* uc_s = new unsigned char[value.size() + 1];
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 			memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
+#else
+			std::memcpy(uc_s, value.c_str(), value.size() + 1);
+#endif
 			vars->set(var_name, uc_s, value.size() + 1);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
