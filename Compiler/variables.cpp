@@ -126,6 +126,12 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 			decl_data.decl_name = "<parsing-error>";
 		}
 
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
+			std::cout << "Variable not compiled" << std::endl;
+			decl_data.decl_name = "<parsing-error>";
+		}
+
 		return decl_data;
 	}
 	else if (line.substr(5, 15) == "unsigned_number") {
@@ -135,6 +141,12 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		std::stringstream ss(line.substr(21));
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
+
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
+			std::cout << "Variable not compiled" << std::endl;
+			decl_data.decl_name = "<parsing-error>";
+		}
 	}
 	else if (line.substr(5, 13) == "signed_number") {
 		decl_data.decl_attr = "defined";
@@ -143,6 +155,12 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		std::stringstream ss(line.substr(19));
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
+
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
+			std::cout << "Variable not compiled" << std::endl;
+			decl_data.decl_name = "<parsing-error>";
+		}
 	}
 	else {
 		decl_data.decl_attr = "undefined";
