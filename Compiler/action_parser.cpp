@@ -327,6 +327,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
 			vars->set(var_name, uc_s, value.size() + 1);
 			vars->setVariablesTree(decl_form);
+			vars->sys_vars_count += 1;
 			return var_name;
 		}
 	}
