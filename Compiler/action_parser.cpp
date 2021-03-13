@@ -6,8 +6,10 @@
 #include <sstream>
 #include <filesystem>
 
+#if defined(__linux__)
 #include <stdio.h>
 #include <cstring>
+#endif
 
 #include "../Actions/threading.h"
 #include "../Memory/memory_decl.h"

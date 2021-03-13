@@ -1,8 +1,10 @@
 #include <iostream>
 #include <string>
 
+#if defined(__linux__)
 #include <stdio.h>
 #include <cstring>
+#endif
 
 #include "memory_decl.h"
 #include "../Registers/regs_decl.h"

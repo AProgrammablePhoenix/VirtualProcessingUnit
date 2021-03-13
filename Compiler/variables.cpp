@@ -4,8 +4,10 @@
 #include <map>
 #include <sstream>
 
+#if defined(__linux__)
 #include <stdio.h>
 #include <cstring>
+#endif
 
 #include "../Memory/memory_decl.h"
 #include "variables.h"
