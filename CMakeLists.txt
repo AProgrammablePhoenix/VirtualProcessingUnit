@@ -25,3 +25,5 @@ target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
 target_link_libraries(ThreadPoolEmulation virtual_engine)
 target_link_libraries(ThreadPoolEmulation compiler)
+
+target_compile_features(compiler PUBLIC cxx_std_17)

@@ -2,7 +2,9 @@
 #include <fstream>
 #include <string>
 #include <map>
+#include <unordered_set>
 #include <sstream>
+#include <filesystem>
 
 #include "../Actions/threading.h"
 #include "../Memory/memory_decl.h"
@@ -248,6 +250,11 @@ std::map<std::string, virtual_actions> symbols_converter =
 #pragma endregion
 };
 
+std::unordered_set<std::string> included_headers;
+
+std::unordered_set<std::string> global_toInclude;
+std::vector<std::string> global_include_list;
+
 std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	std::string content = argument.substr(3, argument.size() - 5);
 	std::string prefix = std::string(1, content[0]);
@@ -330,6 +337,9 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			vars->sys_vars_count += 1;
 			return var_name;
 		}
+		else {
+			return "NULL";
+		}
 	}
 	catch (const std::out_of_range&) {
 		std::cout << "Invalid compiletime value declaration: " << content << std::endl;
@@ -338,6 +348,12 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	}
 }
 std::vector<std::vector<std::string>> parseCodeLines(std::string filename, variables_decl* vars) {
+	std::vector<std::string> toInclude;
+
+	if (!included_headers.count(filename)) {
+		included_headers.insert(filename);
+	}
+	
 	std::ifstream file(filename);
 	std::vector<std::vector<std::string>> parsed;
 	std::string line;
@@ -356,6 +372,16 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 				continue;
 			}
 
+			if (!line.rfind("[include] ", 0)) {
+				std::string included = line.substr(10);
+				std::string localpath = std::filesystem::relative(filename).replace_filename(included).string();
+
+				if (!included_headers.count(localpath)) {
+					toInclude.push_back(localpath);
+					global_include_list.push_back(localpath);
+				}
+			}
+
 			std::stringstream ss(line);
 			std::string action, argument;
 			ss >> action >> std::ws >> argument;
@@ -368,6 +394,18 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 
 			parsed.push_back(std::vector<std::string>({action, argument}));
 		}
+
+		for (unsigned long long i = 0; i < toInclude.size(); i++) {
+			if (!global_toInclude.count(toInclude[i])) {
+				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars);
+
+				for (unsigned long long j = 0; j < loaded.size(); j++) {
+					parsed.push_back(loaded[j]);
+				}
+				global_toInclude.insert(toInclude[i]);
+			}
+		}
+
 		return parsed;
 	}
 	else {
@@ -394,7 +432,7 @@ void purgeParsed(std::vector<virtual_actions> *converted, std::vector<std::vecto
 	}
 }
 
-std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename) {
+std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename, bool main = true) {
 	std::ifstream file(filename);
 	std::vector<std::vector<std::string>> parsed;
 	std::string line;
@@ -422,6 +460,17 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename) {
 
 			parsed.push_back(std::vector<std::string>({action, argument}));
 		}
+
+		if (main) {
+			for (unsigned long long i = 0; i < global_include_list.size(); i++) {
+				std::vector<std::vector<std::string>> loaded = makeCleanedParsed(global_include_list[i], false);
+
+				for (unsigned long long j = 0; j < loaded.size(); j++) {
+					parsed.push_back(loaded[j]);
+				}
+			}
+		}
+
 		return parsed;
 	}
 	else {
@@ -442,6 +491,10 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 			vars->setTagsBranch(decl_form);
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
 			i--;
+
+			if (i >= cleaned_parsed.size()) {
+				break;
+			}
 		}
 		if (symbols_converter[cleaned_parsed[i][0]] == 0 || symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::setAX) {
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
