@@ -1,3 +1,4 @@
 engine.vasm 
 out/
 .vs/
+build/
