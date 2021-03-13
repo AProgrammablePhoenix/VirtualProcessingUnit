@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <corecrt_memcpy_s.h>
 
 #include "../Memory/memory_decl.h"
 #include "variables.h"
