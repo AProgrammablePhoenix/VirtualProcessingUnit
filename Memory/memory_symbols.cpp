@@ -1,6 +1,9 @@
 #include <iostream>
 #include <string>
 
+#include <stdio.h>
+#include <cstring>
+
 #include "memory_decl.h"
 #include "../Registers/regs_decl.h"
 #include "../Registers/registers_symbols.h"
@@ -25,7 +28,11 @@ void pushMemSR(void* unused_p, regs* registers, memory* mem) {
 	b_getSR(&value, registers, mem);
 
 	unsigned char *uc_s = new unsigned char[value.size() + 1];
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
+#else
+	std::memcpy(uc_s, value.c_str(), value.size() + 1);
+#endif
 
 	mem->push(uc_s, value.size() + 1);
 }
