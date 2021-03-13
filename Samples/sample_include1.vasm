@@ -1,0 +1,12 @@
+; expected output:
+; This message comes from imported module!
+; File inclusion test passed
+
+[include] sample_include2.vasm
+
+call function
+
+setSR ${{S"File inclusion test passed"}}
+println 0
+
+hlt 0

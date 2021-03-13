@@ -1,0 +1,6 @@
+decltag function
+
+setSR ${{S"This message comes from imported module!"}}
+println 0
+
+ret 0
