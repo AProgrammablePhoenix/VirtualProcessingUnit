@@ -4,4 +4,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.3:
 - [x] Compile time values interpretation (instead of being forced to create a variable to each value).
-- [ ] Add 'include' instruction to allow spliting code through multiple files.
+- [x] Add 'include' instruction to allow spliting code through multiple files.
