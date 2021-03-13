@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.3:
-- [ ] Compile time values interpretation (instead of being forced to create a variable to each value).
+- [x] Compile time values interpretation (instead of being forced to create a variable to each value).
 - [ ] Add 'include' instruction to allow spliting code through multiple files.
