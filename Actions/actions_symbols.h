@@ -150,12 +150,12 @@ enum virtual_actions {
 	dynget = 0x004160,
 
 	// Native binary ops [belong to Registers]
-	not = 0x004200,
-	and = 0x004210,
-	or  = 0x004220,
-	xor = 0x004230,
-	shl = 0x004240,
-	shr = 0x004250,
+	_not = 0x004200,
+	_and = 0x004210,
+	_or  = 0x004220,
+	_xor = 0x004230,
+	_shl = 0x004240,
+	_shr = 0x004250,
 
 	// Process
 	ijmp = 0x003017,
@@ -361,12 +361,12 @@ private:
 		a_db[virtual_actions::fromString] = b_fromString;
 #pragma endregion
 #pragma region b_binary
-		a_db[virtual_actions::not] = b_not;
-		a_db[virtual_actions::and] = b_and;
-		a_db[virtual_actions::or]  = b_or;
-		a_db[virtual_actions::xor] = b_xor;
-		a_db[virtual_actions::shl] = b_shl;
-		a_db[virtual_actions::shr] = b_shr;
+		a_db[virtual_actions::_not] = b_not;
+		a_db[virtual_actions::_and] = b_and;
+		a_db[virtual_actions::_or]  = b_or;
+		a_db[virtual_actions::_xor] = b_xor;
+		a_db[virtual_actions::_shl] = b_shl;
+		a_db[virtual_actions::_shr] = b_shr;
 #pragma endregion
 
 #pragma region mem
