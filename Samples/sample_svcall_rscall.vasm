@@ -1,0 +1,39 @@
+; expected output:
+; Process launched
+; function1 called
+; function2 called
+; function2 terminated
+; function1 terminated
+; Process terminated
+
+setSR ${{S"Process launched"}}
+println 0
+
+call function1
+setSR ${{S"Process terminated"}}
+println 0
+
+hlt 0
+
+decltag function1
+svcall 0
+
+setSR ${{S"function1 called"}}
+println 0
+
+call function2
+rscall 0
+
+setSR ${{S"function1 terminated"}}
+println 0
+
+ret 0
+
+decltag function2
+setSR ${{S"function2 called"}}
+println 0
+
+setSR ${{S"function2 terminated"}}
+println 0
+
+ret 0
