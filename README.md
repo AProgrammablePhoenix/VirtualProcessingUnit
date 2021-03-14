@@ -4,4 +4,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.4:
 - [x] Add binary operations
-- [ ] Implement "caller address saving/restoring" when using "call" instruction
+- [x] Implement "caller address saving/restoring" when using "call" instruction
