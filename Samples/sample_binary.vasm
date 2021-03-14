@@ -1,0 +1,47 @@
+; expected output:
+; 8
+; 3
+; 255
+; 4095
+; 3840
+; 2
+
+setRAX ${{N2}}
+push RAX
+setRAX ${{N2}}
+shl RAX
+toString RAX
+println 0
+
+setRAX ${{_N-4}}
+not RAX
+toString RAX
+println 0
+
+setRAX ${{N4095}}
+push RAX
+setRAX ${{N255}}
+and RAX
+toString RAX
+println 0
+
+setRAX ${{N4095}}
+push RAX
+setRAX ${{N255}}
+or RAX
+toString RAX
+println 0
+
+setRAX ${{N4095}}
+push RAX
+setRAX ${{N255}}
+xor RAX
+toString RAX
+println 0
+
+setRAX ${{N8}}
+push RAX
+setRAX ${{N2}}
+shr RAX
+toString RAX
+println 0
