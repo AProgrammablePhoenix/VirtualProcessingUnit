@@ -235,6 +235,13 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"dynset", virtual_actions::dynset},
 	{"dynget", virtual_actions::dynget},
 
+	{"not", virtual_actions::not},
+	{"and", virtual_actions::and},
+	{"or",  virtual_actions::or },
+	{"xor", virtual_actions::xor},
+	{"shl", virtual_actions::shl},
+	{"shr", virtual_actions::shr},
+
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
 	{"cmp", virtual_actions::cmp},

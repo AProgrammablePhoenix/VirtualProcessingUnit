@@ -272,6 +272,16 @@ void b_recast(void* unused_p, regs* registers, memory* mem);
 void b_fromString(void* unused_p, regs* registers, memory* mem);
 #pragma endregion
 
+// Native binary ops
+#pragma region native_bin_ops
+void b_not(registries_def reg, regs* registers, memory* unused_m);
+void b_and(registries_def reg, regs* registers, memory* mem);
+void b_or(registries_def reg, regs* registers, memory* mem);
+void b_xor(registries_def reg, regs* registers, memory* mem);
+void b_shl(registries_def reg, regs* registers, memory* mem);
+void b_shr(registries_def reg, regs* registers, memory* mem);
+#pragma endregion
+
 template<typename ret, typename argT, typename argT2>
 struct function {
 	function(ret(*ptr)(argT, argT2)) {

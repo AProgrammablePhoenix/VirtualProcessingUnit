@@ -4,7 +4,7 @@ project ("ThreadPoolEmulation")
 
 add_library(registers STATIC
 			"Registers/regs_decl.h" "Registers/registers_symbols.h" "Registers/registers_symbols.cpp"
-			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp")
+			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp" "Registers/native_binary.cpp")
 
 add_library(memory STATIC
 			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" "Memory/mem_arrays.cpp"

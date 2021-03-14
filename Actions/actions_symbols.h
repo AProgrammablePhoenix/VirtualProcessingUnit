@@ -149,6 +149,14 @@ enum virtual_actions {
 	dynset = 0x004150,
 	dynget = 0x004160,
 
+	// Native binary ops [belong to Registers]
+	not = 0x004200,
+	and = 0x004210,
+	or  = 0x004220,
+	xor = 0x004230,
+	shl = 0x004240,
+	shr = 0x004250,
+
 	// Process
 	ijmp = 0x003017,
 	jmp = 0x003018,
@@ -169,7 +177,7 @@ enum virtual_actions {
 	ret = 0x0030AC
 };
 
-extern void* a_db[0x004160 + 1];
+extern void* a_db[0x004250 + 1];
 
 struct actions_engine {
 public:
@@ -351,6 +359,14 @@ private:
 		a_db[virtual_actions::castreg] = b_castreg;
 		a_db[virtual_actions::recast] = b_recast;
 		a_db[virtual_actions::fromString] = b_fromString;
+#pragma endregion
+#pragma region b_binary
+		a_db[virtual_actions::not] = b_not;
+		a_db[virtual_actions::and] = b_and;
+		a_db[virtual_actions::or]  = b_or;
+		a_db[virtual_actions::xor] = b_xor;
+		a_db[virtual_actions::shl] = b_shl;
+		a_db[virtual_actions::shr] = b_shr;
 #pragma endregion
 
 #pragma region mem
