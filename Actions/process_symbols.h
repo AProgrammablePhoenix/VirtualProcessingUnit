@@ -24,3 +24,6 @@ void p_hlt(void* unused_p, regs* registers, memory* unsused_m);
 void p_call(void* unused_p, regs* registers, memory* unused_m);
 void p_lcall(void* unused_p, regs* registers, memory* unused_m);
 void p_ret(void* unused_p, regs* registers, memory* unused_m);
+
+void p_svcall(void* unused_p, regs* registers, memory* unused_m);
+void p_rscall(void* unused_p, regs* registers, memory* unused_m);

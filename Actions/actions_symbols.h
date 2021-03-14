@@ -174,7 +174,9 @@ enum virtual_actions {
 
 	call = 0x0030AA,
 	lcall = 0x0030AB,
-	ret = 0x0030AC
+	ret = 0x0030AC,
+	svcall = 0x0030AD,
+	rscall = 0x0030AE
 };
 
 extern void* a_db[0x004250 + 1];
@@ -403,6 +405,8 @@ private:
 		a_db[virtual_actions::call] = p_call;
 		a_db[virtual_actions::lcall] = p_lcall;
 		a_db[virtual_actions::ret] = p_ret;
+		a_db[virtual_actions::svcall] = p_svcall;
+		a_db[virtual_actions::rscall] = p_rscall;
 #pragma endregion
 	}
 };

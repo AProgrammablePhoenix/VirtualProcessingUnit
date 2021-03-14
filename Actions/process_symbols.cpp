@@ -6,6 +6,8 @@
 #include "../Registers/registers_symbols.h"
 #include "process_symbols.h"
 
+std::vector<unsigned long long> calling_tree;
+
 void p_inverseJmpSign(void* unused_p, regs* registers, memory* unused_m) {
 	*(registers->jmp_sign) *= -1;
 }
@@ -149,4 +151,18 @@ void p_lcall(void* value_ptr, regs* registers, memory* unused_m) {
 // Get back to caller address (should only be used with p_call)
 void p_ret(void* unused_p, regs* registers, memory* unused_m) {
 	*registers->process_step = *registers->process_call_address;
+}
+
+// Saves actual saved caller address into private stack
+// Allow programmer to add a depth to calling tree
+void p_svcall(void* unused_p, regs* registers, memory* unused_m) {
+	calling_tree.push_back(*registers->process_call_address);
+}
+// Restores last saved caller address from private stack
+// Pulls of one depth from calling tree
+void p_rscall(void* unused_p, regs* registers, memory* unused_m) {
+	if (!calling_tree.empty() || calling_tree.size() > 0) {
+		*registers->process_call_address = calling_tree[calling_tree.size() - 1];
+		calling_tree.pop_back();
+	}
 }
