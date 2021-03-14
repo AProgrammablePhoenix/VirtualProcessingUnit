@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.4:
-- [ ] Add binary operations
+- [x] Add binary operations
 - [ ] Implement "caller address saving/restoring" when using "call" instruction
