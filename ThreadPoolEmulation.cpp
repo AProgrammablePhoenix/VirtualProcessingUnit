@@ -63,7 +63,10 @@ void allocateProcess(actions_engine* engine) {
 void clearMemory(engine& threadin_engine) {
 	for (unsigned long long i = 0; i < registers.size(); i++) {
 		delete registers[i];
+
+		memory_table[i]->destroy();
 		delete memory_table[i];
+
 		delete processes_mem[i];
 	}
 	for (unsigned long long i = 0; i < a_engines.size(); i++) {
