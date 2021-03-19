@@ -1,0 +1,13 @@
+; expected output:
+; 10
+; 1024
+
+setRAX ${{N1024}}
+setRBX ${{N2}}
+log2 RAX
+push RAX
+pow RBX
+toString RAX
+println 0
+toString RBX
+println 0
