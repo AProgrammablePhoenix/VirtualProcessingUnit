@@ -242,6 +242,11 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"shl", virtual_actions::_shl},
 	{"shr", virtual_actions::_shr},
 
+	{"log", virtual_actions::_log},
+	{"log2", virtual_actions::_log2},
+	{"log10", virtual_actions::_log10},
+	{"pow", virtual_actions::_pow},
+
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
 	{"cmp", virtual_actions::cmp},
