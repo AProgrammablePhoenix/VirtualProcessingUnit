@@ -157,6 +157,11 @@ enum virtual_actions {
 	_shl = 0x004240,
 	_shr = 0x004250,
 
+	_log = 0x004260,
+	_log2 = 0x004270,
+	_log10 = 0x004280,
+	_pow = 0x004290,
+
 	// Process
 	ijmp = 0x003017,
 	jmp = 0x003018,
@@ -179,7 +184,7 @@ enum virtual_actions {
 	rscall = 0x0030AE
 };
 
-extern void* a_db[0x004250 + 1];
+extern void* a_db[0x004290 + 1];
 
 struct actions_engine {
 public:
@@ -369,6 +374,11 @@ private:
 		a_db[virtual_actions::_xor] = b_xor;
 		a_db[virtual_actions::_shl] = b_shl;
 		a_db[virtual_actions::_shr] = b_shr;
+
+		a_db[virtual_actions::_log] = b_log;
+		a_db[virtual_actions::_log2] = b_log2;
+		a_db[virtual_actions::_log10] = b_log10;
+		a_db[virtual_actions::_pow] = b_pow;
 #pragma endregion
 
 #pragma region mem
