@@ -230,6 +230,8 @@ variables_decl build_variables_decl_tree(std::string filename) {
 #endif
 					storage.set(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
 					storage.setVariablesTree(parsed[i]);
+
+					delete[] uc_s;
 				}
 				else if (parsed[i].decl_type == "unsigned number") {
 					std::stringstream ss(parsed[i].decl_value);

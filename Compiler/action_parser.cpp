@@ -358,6 +358,8 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			vars->set(var_name, uc_s, value.size() + 1);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
+
+			delete[] uc_s;
 			return var_name;
 		}
 		else {
