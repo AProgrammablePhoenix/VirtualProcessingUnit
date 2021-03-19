@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.5:
-- [ ] Add logarithms operations
+- [x] Add logarithms operations
 - [ ] Implement arrays and dynamic vars "delete" operations to avoid memory leaks.
