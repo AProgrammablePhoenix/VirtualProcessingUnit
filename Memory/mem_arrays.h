@@ -17,6 +17,11 @@ public:
 	virtual void setAt(unsigned long long index) {
 		return;
 	}
+	virtual void destroy() {
+		if (this->container != NULL) {
+			delete[] this->container;
+		}
+	}
 private:
 	regs* registers = NULL;
 	bool initialized = false;
@@ -30,6 +35,7 @@ public:
 	str_mem_array(regs* _registers, unsigned long long size);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
+	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
@@ -43,6 +49,7 @@ public:
 	unum_mem_array(regs* _registers, unsigned long long size);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
+	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
@@ -56,6 +63,7 @@ public:
 	snum_mem_array(regs* _registers, unsigned long long size);
 	void getAt(unsigned long long index);
 	void setAt(unsigned long long index);
+	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
@@ -132,6 +140,8 @@ public:
 	void getDynSize(std::string arr_name);
 
 	std::string getArrayType(std::string arr_name);
+
+	void destroy();
 private:
 	regs* registers;
 
@@ -145,4 +155,6 @@ private:
 
 	std::map<std::string, void*> arrays_table;
 	std::map<std::string, std::string> types_table;
+
+	std::vector<std::string> static_arrays;
 };

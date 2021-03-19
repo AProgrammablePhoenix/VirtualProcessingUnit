@@ -49,6 +49,11 @@ void str_mem_array::setAt(unsigned long long index) {
 		}
 	}
 }
+void str_mem_array::destroy() {
+	if (this->container) {
+		delete[] this->container;
+	}
+}
 
 unum_mem_array::unum_mem_array() {
 	if (!this->initialized) {
@@ -84,6 +89,11 @@ void unum_mem_array::setAt(unsigned long long index) {
 		}
 	}
 }
+void unum_mem_array::destroy() {
+	if (this->container) {
+		delete[] this->container;
+	}
+}
 
 snum_mem_array::snum_mem_array() {
 	if (!this->initialized) {
@@ -116,6 +126,11 @@ void snum_mem_array::setAt(unsigned long long index) {
 		if (index < this->container_size) {
 			this->container[index] = (long long)this->registers->rdx->get();
 		}
+	}
+}
+void snum_mem_array::destroy() {
+	if (this->container) {
+		delete[] this->container;
 	}
 }
 
@@ -246,18 +261,21 @@ void mem_arrays::makeArray(std::string name, std::string type,  unsigned long lo
 			this->unsigned_number_arrays[name] = _array;
 			this->arrays_table[name] = &this->unsigned_number_arrays[name];
 			this->types_table[name] = STATIC_UNUM_ARRAY;
+			this->static_arrays.push_back(name);
 		}
 		else if (type == STATIC_SNUM_ARRAY || type == "static signed number") {
 			snum_mem_array _array = snum_mem_array(this->registers, size);
 			this->signed_numbers_arrays[name] = _array;
 			this->arrays_table[name] = &this->signed_numbers_arrays[name];
 			this->types_table[name] = STATIC_SNUM_ARRAY;
+			this->static_arrays.push_back(name);
 		}
 		else if (type == STATIC_STR_ARRAY || type == "static string") {
 			str_mem_array _array = str_mem_array(this->registers, size);
 			this->string_arrays[name] = _array;
 			this->arrays_table[name] = &this->string_arrays[name];
 			this->types_table[name] = STATIC_STR_ARRAY;
+			this->static_arrays.push_back(name);
 		}
 		else if (type == DYNAMIC_UNUM_ARRAY || type == "dynamic unsigned number") {
 			dyn_unum_array _array = dyn_unum_array(this->registers);
@@ -343,5 +361,18 @@ std::string mem_arrays::getArrayType(std::string arr_name) {
 	}
 	else {
 		return "UNDEFINED_ARRAY";
+	}
+}
+void mem_arrays::destroy() {
+	for (std::string _array : this->static_arrays) {
+		if (this->types_table[_array] == STATIC_UNUM_ARRAY) {
+			this->unsigned_number_arrays[_array].destroy();
+		}
+		else if (this->types_table[_array] == STATIC_SNUM_ARRAY) {
+			this->signed_numbers_arrays[_array].destroy();
+		}
+		else if (this->types_table[_array] == STATIC_STR_ARRAY) {
+			this->string_arrays[_array].destroy();
+		}
 	}
 }

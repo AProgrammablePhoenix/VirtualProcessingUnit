@@ -86,6 +86,11 @@ public:
 			this->_memory[addr].set(data, length);
 		}
 	}
+
+	void destroy() {
+		this->_arrays.destroy();
+	}
+
 	mem_arrays _arrays;
 	mem_dyn_vars _dynvars;
 private:
