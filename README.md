@@ -4,4 +4,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.5:
 - [x] Add logarithms operations
-- [ ] Implement arrays and dynamic vars "delete" operations to avoid memory leaks.
+- [x] Implement arrays and dynamic vars "delete" operations to avoid memory leaks.
