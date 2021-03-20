@@ -3,6 +3,6 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.6:
-- [ ] Add structure pointer in registers (type::string)
+- [x] Add structure pointer in registers (type::string)
 - [ ] Implement 'structs' building system
 - [ ] Implement 'structs' user symbols
