@@ -1,0 +1,82 @@
+; expected output:
+; Hello World!
+; 4096
+; -2048
+
+decl string string_type class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >
+decl string unum_type unsigned __int64
+decl string snum_type __int64
+
+decl string struct1_name struct1
+
+; decl struct1
+setSR struct1_name
+pushSR 0
+struct 0
+
+; set structure pointer to struct1
+pushSR 0
+struct.select 0
+
+; decl properties
+setSR string_type
+pushSR 0
+setSR ${{S"property1"}}
+pushSR 0
+struct.declprop 0
+
+setSR unum_type
+pushSR 0
+setSR ${{S"property2"}}
+pushSR 0
+struct.declprop 0
+
+setSR snum_type
+pushSR 0
+setSR ${{S"property3"}}
+pushSR 0
+struct.declprop 0
+
+; set properties
+setSR ${{S"Hello World!"}}
+pushSR 0
+setSR ${{S"property1"}}
+pushSR 0
+struct.set 0
+
+setRAX ${{N4096}}
+push RAX
+setSR ${{S"property2"}}
+pushSR 0
+struct.set 0
+
+setRAX ${{_N-2048}}
+push RAX
+setSR ${{S"property3"}}
+pushSR 0
+struct.set 0
+
+; get properties
+setSR ${{S"property1"}}
+pushSR 0
+struct.get 0
+popSR 0
+println 0
+
+setSR ${{S"property2"}}
+pushSR 0
+struct.get 0
+pop RAX
+toString RAX
+println 0
+
+setSR ${{S"property3"}}
+pushSR 0
+struct.get 0
+pop RAX
+setRBX ${{N3}}
+push RBX
+push RAX
+recast 0
+popSR 0
+println 0
