@@ -148,6 +148,11 @@ enum virtual_actions {
 	dyndecl = 0x004140,
 	dynset = 0x004150,
 	dynget = 0x004160,
+	_struct = 0x004170,
+	_struct_declprop = 0x004171,
+	_struct_select = 0x004172,
+	_struct_get = 0x004173,
+	_struct_set = 0x004174,
 
 	// Native binary ops [belong to Registers]
 	_not = 0x004200,
@@ -396,6 +401,12 @@ private:
 		a_db[virtual_actions::dyndecl] = m_dyndecl;
 		a_db[virtual_actions::dynset] = m_dynset;
 		a_db[virtual_actions::dynget] = m_dynget;
+
+		a_db[virtual_actions::_struct] = m_structdecl;
+		a_db[virtual_actions::_struct_declprop] = m_structdeclprop;
+		a_db[virtual_actions::_struct_select] = m_structselect;
+		a_db[virtual_actions::_struct_get] = m_structget;
+		a_db[virtual_actions::_struct_set] = m_structset;
 #pragma endregion
 #pragma region process
 		a_db[virtual_actions::ijmp] = p_inverseJmpSign;
