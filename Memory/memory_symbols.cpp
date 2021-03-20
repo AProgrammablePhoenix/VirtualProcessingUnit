@@ -10,6 +10,7 @@
 #include "../Registers/regs_decl.h"
 #include "../Registers/registers_symbols.h"
 #include "mem_arrays.h"
+#include "mem_structs.h"
 
 // Memory stack symbols
 void pushMem(registries_def reg, regs* registers, memory* mem) {
@@ -140,7 +141,7 @@ void m_dyndecl(void* unused_p, regs* registers, memory* mem) {
 	registers->sr->set(var_name);
 }
 
-/* Stack structure before collaing:
+/* Stack structure before calling:
 *	... VAR_NAME
 *	With value to set/get in RDX or SR
 */
@@ -167,4 +168,65 @@ void m_dynget(void* unused_p, regs* registers, memory* mem) {
 	if (mem->_dynvars.getVarType(var_name) != "UNDEFINED_VARIABLE") {
 		mem->_dynvars.dynGetVar(var_name);
 	}
+}
+
+// Memory structs symbols
+/* Stack structure before calling:
+*	... STRUCT_NAME 
+*/
+void m_structdecl(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string structure_name = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	mem->_structs.makeStruct(structure_name);
+}
+void m_structselect(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string structure_name = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	mem->_structs.selectStruct(structure_name);
+}
+
+/* Stack structure before calling:
+*	... PROPERTY_VALUE/PROPERTY_TYPE PROPERTY_NAME
+*	With structure name in 'structPtr' register by calling corresponding struct select method
+*/
+void m_structdeclprop(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string property_name = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	mem->_structs.declStructProperty(property_name);
+}
+void m_structset(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string property_name = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	mem->_structs.setStructProperty(property_name);
+}
+
+/* Stack structure before calling:
+*	... PROPERTY_NAME
+*  Stack structure after calling:
+*	... PROPERTY_VALUE
+*/
+void m_structget(void* unused_p, regs* registers, memory* mem) {
+	std::string saved_sr = registers->sr->get();
+	popMemSR(unused_p, registers, mem);
+	std::string property_name = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	mem->_structs.getStructProperty(property_name);
 }

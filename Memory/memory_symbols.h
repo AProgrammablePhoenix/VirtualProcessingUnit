@@ -40,6 +40,14 @@ void m_dyndecl(void* unused_p, regs* registers, memory* mem);
 void m_dynset(void* unused_p, regs* registers, memory* mem);
 void m_dynget(void* unused_p, regs* registers, memory* mem);
 
+// Memory structs symbols
+void m_structdecl(void* unused_p, regs* registers, memory* mem);
+void m_structselect(void* unused_p, regs* registers, memory* mem);
+void m_structdeclprop(void* unused_p, regs* registers, memory* mem);
+void m_structset(void* unused_p, regs* registers, memory* mem);
+void m_structget(void* unused_p, regs* registers, memory* mem);
+
+
 /*
 struct memory_symbols {
 public:
