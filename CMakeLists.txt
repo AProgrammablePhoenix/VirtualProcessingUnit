@@ -8,7 +8,7 @@ add_library(registers STATIC
 
 add_library(memory STATIC
 			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" "Memory/mem_arrays.cpp"
-			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h")
+			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h" "Memory/mem_structs.cpp" "Memory/mem_structs.h")
 
 add_library(virtual_engine STATIC
 			"Actions/actions_symbols.h"  "Actions/action_decl.h" "Actions/action_decl.cpp" "Actions/v_engine.h"

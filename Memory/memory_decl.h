@@ -6,6 +6,7 @@
 
 #include "mem_arrays.h"
 #include "dyn_vars.h"
+#include "mem_structs.h"
 
 #pragma warning (push)
 
@@ -35,6 +36,7 @@ public:
 	memory(regs* _registers) {
 		this->_arrays = mem_arrays(_registers);
 		this->_dynvars = mem_dyn_vars(_registers);
+		this->_structs = mem_structs(_registers, this);
 		this->init();
 	}
 
@@ -93,6 +95,7 @@ public:
 
 	mem_arrays _arrays;
 	mem_dyn_vars _dynvars;
+	mem_structs _structs;
 private:
 	regs* registers;
 	std::vector<m_container> _memory;
