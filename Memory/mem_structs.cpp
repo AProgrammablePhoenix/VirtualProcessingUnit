@@ -152,7 +152,7 @@ void mem_structs::declStructProperty(std::string property_name) {
 	std::string selected = this->registers->structPtr->get();
 
 	if (selected != "<unexisting_structure>" && this->structs_container.count(selected)) {
-		this->structs_container[selected].set(property_name);
+		this->structs_container[selected].declProperty(property_name);
 	}
 }
 void mem_structs::getStructProperty(std::string property_name) {
