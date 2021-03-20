@@ -4,5 +4,5 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.6:
 - [x] Add structure pointer in registers (type::string)
-- [ ] Implement 'structs' building system
+- [x] Implement 'structs' building system
 - [x] Implement 'structs' user symbols
