@@ -210,6 +210,7 @@ public:
 	unsigned long long *process_call_address = &_process_call_address;
 
 	stringReg* sr = &_sr;
+	stringReg* structPtr = &_structPtr;
 private:
 	unsigned char c_al, c_ah, c_bl, c_bh, c_cl, c_ch, c_dl, c_dh;
 
@@ -252,6 +253,7 @@ private:
 	unsigned long long _process_call_address = 0;
 
 	stringReg _sr = stringReg();
+	stringReg _structPtr = stringReg();
 };
 
 #pragma warning (pop)
