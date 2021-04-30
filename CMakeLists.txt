@@ -20,6 +20,9 @@ add_library(virtual_engine STATIC
 add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h")
 
+target_link_libraries(memory registers)
+target_link_libraries(virtual_engine memory)
+target_link_libraries(compiler virtual_engine)
 
 add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h")
 
