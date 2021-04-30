@@ -23,21 +23,21 @@ add_library(compiler STATIC
 
 add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h")
 
-# vas: virtual assembler
-add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp")
-
-# vexe: virtual executable runner
-add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h")
-
 target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
 target_link_libraries(ThreadPoolEmulation virtual_engine)
 target_link_libraries(ThreadPoolEmulation compiler)
 
+# vas: virtual assembler
+add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp")
+
 target_link_libraries(vas registers)
 target_link_libraries(vas memory)
 target_link_libraries(vas virtual_engine)
 target_link_libraries(vas compiler)
+
+# vexe: virtual executable runner
+add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h")
 
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)
