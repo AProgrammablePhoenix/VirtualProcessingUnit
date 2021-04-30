@@ -11,6 +11,7 @@
 #include <cstring>
 #endif
 
+#include "../Actions/v_engine.h"
 #include "../Actions/threading.h"
 #include "../Memory/memory_decl.h"
 #include "variables.h"
