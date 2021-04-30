@@ -309,7 +309,7 @@ public:
 #pragma warning (push)
 #pragma warning (disable:26812)
 	void* access(registries_def reg_id) {
-		return table[reg_id];
+		return this->table[reg_id];
 	}
 #pragma warning (pop)
 
