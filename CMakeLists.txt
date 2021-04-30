@@ -1,6 +1,8 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 
 project ("ThreadPoolEmulation")
+project ("vas")
+project ("vexe")
 
 add_library(registers STATIC
 			"Registers/regs_decl.h" "Registers/registers_symbols.h" "Registers/registers_symbols.cpp"
@@ -19,12 +21,28 @@ add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h")
 
 
-add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h"  )
+add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h")
+
+# vas: virtual assembler
+add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp")
+
+# vexe: virtual executable runner
+add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h")
 
 target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
 target_link_libraries(ThreadPoolEmulation virtual_engine)
 target_link_libraries(ThreadPoolEmulation compiler)
+
+target_link_libraries(vas registers)
+target_link_libraries(vas memory)
+target_link_libraries(vas virtual_engine)
+target_link_libraries(vas compiler)
+
+target_link_libraries(vexe registers)
+target_link_libraries(vexe memory)
+target_link_libraries(vexe virtual_engine)
+target_link_libraries(vexe compiler)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
 set(CMAKE_CXX_FLAGS "-fpermissive")
