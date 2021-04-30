@@ -92,6 +92,23 @@ void* process_memory::getVarPtr(std::string var_name) {
 		return NULL;
 	}
 }
+std::string process_memory::getVarType(std::string var_name) {
+	if (this->unsigned_numbers.count(var_name)) {
+		return "UNUM";
+	}
+	else if (this->signed_numbers.count(var_name)) {
+		return "SNUM";
+	}
+	else if (this->stored_strings.count(var_name)) {
+		return "STR";
+	}
+	else if (this->stored_tags.count(var_name)) {
+		return "TAG";
+	}
+	else {
+		return "UNDEFINED";
+	}
+}
 
 std::map<std::string, virtual_actions> symbols_converter =
 {
@@ -565,4 +582,25 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 	for (unsigned long long i = 0; i < converted_actions.size(); i++) {
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
 	}
+}
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem) {
+	variables_decl vars = build_variables_decl_tree(filename);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
+	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
+
+	purgeParsed(&converted_actions, &parsed);
+	finalizeTags(makeCleanedParsed(filename), &vars);
+
+	out_mem->set(&vars);
+	out_mem->setRegisters();
+	out_mem->setTags(&vars);
+
+	std::vector<void*> converted_arguments = convertVariables(parsed, out_mem);
+	std::vector<action> out_actions;
+
+	for (unsigned long long i = 0; i < converted_actions.size(); i++) {
+		out_actions.push_back(action(converted_actions[i], converted_arguments[i]));
+	}
+
+	return out_actions;
 }

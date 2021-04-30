@@ -8,6 +8,7 @@
 
 #include "../Actions/actions_symbols.h"
 #include "../Actions/v_engine.h"
+#include "../Actions/threading.h"
 #include "variables.h"
 
 struct process_memory {
@@ -20,6 +21,7 @@ public:
 	bool isTag(std::string tagname);
 
 	void* getVarPtr(std::string var_name);
+	std::string getVarType(std::string var_name);
 private:
 	std::map<std::string, unsigned long long> unsigned_numbers;
 	std::map<std::string, long long> signed_numbers;
@@ -29,3 +31,4 @@ private:
 };
 
 void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem);
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem);
