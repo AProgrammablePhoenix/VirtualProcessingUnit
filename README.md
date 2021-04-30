@@ -3,5 +3,5 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.7:
-- [ ] Create an executable format (VEXE :: Virtual Executable) which will be handled and executed by a specific virtual executable runner.
-- [ ] Create the VEXE handler/runner.
+- [x] Create an executable format (VEXE :: Virtual Executable) which will be handled and executed by a specific virtual executable runner.
+- [x] Create the VEXE handler/runner.
