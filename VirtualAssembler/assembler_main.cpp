@@ -4,6 +4,11 @@
 #include <vector>
 #include <map>
 
+#if defined(__linux__)
+#include <stdio.h>
+#include <cstring>
+#endif
+
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
 
