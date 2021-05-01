@@ -62,7 +62,7 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] b_str;
 		return out;
 	}
-	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0]  < 0x66)
+	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0] < 0x66)
 			|| (out[0] > 0x73 && out[0] < 0x7E)) {
 		unsigned char reg_value = ((unsigned long long)_action.getValuePtr()) & 0xff;
 		reg_value = registers_set[(registries_def)reg_value];
