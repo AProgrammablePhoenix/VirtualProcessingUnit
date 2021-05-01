@@ -25,8 +25,8 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 	for (size_t i = 0; i < byteArray->size(); i++) {
 		if ((*byteArray)[i] < 0x0D || (*byteArray)[i] == 0x1A ||
 			((*byteArray)[i] > 0x59 && (*byteArray)[i] < 0x61) || ((*byteArray)[i] > 0x61 && (*byteArray)[i] < 0x64)
-			|| ((*byteArray)[i] > 0x65 && (*byteArray)[i] < 0x84) || ((*byteArray)[i] > 0x8D && (*byteArray)[i] < 0x9A)
-			|| (*byteArray)[i] > 0x9B) {
+			|| ((*byteArray)[i] > 0x65 && (*byteArray)[i] < 0x74) || ((*byteArray)[i] > 0x7D && (*byteArray)[i] < 0x8A)
+			|| (*byteArray)[i] > 0x8B) {
 
 			unsigned char _op = (*byteArray)[i];
 			unsigned char _arg = 0;
@@ -43,7 +43,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if (((*byteArray)[i] > 0x0C && (*byteArray)[i] < 0x19) || (*byteArray)[i] == 0x9A || (*byteArray)[i] == 0x9B) {
+		else if (((*byteArray)[i] > 0x0C && (*byteArray)[i] < 0x19) || (*byteArray)[i] == 0x8A || (*byteArray)[i] == 0x8B) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
@@ -97,7 +97,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			continue;
 		}
 		else if (((*byteArray)[i] > 0x1A && ((*byteArray)[i] < 0x5A)) || (*byteArray)[i] == 0x61 || ((*byteArray)[i] > 0x63
-			&& (*byteArray)[i] < 0x66) || ((*byteArray)[i] > 0x83 && (*byteArray)[i] < 0x8E)) {
+			&& (*byteArray)[i] < 0x66) || ((*byteArray)[i] > 0x73 && (*byteArray)[i] < 0x7E)) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;

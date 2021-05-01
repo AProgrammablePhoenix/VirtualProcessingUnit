@@ -25,11 +25,11 @@ std::vector<byte> assembleAction(action _action) {
 	out.push_back(instructions_set[_action.getAction()]);
 
 	if (out[0] < 0x0D || out[0] == 0x1A || (out[0] > 0x59 && out[0] < 0x61) || (out[0] > 0x61 && out[0] < 0x64) 
-	|| (out[0] > 0x65 && out[0] < 0x84) || (out[0] > 0x8D && out[0] < 0x9A) || out[0] > 0x9B) {
+	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) || out[0] > 0x8B) {
 		out.push_back(0);
 		return out;
 	}
-	else if ((out[0] > 0x0C && out[0] < 0x19) || out[0] == 0x9A || out[0] == 0x9B) {
+	else if ((out[0] > 0x0C && out[0] < 0x19) || out[0] == 0x8A || out[0] == 0x8B) {
 		unsigned long long value = *((unsigned long long*)_action.getValuePtr());
 		byte* converted = new byte[8];
 		ulongToByteArray(value, &converted);
@@ -63,7 +63,7 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0]  < 0x66)
-			|| (out[0] > 0x83 && out[0] < 0x8E)) {
+			|| (out[0] > 0x73 && out[0] < 0x7E)) {
 		unsigned char reg_value = ((unsigned long long)_action.getValuePtr()) & 0xff;
 		reg_value = registers_set[(registries_def)reg_value];
 
