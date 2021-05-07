@@ -34,10 +34,9 @@ void process::addAction(virtual_actions _action, void* value_ptr) {
 }
 
 void process::execute() {
-	while (*(this->step) < this->actions.size()) {
+	while (*(this->step) < this->actions.size() && !this->engine.toStop()) {
 		this->engine.execute(this->actions[*(this->step)].getAction(), this->actions[*(this->step)].getValuePtr());
 		(*(this->step))++;
-		//this->actions.erase(this->actions.begin());
 	}
 	terminated = true;
 }
@@ -45,9 +44,7 @@ void process::start() {
 	this->execute();
 }
 void process::execute1() {
-	//std::cout << *this->step << " " /*<< this->actions.size()*/ << this->actions[*(this->step)].getAction() << std::endl;
 	if (this->engine.toStop()) {
-		//std::cout << "Terminated at step: " << *this->step << std::endl;
 		this->terminated = true;
 		return;
 	}
@@ -55,7 +52,6 @@ void process::execute1() {
 	if (*(this->step) < this->actions.size()) {
 		this->engine.execute(this->actions[*(this->step)].getAction(), this->actions[*(this->step)].getValuePtr());
 		(*(this->step))++;
-		//this->actions.erase(this->actions.begin());
 	}
 	else {
 		this->terminated = true;
