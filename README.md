@@ -2,9 +2,6 @@ This project allows you to run an engine which emulates threading behaviour. It 
 Actually, the language used to run tasks is not directly C++, it's VASM (which means Virtual ASM), which is a language that is representing
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
-Current errors:
-- infinite loop issue with VEXE format (fix in progress)
-
 Towards V1.7:
 - [x] Create an executable format (VEXE :: Virtual Executable) which will be handled and executed by a specific virtual executable runner.
 - [x] Create the VEXE handler/runner.
