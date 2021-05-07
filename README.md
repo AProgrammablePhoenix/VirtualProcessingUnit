@@ -3,7 +3,7 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Current errors:
-- Seg fault during vexe execution in linux-based systems (fix in progress)
+- infinite loop issue with VEXE format (fix in progress)
 
 Towards V1.7:
 - [x] Create an executable format (VEXE :: Virtual Executable) which will be handled and executed by a specific virtual executable runner.
