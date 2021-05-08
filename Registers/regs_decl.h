@@ -67,8 +67,8 @@ public:
 		unsigned char low = 0;
 		unsigned char high = 0;
 
-		low = (value >> 0) & ~(~0 << (7 - 0 + 1));
-		high = (value >> 8) & ~(~0 << (15 - 8 + 1));
+		low = (value >> 0U) & ~(~0 << 8U);
+		high = (value >> 8U) & ~(~0 << 8U);
 
 		*l = low;
 		*h = high;
@@ -103,8 +103,8 @@ public:
 		unsigned short low = 0;
 		unsigned short high = 0;
 
-		low = (value >> 0) & ~(~0 << (15 - 0 + 1));
-		high = (value >> 16) & ~(~0 << 31 - 16 + 1);
+		low = (value >> 0UL) & ~(~0 << 16UL);
+		high = (value >> 16UL) & ~(~0 << 16UL);
 
 		l->set(low);
 		*h = high;
@@ -138,8 +138,8 @@ struct extendedEEXReg : public reg_int<unsigned long long> {
 		unsigned int low;
 		unsigned int high;
 
-		low = (value >> 0) & ~(~0 << (31 - 0 + 1));
-		high = (value >> 32) & ~(~0 << (63 - 32 + 1));
+		low = (value >> 0ULL) & ~(~0ULL << 32ULL);
+		high = (value >> 32ULL) & ~(~0ULL << 32ULL);
 
 		l->set(low);
 		*h = high;
