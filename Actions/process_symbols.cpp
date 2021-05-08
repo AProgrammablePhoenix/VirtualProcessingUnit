@@ -19,8 +19,8 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long saved_rax = registers->rax->get();
 	unsigned long long saved_rbx = registers->rax->get();
 
-	popMem(registries_def::RAX, registers, mem);
-	popMem(registries_def::RBX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
 
 	unsigned long long rax = registers->rax->get();
 	unsigned long long rbx = registers->rbx->get();
@@ -39,8 +39,8 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		*(registers->cmp_out) = 0xFE;
 	}
 
-	pushMem(registries_def::RBX, registers, mem);
-	pushMem(registries_def::RAX, registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
 	registers->rax->set(saved_rax);
 	registers->rbx->set(saved_rbx);
@@ -129,7 +129,7 @@ void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long saved_rax = registers->rax->get();
 
 	registers->rax->set(*(registers->process_step));
-	pushMem(registries_def::RAX, registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
 	registers->rax->set(saved_rax);
 }

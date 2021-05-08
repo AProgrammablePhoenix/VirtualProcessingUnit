@@ -78,7 +78,7 @@ void __struct__::get(std::string property_name) {
 				unsigned long long saved_rax = this->registers->rax->get();
 
 				this->registers->rax->set(this->unum_properties[property_name]);
-				pushMem(registries_def::RAX, this->registers, this->mem);
+				pushMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 
 				this->registers->rax->set(saved_rax);
 			}
@@ -86,7 +86,7 @@ void __struct__::get(std::string property_name) {
 				unsigned long long saved_rax = this->registers->rax->get();
 
 				this->registers->rax->set((unsigned long long)this->snum_properties[property_name]);
-				pushMem(registries_def::RAX, this->registers, this->mem);
+				pushMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 
 				this->registers->rax->set(saved_rax);
 			}
@@ -107,7 +107,7 @@ void __struct__::set(std::string property_name) {
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
 				unsigned long long saved_rax = this->registers->rax->get();
 
-				popMem(registries_def::RAX, this->registers, this->mem);
+				popMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 				this->unum_properties[property_name] = this->registers->rax->get();
 
 				this->registers->rax->set(saved_rax);
@@ -115,7 +115,7 @@ void __struct__::set(std::string property_name) {
 			else {
 				unsigned long long saved_rax = this->registers->rax->get();
 
-				popMem(registries_def::RAX, this->registers, this->mem);
+				popMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 				this->snum_properties[property_name] = (long long)this->registers->rax->get();
 
 				this->registers->rax->set(saved_rax);

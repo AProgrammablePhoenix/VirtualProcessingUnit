@@ -173,92 +173,92 @@ void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
 // Mov ops
 #pragma region mov_ops
-void b_mov16AX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov16BX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov16CX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov16DX(registries_def reg, regs* registers, memory* unused_m);
+void b_mov16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_mov32EAX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov32EBX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov32ECX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov32EDX(registries_def reg, regs* registers, memory* unused_m);
+void b_mov32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_mov64RAX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov64RBX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov64RCX(registries_def reg, regs* registers, memory* unused_m);
-void b_mov64RDX(registries_def reg, regs* registers, memory* unused_m);
+void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 #pragma endregion
 
 // Native maths ops
 #pragma region native_maths_ops
-void b_inc(registries_def reg, regs* registers, memory* unused_m);
-void b_dec(registries_def reg, regs* registers, memory* unused_m);
+void b_inc(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_dec(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_mul16AX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul16BX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul16CX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul16DX(registries_def reg, regs* registers, memory* unused_m);
+void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_mul32EAX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul32EBX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul32ECX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul32EDX(registries_def reg, regs* registers, memory* unused_m);
+void b_mul32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_mul64RAX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul64RBX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul64RCX(registries_def reg, regs* registers, memory* unused_m);
-void b_mul64RDX(registries_def reg, regs* registers, memory* unused_m);
+void b_mul64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_mul64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_div16AX(registries_def reg, regs* registers, memory* unused_m);
-void b_div16BX(registries_def reg, regs* registers, memory* unused_m);
-void b_div16CX(registries_def reg, regs* registers, memory* unused_m);
-void b_div16DX(registries_def reg, regs* registers, memory* unused_m);
+void b_div16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_div32EAX(registries_def reg, regs* registers, memory* unused_m);
-void b_div32EBX(registries_def reg, regs* registers, memory* unused_m);
-void b_div32ECX(registries_def reg, regs* registers, memory* unused_m);
-void b_div32EDX(registries_def reg, regs* registers, memory* unused_m);
+void b_div32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_div64RAX(registries_def reg, regs* registers, memory* unused_m);
-void b_div64RBX(registries_def reg, regs* registers, memory* unused_m);
-void b_div64RCX(registries_def reg, regs* registers, memory* unused_m);
-void b_div64RDX(registries_def reg, regs* registers, memory* unused_m);
+void b_div64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_div64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_add16AX(registries_def reg, regs* registers, memory* unused_m);
-void b_add16BX(registries_def reg, regs* registers, memory* unused_m);
-void b_add16CX(registries_def reg, regs* registers, memory* unused_m);
-void b_add16DX(registries_def reg, regs* registers, memory* unused_m);
+void b_add16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_add32EAX(registries_def reg, regs* registers, memory* unused_m);
-void b_add32EBX(registries_def reg, regs* registers, memory* unused_m);
-void b_add32ECX(registries_def reg, regs* registers, memory* unused_m);
-void b_add32EDX(registries_def reg, regs* registers, memory* unused_m);
+void b_add32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_add64RAX(registries_def reg, regs* registers, memory* unused_m);
-void b_add64RBX(registries_def reg, regs* registers, memory* unused_m);
-void b_add64RCX(registries_def reg, regs* registers, memory* unused_m);
-void b_add64RDX(registries_def reg, regs* registers, memory* unused_m);
+void b_add64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_add64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_sub16AX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub16BX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub16CX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub16DX(registries_def reg, regs* registers, memory* unused_m);
+void b_sub16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_sub32EAX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub32EBX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub32ECX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub32EDX(registries_def reg, regs* registers, memory* unused_m);
+void b_sub32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_sub64RAX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub64RBX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub64RCX(registries_def reg, regs* registers, memory* unused_m);
-void b_sub64RDX(registries_def reg, regs* registers, memory* unused_m);
+void b_sub64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 #pragma endregion
 
 //extended ops
 #pragma region extended_ops
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_toString(registries_def reg, regs* registers, memory* unused_m);
+void b_toString(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
@@ -267,23 +267,23 @@ void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m);
 
-void b_castreg(registries_def receiver, regs* registers, memory* mem);
+void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem);
 void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 // Native binary ops
 #pragma region native_bin_ops
-void b_not(registries_def reg, regs* registers, memory* unused_m);
-void b_log2(registries_def reg, regs* registers, memory* unused_m);
-void b_log10(registries_def reg, regs* registers, memory* unused_m);
-void b_log(registries_def reg, regs* registers, memory* unused_m);
-void b_and(registries_def reg, regs* registers, memory* mem);
-void b_or(registries_def reg, regs* registers, memory* mem);
-void b_xor(registries_def reg, regs* registers, memory* mem);
-void b_shl(registries_def reg, regs* registers, memory* mem);
-void b_shr(registries_def reg, regs* registers, memory* mem);
-void b_pow(registries_def reg, regs* registers, memory* mem);
+void b_not(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_log2(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_log10(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
 template<typename ret, typename argT, typename argT2>

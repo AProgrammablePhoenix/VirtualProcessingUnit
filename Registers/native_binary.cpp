@@ -11,21 +11,29 @@
 *	With value in specified registers
 *	Output in specified register
 */
-void b_not(registries_def reg, regs* registers, memory* unused_m) {
+void b_not(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(~(((reg_int<unsigned long long>*)ptr_table.access(reg)))->get());
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(~(((reg_int<unsigned long long>*)ptr_table.access(reg_id)))->get());
 }
-void b_log2(registries_def reg, regs* registers, memory* unused_m) {
+void b_log2(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(log2l((((reg_int<unsigned long long>*)ptr_table.access(reg)))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(log2l((((reg_int<unsigned long long>*)ptr_table.access(reg_id)))->get()));
 }
-void b_log10(registries_def reg, regs* registers, memory* unused_m) {
+void b_log10(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(log10l((((reg_int<unsigned long long>*)ptr_table.access(reg)))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(log10l((((reg_int<unsigned long long>*)ptr_table.access(reg_id)))->get()));
 }
-void b_log(registries_def reg, regs* registers, memory* unused_m) {
+void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(logbl((((reg_int<unsigned long long>*)ptr_table.access(reg)))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(logbl((((reg_int<unsigned long long>*)ptr_table.access(reg_id)))->get()));
 }
 
 /* STACK status before calling:
@@ -33,58 +41,70 @@ void b_log(registries_def reg, regs* registers, memory* unused_m) {
 *	With RIGHT value in specified register
 *	Output in specified register
 */
-void b_and(registries_def reg, regs* registers, memory* mem) {
+void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long left = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(left & (((reg_int<unsigned long long>*)ptr_table.access(reg))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(left & (((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()));
 }
-void b_or(registries_def reg, regs* registers, memory* mem) {
+void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long left = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(left | (((reg_int<unsigned long long>*)ptr_table.access(reg))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(left | (((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()));
 }
-void b_xor(registries_def reg, regs* registers, memory* mem) {
+void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long left = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(left ^ (((reg_int<unsigned long long>*)ptr_table.access(reg))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(left ^ (((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()));
 }
-void b_shl(registries_def reg, regs* registers, memory* mem) {
+void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long left = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(left << (((reg_int<unsigned long long>*)ptr_table.access(reg))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(left << (((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()));
 }
-void b_shr(registries_def reg, regs* registers, memory* mem) {
+void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long left = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(left >> (((reg_int<unsigned long long>*)ptr_table.access(reg))->get()));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(left >> (((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()));
 }
 
-void b_pow(registries_def reg, regs* registers, memory* mem) {
+void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long pow = registers->rax->get();
 	registers->rax->set(saved_rax);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set(powl((((reg_int<unsigned long long>*)ptr_table.access(reg))->get()), pow));
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(powl((((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get()), pow));
 }

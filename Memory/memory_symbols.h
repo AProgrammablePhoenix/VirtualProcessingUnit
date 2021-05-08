@@ -23,8 +23,8 @@ enum memory_actions {
 #pragma warning (pop)
 
 // Memory stack symbols
-void pushMem(registries_def reg, regs* registers, memory* mem);
-void popMem(registries_def reg, regs* registers, memory* mem);
+void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void popMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void popMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);

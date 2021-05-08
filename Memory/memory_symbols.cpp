@@ -13,17 +13,21 @@
 #include "mem_structs.h"
 
 // Memory stack symbols
-void pushMem(registries_def reg, regs* registers, memory* mem) {
+void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg))->get();
+	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
 
 	mem->push((unsigned char*)value);
 }
-void popMem(registries_def reg, regs* registers,  memory* mem) {
+void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	unsigned char* value = mem->pop();
 
-	((reg_int<unsigned long long>*)ptr_table.access(reg))->set((unsigned long long)value);
+	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set((unsigned long long)value);
 }
 
 void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
@@ -59,7 +63,7 @@ void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string array_type = registers->sr->get();
 
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long array_size = registers->rax->get();
 
 	if (mem->_arrays.getArrayType(array_name) == "UNDEFINED_ARRAY") {
@@ -81,7 +85,7 @@ void m_setAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(saved_sr);
 
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long index = registers->rax->get();
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
@@ -100,7 +104,7 @@ void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(saved_sr);
 
 	unsigned long long saved_rax = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long index = registers->rax->get();
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
