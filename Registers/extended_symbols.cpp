@@ -162,7 +162,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
-		unsigned long long n_value = NULL;
+		unsigned long long n_value = 0;
 		ss >> n_value;
 		registers->rax->set(n_value);
 		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
@@ -171,7 +171,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 	}
 	else if (cast_type == 1) {
 		std::stringstream ss(value);
-		long long n_value = NULL;
+		long long n_value = 0;
 		ss >> n_value;
 		registers->rax->set(n_value);
 		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
