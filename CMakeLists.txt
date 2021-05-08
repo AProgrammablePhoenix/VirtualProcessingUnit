@@ -48,4 +48,9 @@ target_link_libraries(vexe virtual_engine)
 target_link_libraries(vexe compiler)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
-set(CMAKE_CXX_FLAGS "-fpermissive")
+
+if (MSVC)    
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+elseif (GNU)
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+endif()

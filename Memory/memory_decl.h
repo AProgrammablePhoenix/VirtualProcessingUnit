@@ -8,8 +8,6 @@
 #include "dyn_vars.h"
 #include "mem_structs.h"
 
-#pragma warning (push)
-
 struct m_container {
 public:
 	void set(unsigned char data[]) {
@@ -106,5 +104,3 @@ private:
 		_memory.push_back(start_block);
 	}
 };
-
-#pragma warning (pop)

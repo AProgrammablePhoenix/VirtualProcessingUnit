@@ -190,7 +190,9 @@ enum virtual_actions {
 	rscall = 0x0030AE
 };
 
-extern void* a_db[0x004290 + 1];
+typedef void* (*core_function)(std::shared_ptr<void>, regs*, memory*);
+
+extern void (*a_db[0x004290 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -213,12 +215,9 @@ public:
 		this->init();
 	}
 
-#pragma warning (push)
-#pragma warning (disable : 26812)
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
 		((void* (*)(std::shared_ptr<void>, regs*, memory*))a_db[action])(value_ptr, this->self_regs, this->self_mem);
 	}
-#pragma warning (pop)
 
 	unsigned long long* getStepCounterPtr() {
 		return this->self_regs->process_step;

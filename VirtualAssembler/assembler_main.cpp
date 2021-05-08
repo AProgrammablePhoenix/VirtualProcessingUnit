@@ -71,6 +71,9 @@ std::vector<byte> assembleAction(action _action) {
 		out.push_back(reg_value);
 		return out;
 	}
+	else {
+		return std::vector<byte>({ 0, 0, 0, 0, 0, 0, 0, 0, });
+	}
 }
 
 std::vector<byte> as(std::string filename) {
@@ -112,4 +115,6 @@ int main(int argc, char* argv[]) {
 	asFinal(outputFile, as(inputFile));
 
 	std::cout << "Linking of '" << inputFile << "': done." << std::endl;
+
+	return 0;
 }
