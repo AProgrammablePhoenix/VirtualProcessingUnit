@@ -16,19 +16,20 @@ public:
 		return;
 	}
 	virtual T get() {
-		if (typeid (T) == typeid (std::string)) {
-#pragma warning (push)
-#pragma warning (disable : 4311)
-#pragma warning (disable : 4302)
-			return (T)"";
-		}
-		else {
-#pragma warning (disable : 6387)
-			return (T)NULL;
-#pragma warning (pop)
-		}
+		return (T)NULL;
 	}
 };
+template <>
+struct reg_int<std::string> {
+public:
+	virtual void set(std::string value) {
+		return;
+	}
+	virtual std::string get() {
+		return "";
+	}
+};
+
 
 struct baseReg : public reg_int<unsigned char> {
 public:
