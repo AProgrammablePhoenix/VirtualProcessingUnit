@@ -46,14 +46,14 @@ void dyn_str_var::dynset() {
 dyn_unum_var::dyn_unum_var() {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 	}
 }
 dyn_unum_var::dyn_unum_var(regs* _registers) {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 		this->registers = _registers;
 		this->value_type = UNUM_TYPE;
@@ -74,14 +74,14 @@ void dyn_unum_var::dynset() {
 dyn_snum_var::dyn_snum_var() {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 	}
 }
 dyn_snum_var::dyn_snum_var(regs* _registers) {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 		this->registers = _registers;
 		this->value_type = SNUM_TYPE;
