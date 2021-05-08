@@ -54,7 +54,11 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] b_str_size;
 
 		char* b_str = new char[str_size];
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		strncpy_s(b_str, str_size, str.c_str(), str_size);
+#else
 		strncpy(b_str, str.c_str(), str_size);
+#endif
 
 		for (byte i = 0; i < str_size; i++) {
 			out.push_back(b_str[i]);
