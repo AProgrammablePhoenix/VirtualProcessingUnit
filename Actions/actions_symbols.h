@@ -8,7 +8,7 @@
 #include "../Memory/memory_symbols.h"
 #include "process_symbols.h"
 
-enum virtual_actions {
+enum class virtual_actions {
 	// Registers
 	getAX = 0x000100,
 	getBX = 0x000200,
@@ -216,7 +216,7 @@ public:
 	}
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
-		((void* (*)(std::shared_ptr<void>, regs*, memory*))a_db[action])(value_ptr, this->self_regs, this->self_mem);
+		((void* (*)(std::shared_ptr<void>, regs*, memory*))a_db[(unsigned long long)action])(value_ptr, this->self_regs, this->self_mem);
 	}
 
 	unsigned long long* getStepCounterPtr() {
@@ -240,194 +240,194 @@ private:
 
 	void init() {
 #pragma region b_set
-		a_db[virtual_actions::setAX] = b_set16AX;
-		a_db[virtual_actions::setBX] = b_set16BX;
-		a_db[virtual_actions::setCX] = b_set16CX;
-		a_db[virtual_actions::setDX] = b_set16DX;
+		a_db[(unsigned long long)virtual_actions::setAX] = b_set16AX;
+		a_db[(unsigned long long)virtual_actions::setBX] = b_set16BX;
+		a_db[(unsigned long long)virtual_actions::setCX] = b_set16CX;
+		a_db[(unsigned long long)virtual_actions::setDX] = b_set16DX;
 
-		a_db[virtual_actions::setEAX] = b_set32EAX;
-		a_db[virtual_actions::setEBX] = b_set32EBX;
-		a_db[virtual_actions::setECX] = b_set32ECX;
-		a_db[virtual_actions::setEDX] = b_set32EDX;
+		a_db[(unsigned long long)virtual_actions::setEAX] = b_set32EAX;
+		a_db[(unsigned long long)virtual_actions::setEBX] = b_set32EBX;
+		a_db[(unsigned long long)virtual_actions::setECX] = b_set32ECX;
+		a_db[(unsigned long long)virtual_actions::setEDX] = b_set32EDX;
 
-		a_db[virtual_actions::setRAX] = b_set64RAX;
-		a_db[virtual_actions::setRBX] = b_set64RBX;
-		a_db[virtual_actions::setRCX] = b_set64RCX;
-		a_db[virtual_actions::setRDX] = b_set64RDX;
+		a_db[(unsigned long long)virtual_actions::setRAX] = b_set64RAX;
+		a_db[(unsigned long long)virtual_actions::setRBX] = b_set64RBX;
+		a_db[(unsigned long long)virtual_actions::setRCX] = b_set64RCX;
+		a_db[(unsigned long long)virtual_actions::setRDX] = b_set64RDX;
 
-		a_db[virtual_actions::setSR] = b_setSR;
+		a_db[(unsigned long long)virtual_actions::setSR] = b_setSR;
 #pragma endregion
 #pragma region b_get
-		a_db[virtual_actions::getAX] = b_get16AX;
-		a_db[virtual_actions::getBX] = b_get16BX;
-		a_db[virtual_actions::getCX] = b_get16CX;
-		a_db[virtual_actions::getDX] = b_get16DX;
+		a_db[(unsigned long long)virtual_actions::getAX] = b_get16AX;
+		a_db[(unsigned long long)virtual_actions::getBX] = b_get16BX;
+		a_db[(unsigned long long)virtual_actions::getCX] = b_get16CX;
+		a_db[(unsigned long long)virtual_actions::getDX] = b_get16DX;
 
-		a_db[virtual_actions::getEAX] = b_get32EAX;
-		a_db[virtual_actions::getEBX] = b_get32EBX;
-		a_db[virtual_actions::getECX] = b_get32ECX;
-		a_db[virtual_actions::getEDX] = b_get32EDX;
+		a_db[(unsigned long long)virtual_actions::getEAX] = b_get32EAX;
+		a_db[(unsigned long long)virtual_actions::getEBX] = b_get32EBX;
+		a_db[(unsigned long long)virtual_actions::getECX] = b_get32ECX;
+		a_db[(unsigned long long)virtual_actions::getEDX] = b_get32EDX;
 
-		a_db[virtual_actions::getRAX] = b_get64RAX;
-		a_db[virtual_actions::getRBX] = b_get64RBX;
-		a_db[virtual_actions::getRCX] = b_get64RCX;
-		a_db[virtual_actions::getRDX] = b_get64RDX;
+		a_db[(unsigned long long)virtual_actions::getRAX] = b_get64RAX;
+		a_db[(unsigned long long)virtual_actions::getRBX] = b_get64RBX;
+		a_db[(unsigned long long)virtual_actions::getRCX] = b_get64RCX;
+		a_db[(unsigned long long)virtual_actions::getRDX] = b_get64RDX;
 
-		a_db[virtual_actions::getSR] = b_getSR;
+		a_db[(unsigned long long)virtual_actions::getSR] = b_getSR;
 #pragma endregion
 #pragma region b_mov
-		a_db[virtual_actions::movAX] = b_mov16AX;
-		a_db[virtual_actions::movBX] = b_mov16BX;
-		a_db[virtual_actions::movCX] = b_mov16CX;
-		a_db[virtual_actions::movDX] = b_mov16DX;
+		a_db[(unsigned long long)virtual_actions::movAX] = b_mov16AX;
+		a_db[(unsigned long long)virtual_actions::movBX] = b_mov16BX;
+		a_db[(unsigned long long)virtual_actions::movCX] = b_mov16CX;
+		a_db[(unsigned long long)virtual_actions::movDX] = b_mov16DX;
 
-		a_db[virtual_actions::movEAX] = b_mov32EAX;
-		a_db[virtual_actions::movEBX] = b_mov32EBX;
-		a_db[virtual_actions::movECX] = b_mov32ECX;
-		a_db[virtual_actions::movEDX] = b_mov32EDX;
+		a_db[(unsigned long long)virtual_actions::movEAX] = b_mov32EAX;
+		a_db[(unsigned long long)virtual_actions::movEBX] = b_mov32EBX;
+		a_db[(unsigned long long)virtual_actions::movECX] = b_mov32ECX;
+		a_db[(unsigned long long)virtual_actions::movEDX] = b_mov32EDX;
 
-		a_db[virtual_actions::movRAX] = b_mov64RAX;
-		a_db[virtual_actions::movRBX] = b_mov64RBX;
-		a_db[virtual_actions::movRCX] = b_mov64RCX;
-		a_db[virtual_actions::movRDX] = b_mov64RDX;
+		a_db[(unsigned long long)virtual_actions::movRAX] = b_mov64RAX;
+		a_db[(unsigned long long)virtual_actions::movRBX] = b_mov64RBX;
+		a_db[(unsigned long long)virtual_actions::movRCX] = b_mov64RCX;
+		a_db[(unsigned long long)virtual_actions::movRDX] = b_mov64RDX;
 #pragma endregion
-		a_db[virtual_actions::inc] = b_inc;
-		a_db[virtual_actions::dec] = b_dec;
+		a_db[(unsigned long long)virtual_actions::inc] = b_inc;
+		a_db[(unsigned long long)virtual_actions::dec] = b_dec;
 #pragma region b_mul
-		a_db[virtual_actions::mulAX] = b_mul16AX;
-		a_db[virtual_actions::mulBX] = b_mul16BX;
-		a_db[virtual_actions::mulCX] = b_mul16CX;
-		a_db[virtual_actions::mulDX] = b_mul16DX;
+		a_db[(unsigned long long)virtual_actions::mulAX] = b_mul16AX;
+		a_db[(unsigned long long)virtual_actions::mulBX] = b_mul16BX;
+		a_db[(unsigned long long)virtual_actions::mulCX] = b_mul16CX;
+		a_db[(unsigned long long)virtual_actions::mulDX] = b_mul16DX;
 
-		a_db[virtual_actions::mulEAX] = b_mul32EAX;
-		a_db[virtual_actions::mulEBX] = b_mul32EBX;
-		a_db[virtual_actions::mulECX] = b_mul32ECX;
-		a_db[virtual_actions::mulEDX] = b_mul32EDX;
+		a_db[(unsigned long long)virtual_actions::mulEAX] = b_mul32EAX;
+		a_db[(unsigned long long)virtual_actions::mulEBX] = b_mul32EBX;
+		a_db[(unsigned long long)virtual_actions::mulECX] = b_mul32ECX;
+		a_db[(unsigned long long)virtual_actions::mulEDX] = b_mul32EDX;
 
-		a_db[virtual_actions::mulRAX] = b_mul64RAX;
-		a_db[virtual_actions::mulRBX] = b_mul64RBX;
-		a_db[virtual_actions::mulRCX] = b_mul64RCX;
-		a_db[virtual_actions::mulRDX] = b_mul64RDX;
+		a_db[(unsigned long long)virtual_actions::mulRAX] = b_mul64RAX;
+		a_db[(unsigned long long)virtual_actions::mulRBX] = b_mul64RBX;
+		a_db[(unsigned long long)virtual_actions::mulRCX] = b_mul64RCX;
+		a_db[(unsigned long long)virtual_actions::mulRDX] = b_mul64RDX;
 #pragma endregion
 #pragma region b_div
-		a_db[virtual_actions::divAX] = b_div16AX;
-		a_db[virtual_actions::divBX] = b_div16BX;
-		a_db[virtual_actions::divCX] = b_div16CX;
-		a_db[virtual_actions::divDX] = b_div16DX;
+		a_db[(unsigned long long)virtual_actions::divAX] = b_div16AX;
+		a_db[(unsigned long long)virtual_actions::divBX] = b_div16BX;
+		a_db[(unsigned long long)virtual_actions::divCX] = b_div16CX;
+		a_db[(unsigned long long)virtual_actions::divDX] = b_div16DX;
 
-		a_db[virtual_actions::divEAX] = b_div32EAX;
-		a_db[virtual_actions::divEBX] = b_div32EBX;
-		a_db[virtual_actions::divECX] = b_div32ECX;
-		a_db[virtual_actions::divEDX] = b_div32EDX;
+		a_db[(unsigned long long)virtual_actions::divEAX] = b_div32EAX;
+		a_db[(unsigned long long)virtual_actions::divEBX] = b_div32EBX;
+		a_db[(unsigned long long)virtual_actions::divECX] = b_div32ECX;
+		a_db[(unsigned long long)virtual_actions::divEDX] = b_div32EDX;
 
-		a_db[virtual_actions::divRAX] = b_div64RAX;
-		a_db[virtual_actions::divRBX] = b_div64RBX;
-		a_db[virtual_actions::divRCX] = b_div64RCX;
-		a_db[virtual_actions::divRDX] = b_div64RDX;
+		a_db[(unsigned long long)virtual_actions::divRAX] = b_div64RAX;
+		a_db[(unsigned long long)virtual_actions::divRBX] = b_div64RBX;
+		a_db[(unsigned long long)virtual_actions::divRCX] = b_div64RCX;
+		a_db[(unsigned long long)virtual_actions::divRDX] = b_div64RDX;
 #pragma endregion
 #pragma region b_add
-		a_db[virtual_actions::addAX] = b_add16AX;
-		a_db[virtual_actions::addBX] = b_add16BX;
-		a_db[virtual_actions::addCX] = b_add16CX;
-		a_db[virtual_actions::addDX] = b_add16DX;
+		a_db[(unsigned long long)virtual_actions::addAX] = b_add16AX;
+		a_db[(unsigned long long)virtual_actions::addBX] = b_add16BX;
+		a_db[(unsigned long long)virtual_actions::addCX] = b_add16CX;
+		a_db[(unsigned long long)virtual_actions::addDX] = b_add16DX;
 
-		a_db[virtual_actions::addEAX] = b_add32EAX;
-		a_db[virtual_actions::addEBX] = b_add32EBX;
-		a_db[virtual_actions::addECX] = b_add32ECX;
-		a_db[virtual_actions::addEDX] = b_add32EDX;
+		a_db[(unsigned long long)virtual_actions::addEAX] = b_add32EAX;
+		a_db[(unsigned long long)virtual_actions::addEBX] = b_add32EBX;
+		a_db[(unsigned long long)virtual_actions::addECX] = b_add32ECX;
+		a_db[(unsigned long long)virtual_actions::addEDX] = b_add32EDX;
 
-		a_db[virtual_actions::addRAX] = b_add64RAX;
-		a_db[virtual_actions::addRBX] = b_add64RBX;
-		a_db[virtual_actions::addRCX] = b_add64RCX;
-		a_db[virtual_actions::addRDX] = b_add64RDX;
+		a_db[(unsigned long long)virtual_actions::addRAX] = b_add64RAX;
+		a_db[(unsigned long long)virtual_actions::addRBX] = b_add64RBX;
+		a_db[(unsigned long long)virtual_actions::addRCX] = b_add64RCX;
+		a_db[(unsigned long long)virtual_actions::addRDX] = b_add64RDX;
 #pragma endregion
 #pragma region b_sub
-		a_db[virtual_actions::subAX] = b_sub16AX;
-		a_db[virtual_actions::subBX] = b_sub16BX;
-		a_db[virtual_actions::subCX] = b_sub16CX;
-		a_db[virtual_actions::subDX] = b_sub16DX;
+		a_db[(unsigned long long)virtual_actions::subAX] = b_sub16AX;
+		a_db[(unsigned long long)virtual_actions::subBX] = b_sub16BX;
+		a_db[(unsigned long long)virtual_actions::subCX] = b_sub16CX;
+		a_db[(unsigned long long)virtual_actions::subDX] = b_sub16DX;
 
-		a_db[virtual_actions::subEAX] = b_sub32EAX;
-		a_db[virtual_actions::subEBX] = b_sub32EBX;
-		a_db[virtual_actions::subECX] = b_sub32ECX;
-		a_db[virtual_actions::subEDX] = b_sub32EDX;
+		a_db[(unsigned long long)virtual_actions::subEAX] = b_sub32EAX;
+		a_db[(unsigned long long)virtual_actions::subEBX] = b_sub32EBX;
+		a_db[(unsigned long long)virtual_actions::subECX] = b_sub32ECX;
+		a_db[(unsigned long long)virtual_actions::subEDX] = b_sub32EDX;
 
-		a_db[virtual_actions::subRAX] = b_sub64RAX;
-		a_db[virtual_actions::subRBX] = b_sub64RBX;
-		a_db[virtual_actions::subRCX] = b_sub64RCX;
-		a_db[virtual_actions::subRDX] = b_sub64RDX;
+		a_db[(unsigned long long)virtual_actions::subRAX] = b_sub64RAX;
+		a_db[(unsigned long long)virtual_actions::subRBX] = b_sub64RBX;
+		a_db[(unsigned long long)virtual_actions::subRCX] = b_sub64RCX;
+		a_db[(unsigned long long)virtual_actions::subRDX] = b_sub64RDX;
 #pragma endregion
 #pragma region b_extended
-		a_db[virtual_actions::rdstdin] = b_getInput;
-		a_db[virtual_actions::toString] = b_toString;
-		a_db[virtual_actions::mergeString] = b_mergeString;
-		a_db[virtual_actions::substring] = b_substring;
-		a_db[virtual_actions::_strlen] = b_strlen;
+		a_db[(unsigned long long)virtual_actions::rdstdin] = b_getInput;
+		a_db[(unsigned long long)virtual_actions::toString] = b_toString;
+		a_db[(unsigned long long)virtual_actions::mergeString] = b_mergeString;
+		a_db[(unsigned long long)virtual_actions::substring] = b_substring;
+		a_db[(unsigned long long)virtual_actions::_strlen] = b_strlen;
 
-		a_db[virtual_actions::print] = b_print;
-		a_db[virtual_actions::println] = b_println;
-		a_db[virtual_actions::printEOL] = b_printEOL;
+		a_db[(unsigned long long)virtual_actions::print] = b_print;
+		a_db[(unsigned long long)virtual_actions::println] = b_println;
+		a_db[(unsigned long long)virtual_actions::printEOL] = b_printEOL;
 
-		a_db[virtual_actions::castreg] = b_castreg;
-		a_db[virtual_actions::recast] = b_recast;
-		a_db[virtual_actions::fromString] = b_fromString;
+		a_db[(unsigned long long)virtual_actions::castreg] = b_castreg;
+		a_db[(unsigned long long)virtual_actions::recast] = b_recast;
+		a_db[(unsigned long long)virtual_actions::fromString] = b_fromString;
 #pragma endregion
 #pragma region b_binary
-		a_db[virtual_actions::_not] = b_not;
-		a_db[virtual_actions::_and] = b_and;
-		a_db[virtual_actions::_or]  = b_or;
-		a_db[virtual_actions::_xor] = b_xor;
-		a_db[virtual_actions::_shl] = b_shl;
-		a_db[virtual_actions::_shr] = b_shr;
+		a_db[(unsigned long long)virtual_actions::_not] = b_not;
+		a_db[(unsigned long long)virtual_actions::_and] = b_and;
+		a_db[(unsigned long long)virtual_actions::_or]  = b_or;
+		a_db[(unsigned long long)virtual_actions::_xor] = b_xor;
+		a_db[(unsigned long long)virtual_actions::_shl] = b_shl;
+		a_db[(unsigned long long)virtual_actions::_shr] = b_shr;
 
-		a_db[virtual_actions::_log] = b_log;
-		a_db[virtual_actions::_log2] = b_log2;
-		a_db[virtual_actions::_log10] = b_log10;
-		a_db[virtual_actions::_pow] = b_pow;
+		a_db[(unsigned long long)virtual_actions::_log] = b_log;
+		a_db[(unsigned long long)virtual_actions::_log2] = b_log2;
+		a_db[(unsigned long long)virtual_actions::_log10] = b_log10;
+		a_db[(unsigned long long)virtual_actions::_pow] = b_pow;
 #pragma endregion
 
 #pragma region mem
-		a_db[virtual_actions::push] = pushMem;
-		a_db[virtual_actions::pop] = popMem;
+		a_db[(unsigned long long)virtual_actions::push] = pushMem;
+		a_db[(unsigned long long)virtual_actions::pop] = popMem;
 
-		a_db[virtual_actions::pushSR] = pushMemSR;
-		a_db[virtual_actions::popSR] = popMemSR;
+		a_db[(unsigned long long)virtual_actions::pushSR] = pushMemSR;
+		a_db[(unsigned long long)virtual_actions::popSR] = popMemSR;
 
-		a_db[virtual_actions::declArray] = m_declArray;
-		a_db[virtual_actions::setAt] = m_setAt;
-		a_db[virtual_actions::getAt] = m_getAt;
-		a_db[virtual_actions::getDynSize] = m_getDynSize;
+		a_db[(unsigned long long)virtual_actions::declArray] = m_declArray;
+		a_db[(unsigned long long)virtual_actions::setAt] = m_setAt;
+		a_db[(unsigned long long)virtual_actions::getAt] = m_getAt;
+		a_db[(unsigned long long)virtual_actions::getDynSize] = m_getDynSize;
 		
-		a_db[virtual_actions::dyndecl] = m_dyndecl;
-		a_db[virtual_actions::dynset] = m_dynset;
-		a_db[virtual_actions::dynget] = m_dynget;
+		a_db[(unsigned long long)virtual_actions::dyndecl] = m_dyndecl;
+		a_db[(unsigned long long)virtual_actions::dynset] = m_dynset;
+		a_db[(unsigned long long)virtual_actions::dynget] = m_dynget;
 
-		a_db[virtual_actions::_struct] = m_structdecl;
-		a_db[virtual_actions::_struct_declprop] = m_structdeclprop;
-		a_db[virtual_actions::_struct_select] = m_structselect;
-		a_db[virtual_actions::_struct_get] = m_structget;
-		a_db[virtual_actions::_struct_set] = m_structset;
+		a_db[(unsigned long long)virtual_actions::_struct] = m_structdecl;
+		a_db[(unsigned long long)virtual_actions::_struct_declprop] = m_structdeclprop;
+		a_db[(unsigned long long)virtual_actions::_struct_select] = m_structselect;
+		a_db[(unsigned long long)virtual_actions::_struct_get] = m_structget;
+		a_db[(unsigned long long)virtual_actions::_struct_set] = m_structset;
 #pragma endregion
 #pragma region process
-		a_db[virtual_actions::ijmp] = p_inverseJmpSign;
-		a_db[virtual_actions::jmp] = p_jmp;
-		a_db[virtual_actions::cmp] = p_cmp;
-		a_db[virtual_actions::je] = p_je;
-		a_db[virtual_actions::jne] = p_jne;
-		a_db[virtual_actions::jl] = p_jl;
-		a_db[virtual_actions::jg] = p_jg;
-		a_db[virtual_actions::jle] = p_jle;
-		a_db[virtual_actions::jge] = p_jge;
-		a_db[virtual_actions::cmpstr] = p_cmpstr;
+		a_db[(unsigned long long)virtual_actions::ijmp] = p_inverseJmpSign;
+		a_db[(unsigned long long)virtual_actions::jmp] = p_jmp;
+		a_db[(unsigned long long)virtual_actions::cmp] = p_cmp;
+		a_db[(unsigned long long)virtual_actions::je] = p_je;
+		a_db[(unsigned long long)virtual_actions::jne] = p_jne;
+		a_db[(unsigned long long)virtual_actions::jl] = p_jl;
+		a_db[(unsigned long long)virtual_actions::jg] = p_jg;
+		a_db[(unsigned long long)virtual_actions::jle] = p_jle;
+		a_db[(unsigned long long)virtual_actions::jge] = p_jge;
+		a_db[(unsigned long long)virtual_actions::cmpstr] = p_cmpstr;
 
-		a_db[virtual_actions::gca] = p_gca;
-		a_db[virtual_actions::hlt] = p_hlt;
+		a_db[(unsigned long long)virtual_actions::gca] = p_gca;
+		a_db[(unsigned long long)virtual_actions::hlt] = p_hlt;
 
-		a_db[virtual_actions::call] = p_call;
-		a_db[virtual_actions::lcall] = p_lcall;
-		a_db[virtual_actions::ret] = p_ret;
-		a_db[virtual_actions::svcall] = p_svcall;
-		a_db[virtual_actions::rscall] = p_rscall;
+		a_db[(unsigned long long)virtual_actions::call] = p_call;
+		a_db[(unsigned long long)virtual_actions::lcall] = p_lcall;
+		a_db[(unsigned long long)virtual_actions::ret] = p_ret;
+		a_db[(unsigned long long)virtual_actions::svcall] = p_svcall;
+		a_db[(unsigned long long)virtual_actions::rscall] = p_rscall;
 #pragma endregion
 	}
 };

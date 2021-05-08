@@ -474,7 +474,7 @@ std::vector<virtual_actions> convertSymbols(std::vector<std::vector<std::string>
 }
 void purgeParsed(std::vector<virtual_actions> *converted, std::vector<std::vector<std::string>> *parsed) {
 	for (unsigned long long i = 0; i < converted->size(); i++) {
-		if ((*converted)[i] == 0 || (*converted)[i] < virtual_actions::setAX) {
+		if ((unsigned long long)((*converted)[i]) == 0 || (*converted)[i] < virtual_actions::setAX) {
 			parsed->erase(parsed->begin() + i);
 			converted->erase(converted->begin() + i);
 			i--;
@@ -546,7 +546,8 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 				break;
 			}
 		}
-		if (symbols_converter[cleaned_parsed[i][0]] == 0 || symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::setAX) {
+		if ((unsigned long long)(symbols_converter[cleaned_parsed[i][0]]) == 0 ||
+				symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::setAX) {
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
 			i--;
 		}
