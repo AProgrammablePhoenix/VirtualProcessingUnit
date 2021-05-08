@@ -49,8 +49,8 @@ target_link_libraries(vexe compiler)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
 
-if (MSVC)    
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")    
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-elseif (GNU)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 endif()
