@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "../Memory/memory_decl.h"
 

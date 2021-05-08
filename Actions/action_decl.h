@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "actions_symbols.h"
 

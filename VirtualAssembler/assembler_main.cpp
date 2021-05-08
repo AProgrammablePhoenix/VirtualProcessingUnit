@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #if defined(__linux__)
 #include <stdio.h>

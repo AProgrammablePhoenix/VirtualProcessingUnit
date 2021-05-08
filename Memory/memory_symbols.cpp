@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
 #if defined(__linux__)
 #include <stdio.h>

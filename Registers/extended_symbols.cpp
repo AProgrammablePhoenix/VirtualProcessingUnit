@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <memory>
 
 #include "registers_symbols.h"
 #include "../Memory/memory_symbols.h"

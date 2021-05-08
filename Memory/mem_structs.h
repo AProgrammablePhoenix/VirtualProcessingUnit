@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "memory_decl.h"
 #include "../Registers/regs_decl.h"

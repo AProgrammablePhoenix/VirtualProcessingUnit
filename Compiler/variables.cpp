@@ -3,6 +3,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <memory>
 
 #if defined(__linux__)
 #include <stdio.h>

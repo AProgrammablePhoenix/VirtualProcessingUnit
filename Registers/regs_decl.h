@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #pragma warning (push)
 #pragma warning (disable : 4293)

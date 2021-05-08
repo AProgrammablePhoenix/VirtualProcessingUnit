@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <memory>
 
 #include "v_engine.h"
 

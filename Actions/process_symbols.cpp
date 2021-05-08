@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "../Memory/memory_decl.h"
 #include "../Memory/memory_symbols.h"

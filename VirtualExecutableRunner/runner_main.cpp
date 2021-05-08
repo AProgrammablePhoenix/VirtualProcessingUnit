@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "../Compiler/action_parser.h"
 #include "runner.h"

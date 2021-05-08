@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "action_decl.h"
 #include "actions_symbols.h"

@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <memory>
 
 #include "../Actions/actions_symbols.h"
 #include "../Actions/v_engine.h"

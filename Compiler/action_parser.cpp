@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <sstream>
 #include <filesystem>
+#include <memory>
 
 #if defined(__linux__)
 #include <stdio.h>

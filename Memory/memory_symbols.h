@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory>
 
 #include "memory_decl.h"
 #include "../Registers/regs_decl.h"

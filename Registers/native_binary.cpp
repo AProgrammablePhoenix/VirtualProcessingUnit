@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
+#include <memory>
 
 #include "regs_decl.h"
 #include "registers_symbols.h"
