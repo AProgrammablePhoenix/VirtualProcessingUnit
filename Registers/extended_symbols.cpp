@@ -5,7 +5,7 @@
 #include "registers_symbols.h"
 #include "../Memory/memory_symbols.h"
 
-void b_getInput(void* unused_p, regs* registers, memory* mem) {
+void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;
 
 	std::getline(std::cin, input);
@@ -24,14 +24,14 @@ void b_toString(registries_def reg, regs* registers, memory* unused_m) {
 	std::string converted = ss.str();
 	b_setSR(&converted, registers, unused_m);
 }
-void b_mergeString(void* unused_p, regs* registers, memory* mem) {
+void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string pushed = registers->sr->get();
 	popMemSR(NULL, registers, mem);
 	std::string base = registers->sr->get();
 
 	registers->sr->set(base + pushed);
 }
-void b_substring(void* unused_p, regs* registers, memory* unused_m) {
+void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
 	unsigned short ax = 0;
 	unsigned short bx = 0;
@@ -41,7 +41,7 @@ void b_substring(void* unused_p, regs* registers, memory* unused_m) {
 
 	registers->sr->set(sr.substr(ax, bx));
 }
-void b_strlen(void* unused_p, regs* registers, memory* mem) {
+void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
 	unsigned long long saved_rax = registers->rax->get();
 
@@ -50,15 +50,15 @@ void b_strlen(void* unused_p, regs* registers, memory* mem) {
 	registers->rax->set(saved_rax);
 }
 
-void b_print(void* unused_p, regs* registers, memory* unused_m) {
+void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
 	std::cout << sr;
 }
-void b_println(void* unused_p, regs* registers, memory* unused_m) {
+void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
 	std::cout << sr << std::endl;
 }
-void b_printEOL(void* unused_p, regs* unused_r, memory* unused_m) {
+void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m) {
 	std::cout << std::endl;
 }
 
@@ -95,7 +95,7 @@ void b_castreg(registries_def receiver, regs* registers, memory* mem) {
 *	- unsigned_number -> string (reason: handled by "toString" instruction
 *	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
-void b_recast(void* unused_p, regs* registers, memory* mem) {
+void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long savedRAX = registers->rax->get();
 
 	popMem(registries_def::RAX, registers, mem);
@@ -145,7 +145,7 @@ void b_recast(void* unused_p, regs* registers, memory* mem) {
 *	- 0 = string -> unsigned number
 *	- 1 = string -> signed number
 */
-void b_fromString(void* unused_p, regs* registers, memory* mem) {
+void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
 	unsigned long long saved_rax = registers->rax->get();
 

@@ -134,40 +134,40 @@ enum extra_registries {
 
 // Native registers ops
 #pragma region native_regs_ops
-void b_set16AX(unsigned short *a, regs* regsiters, memory* unused_m);
-void b_set16BX(unsigned short *a, regs* registers, memory* unused_m);
-void b_set16CX(unsigned short *a, regs* registers, memory* unused_m);
-void b_set16DX(unsigned short *a, regs* registers, memory* unused_m);
+void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* unused_m);
+void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
-void b_set32EAX(unsigned int *a, regs* registers, memory* unused_m);
-void b_set32EBX(unsigned int *a, regs* registers, memory* unused_m);
-void b_set32ECX(unsigned int *a, regs* registers, memory* unused_m);
-void b_set32EDX(unsigned int *a, regs* registers, memory* unused_m);
+void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
-void b_set64RAX(unsigned long long *a, regs* registers, memory* unused_m);
-void b_set64RBX(unsigned long long *a, regs* registers, memory* unused_m);
-void b_set64RCX(unsigned long long *a, regs* registers, memory* unused_m);
-void b_set64RDX(unsigned long long *a, regs* registers, memory* unused_m);
+void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
-void b_setSR(std::string* a, regs* registers, memory* unused_m);
+void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
 
-void b_get16AX(void* receiver, regs* registers, memory* unused_m);
-void b_get16BX(void* receiver, regs* registers, memory* unused_m);
-void b_get16CX(void* receiver, regs* registers, memory* unused_m);
-void b_get16DX(void* receiver, regs* registers, memory* unused_m);
+void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get16BX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get16CX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get16DX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
-void b_get32EAX(void* receiver, regs* registers, memory* unused_m);
-void b_get32EBX(void* receiver, regs* registers, memory* unused_m);
-void b_get32ECX(void* receiver, regs* registers, memory* unused_m);
-void b_get32EDX(void* receiver, regs* registers, memory* unused_m);
+void b_get32EAX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get32EBX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get32ECX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get32EDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
-void b_get64RAX(void* receiver, regs* registers, memory* unused_m);
-void b_get64RBX(void* receiver, regs* registers, memory* unused_m);
-void b_get64RCX(void* receiver, regs* registers, memory* unused_m);
-void b_get64RDX(void* receiver, regs* registers, memory* unused_m);
+void b_get64RAX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get64RBX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get64RCX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
-void b_getSR(void* receiver, regs* registers, memory* unused_m);
+void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
 #pragma endregion
 
@@ -257,19 +257,19 @@ void b_sub64RDX(registries_def reg, regs* registers, memory* unused_m);
 
 //extended ops
 #pragma region extended_ops
-void b_getInput(void* unused_p, regs* registers, memory* mem);
+void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_toString(registries_def reg, regs* registers, memory* unused_m);
-void b_mergeString(void* unused_p, regs* registers, memory* mem);
-void b_substring(void* unused_p, regs* registers, memory* unused_m);
-void b_strlen(void* unused_p, regs* registers, memory* mem);
+void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
-void b_print(void* unused_p, regs* registers, memory* unused_m);
-void b_println(void* unused_p, regs* registers, memory* unused_m);
-void b_printEOL(void* unused_p, regs* unused_r, memory* unused_m);
+void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m);
 
 void b_castreg(registries_def receiver, regs* registers, memory* mem);
-void b_recast(void* unused_p, regs* registers, memory* mem);
-void b_fromString(void* unused_p, regs* registers, memory* mem);
+void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 // Native binary ops
