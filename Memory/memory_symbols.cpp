@@ -27,17 +27,17 @@ void popMem(registries_def reg, regs* registers,  memory* mem) {
 }
 
 void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string value = "";
-	b_getSR(&value, registers, mem);
+	std::shared_ptr<std::string> value = std::make_shared<std::string>("");
+	b_getSR(value, registers, mem);
 
-	unsigned char *uc_s = new unsigned char[value.size() + 1];
+	unsigned char *uc_s = new unsigned char[value->size() + 1];
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
+	memcpy_s(uc_s, value->size() + 1, value->c_str(), value->size() + 1);
 #else
-	std::memcpy(uc_s, value.c_str(), value.size() + 1);
+	std::memcpy(uc_s, value->c_str(), value->size() + 1);
 #endif
 
-	mem->push(uc_s, value.size() + 1);
+	mem->push(uc_s, value->size() + 1);
 }
 void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
 	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
