@@ -21,8 +21,8 @@ void b_toString(registries_def reg, regs* registers, memory* unused_m) {
 	std::stringstream ss;
 	ss << value;
 
-	std::string converted = ss.str();
-	b_setSR(&converted, registers, unused_m);
+	std::shared_ptr<std::string> converted = std::make_shared<std::string>(ss.str());
+	b_setSR(converted, registers, unused_m);
 }
 void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string pushed = registers->sr->get();
@@ -33,13 +33,13 @@ void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem)
 }
 void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
-	unsigned short ax = 0;
-	unsigned short bx = 0;
+	std::shared_ptr<unsigned short> ax = std::make_shared<unsigned short>(0);
+	std::shared_ptr<unsigned short> bx = std::make_shared<unsigned short>(0);
 
-	b_get16AX(&ax, registers, unused_m);
-	b_get16BX(&bx, registers, unused_m);
+	b_get16AX(ax, registers, unused_m);
+	b_get16BX(bx, registers, unused_m);
 
-	registers->sr->set(sr.substr(ax, bx));
+	registers->sr->set(sr.substr(*ax, *bx));
 }
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
