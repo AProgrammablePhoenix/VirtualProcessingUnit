@@ -6,6 +6,6 @@
 
 void* a_db[0x004290 + 1];
 
-action makeAction(virtual_actions _action, void* value_ptr) {
+action makeAction(virtual_actions _action, std::shared_ptr<void> value_ptr) {
 	return action(_action, value_ptr);
 }

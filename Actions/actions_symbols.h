@@ -214,8 +214,8 @@ public:
 
 #pragma warning (push)
 #pragma warning (disable : 26812)
-	void execute(virtual_actions action, void* value_ptr) {
-		((void* (*)(void*, regs*, memory*))a_db[action])(value_ptr, this->self_regs, this->self_mem);
+	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
+		((void* (*)(std::shared_ptr<void>, regs*, memory*))a_db[action])(value_ptr, this->self_regs, this->self_mem);
 	}
 #pragma warning (pop)
 

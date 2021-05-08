@@ -7,7 +7,7 @@
 
 struct action {
 public:
-	action(virtual_actions _action_, void* _value_ptr_) {
+	action(virtual_actions _action_, std::shared_ptr<void> _value_ptr_) {
 		this->_action = _action_;
 		this->_value_ptr = _value_ptr_;
 	}
@@ -16,12 +16,12 @@ public:
 		return this->_action;
 	}
 
-	void* getValuePtr() {
+	std::shared_ptr<void> getValuePtr() {
 		return this->_value_ptr;
 	}
 private:
 	virtual_actions _action;
-	void* _value_ptr;
+	std::shared_ptr<void> _value_ptr;
 };
 
-action makeAction(virtual_actions _action, void* value_ptr);
+action makeAction(virtual_actions _action, std::shared_ptr<void> value_ptr);

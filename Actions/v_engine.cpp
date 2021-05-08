@@ -29,7 +29,7 @@ process::process(actions_engine* _engine, std::vector<action>* _actions) {
 void process::addAction(action _action) {
 	this->actions.push_back(_action);
 }
-void process::addAction(virtual_actions _action, void* value_ptr) {
+void process::addAction(virtual_actions _action, std::shared_ptr<void> value_ptr) {
 	this->actions.push_back(action(_action, value_ptr));
 }
 
