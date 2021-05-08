@@ -142,11 +142,11 @@ void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m) {
 // Get immediatly to pointed address (mainly used with tags and procedure)
 void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m) {
 	*registers->process_call_address = *registers->process_step;
-	*registers->process_step = *std::dynamic_pointer_cast<unsigned long long>(value_ptr);
+	*registers->process_step = *std::static_pointer_cast<unsigned long long>(value_ptr);
 }
 // Get immediatly to pointed address without saving caller address (mainly used with tags in loops)
 void p_lcall(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m) {
-	*registers->process_step = *std::dynamic_pointer_cast<unsigned long long>(value_ptr);
+	*registers->process_step = *std::static_pointer_cast<unsigned long long>(value_ptr);
 }
 // Get back to caller address (should only be used with p_call)
 void p_ret(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {

@@ -36,9 +36,9 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			//unsigned char* p_arg = new unsigned char;
 			//*p_arg = _arg;
-			runtime_vars.push_back(new unsigned char(_arg));
+			//runtime_vars.push_back(new unsigned char(_arg));
 
-			action _action(real_op, runtime_vars[runtime_vars.size() - 1]);
+			action _action(real_op, std::make_shared<unsigned char>(_arg/*runtime_vars[runtime_vars.size() - 1])*/));
 			actions->push_back(_action);
 
 			continue;
@@ -59,9 +59,9 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			//unsigned long long* p_arg = new unsigned long long;
 			//*p_arg = value;
-			runtime_vars.push_back(new unsigned long long(value));
+			//runtime_vars.push_back(new unsigned long long(value));
 
-			action _action(real_op, runtime_vars[runtime_vars.size() - 1]);
+			action _action(real_op, std::make_shared<unsigned long long>(value)/*runtime_vars[runtime_vars.size() - 1]*/);
 			actions->push_back(_action);
 
 			continue;
@@ -88,9 +88,9 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			std::string str(b_str, b_str + str_size);
 			//std::string* p_arg = new std::string;
 			//*p_arg = str;
-			runtime_vars.push_back(new std::string(str));
+			//runtime_vars.push_back(new std::string(str));
 
-			action _action(real_op, runtime_vars[runtime_vars.size() - 1]);
+			action _action(real_op, std::make_shared<std::string>(str)/*runtime_vars[runtime_vars.size() - 1]*/);
 
 			actions->push_back(_action);
 
@@ -105,7 +105,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			unsigned char _reg = (*byteArray)[i];
 			registries_def real_reg = findKeyByValue(registers_set, _reg);
 
-			action _action(real_op, (void*)real_reg);
+			action _action(real_op, std::make_shared<registries_def>(real_reg));
 			actions->push_back(_action);
 
 			continue;

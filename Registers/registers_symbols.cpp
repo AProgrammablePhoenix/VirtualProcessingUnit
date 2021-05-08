@@ -7,88 +7,88 @@
 #include "regs_decl.h"
 
 void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* unsued_m) {
-	regsiters->ax->set(*std::dynamic_pointer_cast<unsigned short>(a));
+	regsiters->ax->set(*std::static_pointer_cast<unsigned short>(a));
 }
 void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->bx->set(*std::dynamic_pointer_cast<unsigned short>(a));
+	registers->bx->set(*std::static_pointer_cast<unsigned short>(a));
 }
 void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->cx->set(*std::dynamic_pointer_cast<unsigned short>(a));
+	registers->cx->set(*std::static_pointer_cast<unsigned short>(a));
 }
 void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->dx->set(*std::dynamic_pointer_cast<unsigned short>(a));
+	registers->dx->set(*std::static_pointer_cast<unsigned short>(a));
 }
 
 void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->eax->set(*std::dynamic_pointer_cast<unsigned int>(a));
+	registers->eax->set(*std::static_pointer_cast<unsigned int>(a));
 }
 void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->ebx->set(*std::dynamic_pointer_cast<unsigned int>(a));
+	registers->ebx->set(*std::static_pointer_cast<unsigned int>(a));
 }
 void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->ecx->set(*std::dynamic_pointer_cast<unsigned int>(a));
+	registers->ecx->set(*std::static_pointer_cast<unsigned int>(a));
 }
 void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->edx->set(*std::dynamic_pointer_cast<unsigned int>(a));
+	registers->edx->set(*std::static_pointer_cast<unsigned int>(a));
 }
 
 void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->rax->set(*std::dynamic_pointer_cast<unsigned long long>(a));
+	registers->rax->set(*std::static_pointer_cast<unsigned long long>(a));
 }
 void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->rbx->set(*std::dynamic_pointer_cast<unsigned long long>(a));
+	registers->rbx->set(*std::static_pointer_cast<unsigned long long>(a));
 }
 void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->rcx->set(*std::dynamic_pointer_cast<unsigned long long>(a));
+	registers->rcx->set(*std::static_pointer_cast<unsigned long long>(a));
 }
 void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->rdx->set(*std::dynamic_pointer_cast<unsigned long long>(a));
+	registers->rdx->set(*std::static_pointer_cast<unsigned long long>(a));
 }
 
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
-	registers->sr->set(*std::dynamic_pointer_cast<std::string>(a));
+	registers->sr->set(*std::static_pointer_cast<std::string>(a));
 }
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned short>(receiver)) = registers->ax->get();
+	*(std::static_pointer_cast<unsigned short>(receiver)) = registers->ax->get();
 }
 void b_get16BX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned short>(receiver)) = registers->bx->get();
+	*(std::static_pointer_cast<unsigned short>(receiver)) = registers->bx->get();
 }
 void b_get16CX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned short>(receiver)) = registers->cx->get();
+	*(std::static_pointer_cast<unsigned short>(receiver)) = registers->cx->get();
 }
 void b_get16DX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned short>(receiver)) = registers->dx->get();
+	*(std::static_pointer_cast<unsigned short>(receiver)) = registers->dx->get();
 }
 
 void b_get32EAX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned int>(receiver)) = registers->eax->get();
+	*(std::static_pointer_cast<unsigned int>(receiver)) = registers->eax->get();
 }
 void b_get32EBX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned int>(receiver)) = registers->ebx->get();
+	*(std::static_pointer_cast<unsigned int>(receiver)) = registers->ebx->get();
 }
 void b_get32ECX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned int>(receiver)) = registers->ecx->get();
+	*(std::static_pointer_cast<unsigned int>(receiver)) = registers->ecx->get();
 }
 void b_get32EDX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned int>(receiver)) = registers->edx->get();
+	*(std::static_pointer_cast<unsigned int>(receiver)) = registers->edx->get();
 }
 
 void b_get64RAX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned long long>(receiver)) = registers->rax->get();
+	*(std::static_pointer_cast<unsigned long long>(receiver)) = registers->rax->get();
 }
 void b_get64RBX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned long long>(receiver)) = registers->rbx->get();
+	*(std::static_pointer_cast<unsigned long long>(receiver)) = registers->rbx->get();
 }
 void b_get64RCX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned long long>(receiver)) = registers->rcx->get();
+	*(std::static_pointer_cast<unsigned long long>(receiver)) = registers->rcx->get();
 }
 void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<unsigned long long>(receiver)) = registers->rdx->get();
+	*(std::static_pointer_cast<unsigned long long>(receiver)) = registers->rdx->get();
 }
 
 void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
-	*(std::dynamic_pointer_cast<std::string>(receiver)) = registers->sr->get();
+	*(std::static_pointer_cast<std::string>(receiver)) = registers->sr->get();
 }

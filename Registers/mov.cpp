@@ -8,16 +8,16 @@
 #pragma warning (disable:26812)
 
 void c_b_mov16AX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ax->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->ax->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov16BX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->bx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->bx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov16CX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->cx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->cx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov16DX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->dx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->dx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 
 void b_mov16AX(registries_def reg, regs* registers, memory* unused_m) {
@@ -50,16 +50,16 @@ void b_mov16DX(registries_def reg, regs* registers, memory* unused_m) {
 }
 
 void c_b_mov32EAX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->eax->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->eax->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov32EBX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ebx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->ebx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov32ECX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ecx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->ecx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 void c_b_mov32EDX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->edx->set(*std::dynamic_pointer_cast<unsigned short>(reg_ptr));
+	registers->edx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 
 void b_mov32EAX(registries_def reg, regs* registers, memory* unused_m) {
@@ -92,16 +92,16 @@ void b_mov32EDX(registries_def reg, regs* registers, memory* unused_m) {
 }
 
 void c_b_mov64RAX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rax->set(*std::dynamic_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rax->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
 }
 void c_b_mov64RBX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rbx->set(*std::dynamic_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rbx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
 }
 void c_b_mov64RCX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rcx->set(*std::dynamic_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rcx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
 }
 void c_b_mov64RDX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rdx->set(*std::dynamic_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rdx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
 }
 
 void b_mov64RAX(registries_def reg, regs* registers, memory* unused_m) {

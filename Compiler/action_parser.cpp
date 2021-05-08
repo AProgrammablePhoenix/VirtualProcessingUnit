@@ -23,21 +23,21 @@ void process_memory::set(variables_decl* var) {
 	for (unsigned long long i = 0; i < headers.size(); i++) {
 		if (headers[i].decl_type == "string") {
 			this->stored_strings[headers[i].decl_name] = headers[i].decl_value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<void>(this->stored_strings[headers[i].decl_name]);
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<std::string>(this->stored_strings[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "unsigned number") {
 			unsigned long long value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
 			this->unsigned_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<void>(this->unsigned_numbers[headers[i].decl_name]);
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<unsigned long long>(this->unsigned_numbers[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "signed number") {
 			long long value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
 			this->signed_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<void>(this->signed_numbers[headers[i].decl_name]);
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<long long>(this->signed_numbers[headers[i].decl_name]);
 		}
 	}
 }
@@ -46,7 +46,7 @@ void process_memory::setTags(variables_decl* vars) {
 
 	for (unsigned long long i = 0; i < tags_headers.size(); i++) {
 		this->stored_tags[tags_headers[i].tagname] = tags_headers[i].value;
-		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<void>(this->stored_tags[tags_headers[i].tagname]);
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<unsigned long long>(this->stored_tags[tags_headers[i].tagname]);
 	}
 }
 void process_memory::setTagValue(std::string tagname, unsigned long long value) {
@@ -58,22 +58,22 @@ void process_memory::set(std::string var_name, std::shared_ptr<void> data_ptr) {
 	}
 }
 void process_memory::setRegisters() {
-	this->data_ptrs["AX"] = std::make_shared<void>(registries_def::AX);
-	this->data_ptrs["BX"] = std::make_shared<void>(registries_def::BX);
-	this->data_ptrs["CX"] = std::make_shared<void>(registries_def::CX);
-	this->data_ptrs["DX"] = std::make_shared<void>(registries_def::DX);
+	this->data_ptrs["AX"] = std::make_shared<registries_def>(registries_def::AX);
+	this->data_ptrs["BX"] = std::make_shared<registries_def>(registries_def::BX);
+	this->data_ptrs["CX"] = std::make_shared<registries_def>(registries_def::CX);
+	this->data_ptrs["DX"] = std::make_shared<registries_def>(registries_def::DX);
 
-	this->data_ptrs["EAX"] = std::make_shared<void>(registries_def::EAX);
-	this->data_ptrs["EBX"] = std::make_shared<void>(registries_def::EBX);
-	this->data_ptrs["ECX"] = std::make_shared<void>(registries_def::ECX);
-	this->data_ptrs["EDX"] = std::make_shared<void>(registries_def::EDX);
+	this->data_ptrs["EAX"] = std::make_shared<registries_def>(registries_def::EAX);
+	this->data_ptrs["EBX"] = std::make_shared<registries_def>(registries_def::EBX);
+	this->data_ptrs["ECX"] = std::make_shared<registries_def>(registries_def::ECX);
+	this->data_ptrs["EDX"] = std::make_shared<registries_def>(registries_def::EDX);
 
-	this->data_ptrs["RAX"] = std::make_shared<void>(registries_def::RAX);
-	this->data_ptrs["RBX"] = std::make_shared<void>(registries_def::RBX);
-	this->data_ptrs["RCX"] = std::make_shared<void>(registries_def::RCX);
-	this->data_ptrs["RDX"] = std::make_shared<void>(registries_def::RDX);
+	this->data_ptrs["RAX"] = std::make_shared<registries_def>(registries_def::RAX);
+	this->data_ptrs["RBX"] = std::make_shared<registries_def>(registries_def::RBX);
+	this->data_ptrs["RCX"] = std::make_shared<registries_def>(registries_def::RCX);
+	this->data_ptrs["RDX"] = std::make_shared<registries_def>(registries_def::RDX);
 
-	this->data_ptrs["SR"] = std::make_shared<void>(extra_registries::SR);
+	this->data_ptrs["SR"] = std::make_shared<extra_registries>(extra_registries::SR);
 }
 bool process_memory::isTag(std::string tagname) {
 	if (this->stored_tags.count(tagname)) {
@@ -90,7 +90,7 @@ std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
 	}
 	else {
 		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
-		return NULL;
+		return std::make_shared<unsigned int>(0);
 	}
 }
 std::string process_memory::getVarType(std::string var_name) {
