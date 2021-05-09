@@ -1,10 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
+#include <memory>
+#include <string>
 #include <typeinfo>
+#include <vector>
 
 #include "../Registers/regs_decl.h"
 #include "memory_decl.h"
@@ -77,6 +78,6 @@ private:
 	std::map<std::string, dyn_unum_var> dyn_unsigned_number_vars;
 	std::map<std::string, dyn_snum_var> dyn_signed_number_vars;
 
-	std::map<std::string, void*> variables_table;
+	std::map<std::string, std::shared_ptr<void>> variables_table;
 	std::map<std::string, std::string> types_table;
 };

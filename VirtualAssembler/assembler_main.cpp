@@ -1,12 +1,13 @@
 #include <fstream>
 #include <iostream>
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <map>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
 #include "../Compiler/action_parser.h"
@@ -30,7 +31,7 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if ((out[0] > 0x0C && out[0] < 0x19) || out[0] == 0x8A || out[0] == 0x8B) {
-		unsigned long long value = *((unsigned long long*)_action.getValuePtr());
+		unsigned long long value = *std::static_pointer_cast<unsigned long long>(_action.getValuePtr());
 		byte* converted = new byte[8];
 		ulongToByteArray(value, &converted);
 		
@@ -41,7 +42,7 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if (out[0] == 0x19) {
-		std::string str = *((std::string*)_action.getValuePtr());
+		std::string str = *std::static_pointer_cast<std::string>(_action.getValuePtr());
 		unsigned long long str_size = str.size();
 
 		byte* b_str_size = new byte[8];
@@ -53,7 +54,11 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] b_str_size;
 
 		char* b_str = new char[str_size];
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+		strncpy_s(b_str, str_size, str.c_str(), str_size);
+#else
 		strncpy(b_str, str.c_str(), str_size);
+#endif
 
 		for (byte i = 0; i < str_size; i++) {
 			out.push_back(b_str[i]);
@@ -64,11 +69,14 @@ std::vector<byte> assembleAction(action _action) {
 	}
 	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0] < 0x66)
 			|| (out[0] > 0x73 && out[0] < 0x7E)) {
-		unsigned char reg_value = ((unsigned long long)_action.getValuePtr()) & 0xff;
+		unsigned char reg_value = (*std::static_pointer_cast<unsigned long long>(_action.getValuePtr())) & 0xff;
 		reg_value = registers_set[(registries_def)reg_value];
 
 		out.push_back(reg_value);
 		return out;
+	}
+	else {
+		return std::vector<byte>({ 0, 0, 0, 0, 0, 0, 0, 0, });
 	}
 }
 
@@ -111,4 +119,6 @@ int main(int argc, char* argv[]) {
 	asFinal(outputFile, as(inputFile));
 
 	std::cout << "Linking of '" << inputFile << "': done." << std::endl;
+
+	return 0;
 }

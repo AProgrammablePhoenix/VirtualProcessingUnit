@@ -1,17 +1,16 @@
-#pragma once
-
 #include <iostream>
+#include <map>
+#include <memory>
 #include <string>
 #include <vector>
-#include <map>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 #include "dyn_vars.h"
+#include "memory_decl.h"
 
+#define SNUM_TYPE "__int64"
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_TYPE "unsigned __int64"
-#define SNUM_TYPE "__int64"
 
 dyn_str_var::dyn_str_var() {
 	if (!this->initialized) {
@@ -44,14 +43,14 @@ void dyn_str_var::dynset() {
 dyn_unum_var::dyn_unum_var() {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 	}
 }
 dyn_unum_var::dyn_unum_var(regs* _registers) {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 		this->registers = _registers;
 		this->value_type = UNUM_TYPE;
@@ -72,14 +71,14 @@ void dyn_unum_var::dynset() {
 dyn_snum_var::dyn_snum_var() {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 	}
 }
 dyn_snum_var::dyn_snum_var(regs* _registers) {
 	if (!this->initialized) {
 		if (this->content) {
-			this->content = NULL;
+			this->content = 0;
 		}
 		this->registers = _registers;
 		this->value_type = SNUM_TYPE;
@@ -108,19 +107,19 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 		if (type == UNUM_TYPE) {
 			dyn_unum_var _var = dyn_unum_var(this->registers);
 			this->dyn_unsigned_number_vars[name] = _var;
-			this->variables_table[name] = &this->dyn_unsigned_number_vars[name];
+			this->variables_table[name] = std::make_shared<dyn_unum_var>(this->dyn_unsigned_number_vars[name]);
 			this->types_table[name] = UNUM_TYPE;
 		}
 		else if (type == SNUM_TYPE) {
 			dyn_snum_var _var = dyn_snum_var(this->registers);
 			this->dyn_signed_number_vars[name] = _var;
-			this->variables_table[name] = &this->dyn_signed_number_vars[name];
+			this->variables_table[name] = std::make_shared<dyn_snum_var>(this->dyn_signed_number_vars[name]);
 			this->types_table[name] = SNUM_TYPE;
 		}
 		else if (type == STR_TYPE) {
 			dyn_str_var _var = dyn_str_var(this->registers);
 			this->dyn_string_vars[name] = _var;
-			this->variables_table[name] = &this->dyn_string_vars[name];
+			this->variables_table[name] = std::make_shared<dyn_str_var>(this->dyn_string_vars[name]);
 			this->types_table[name] = STR_TYPE;
 		}
 	}
@@ -128,26 +127,26 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 void mem_dyn_vars::dynGetVar(std::string name) {
 	if (this->variables_table.count(name)) {
 		if (this->types_table[name] == UNUM_TYPE) {
-			((dyn_var_int<unsigned long long>*)this->variables_table[name])->dynget();
+			(std::static_pointer_cast<dyn_var_int<unsigned long long>>(this->variables_table[name]))->dynget();
 		}
 		else if (this->types_table[name] == SNUM_TYPE) {
-			((dyn_var_int<long long>*)this->variables_table[name])->dynget();
+			(std::static_pointer_cast<dyn_var_int<long long>>(this->variables_table[name]))->dynget();
 		}
 		else if (this->types_table[name] == STR_TYPE) {
-			((dyn_var_int<std::string>*)this->variables_table[name])->dynget();
+			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynget();
 		}
 	}
 }
 void mem_dyn_vars::dynSetVar(std::string name) {
 	if (this->variables_table.count(name)) {
 		if (this->types_table[name] == UNUM_TYPE) {
-			((dyn_var_int<unsigned long long>*)this->variables_table[name])->dynset();
+			(std::static_pointer_cast<dyn_var_int<unsigned long long>>(this->variables_table[name]))->dynset();
 		}
 		else if (this->types_table[name] == SNUM_TYPE) {
-			((dyn_var_int<long long>*)this->variables_table[name])->dynset();
+			(std::static_pointer_cast<dyn_var_int<long long>>(this->variables_table[name]))->dynset();
 		}
 		else if (this->types_table[name] == STR_TYPE) {
-			((dyn_var_int<std::string>*)this->variables_table[name])->dynset();
+			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynset();
 		}
 	}
 }

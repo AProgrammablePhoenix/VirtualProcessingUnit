@@ -1,2 +1,3 @@
 ﻿#pragma once
-#include <iostream>
+
+// Still nothing here, this file may be deleted in the future for its uselessness

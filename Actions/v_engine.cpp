@@ -1,9 +1,10 @@
 #include <iostream>
+#include <memory>
 #include <string>
 
-#include "v_engine.h"
 #include "action_decl.h"
 #include "actions_symbols.h"
+#include "v_engine.h"
 
 actions_engine temp_engine = actions_engine();
 
@@ -29,7 +30,7 @@ process::process(actions_engine* _engine, std::vector<action>* _actions) {
 void process::addAction(action _action) {
 	this->actions.push_back(_action);
 }
-void process::addAction(virtual_actions _action, void* value_ptr) {
+void process::addAction(virtual_actions _action, std::shared_ptr<void> value_ptr) {
 	this->actions.push_back(action(_action, value_ptr));
 }
 

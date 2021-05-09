@@ -1,4 +1,5 @@
 #include <iostream>
+#include <memory>
 #include <string>
 
 #include "../Memory/memory_decl.h"
@@ -8,19 +9,19 @@
 
 std::vector<unsigned long long> calling_tree;
 
-void p_inverseJmpSign(void* unused_p, regs* registers, memory* unused_m) {
+void p_inverseJmpSign(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	*(registers->jmp_sign) *= -1;
 }
-void p_jmp(void* unused_p, regs* registers, memory* unused_m) {
+void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 	*(registers->process_step) += count;
 }
-void p_cmp(void* unused_p, regs* registers, memory* mem) {
+void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long saved_rax = registers->rax->get();
 	unsigned long long saved_rbx = registers->rax->get();
 
-	popMem(registries_def::RAX, registers, mem);
-	popMem(registries_def::RBX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
 
 	unsigned long long rax = registers->rax->get();
 	unsigned long long rbx = registers->rbx->get();
@@ -39,13 +40,13 @@ void p_cmp(void* unused_p, regs* registers, memory* mem) {
 		*(registers->cmp_out) = 0xFE;
 	}
 
-	pushMem(registries_def::RBX, registers, mem);
-	pushMem(registries_def::RAX, registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
 	registers->rax->set(saved_rax);
 	registers->rbx->set(saved_rbx);
 }
-void p_cmpstr(void* unused_p, regs* registers, memory* mem) {
+void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
 	std::string s1, s2;
 
@@ -76,7 +77,7 @@ void p_cmpstr(void* unused_p, regs* registers, memory* mem) {
 }
 
 // Jump if equal
-void p_je(void* unused_p, regs* registers, memory* unused_m) {
+void p_je(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -84,7 +85,7 @@ void p_je(void* unused_p, regs* registers, memory* unused_m) {
 	}
 }
 // Jump if not equal
-void p_jne(void* unused_p, regs* registers, memory* unused_m) {
+void p_jne(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) != 0) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -92,7 +93,7 @@ void p_jne(void* unused_p, regs* registers, memory* unused_m) {
 	}
 }
 // Jump if less
-void p_jl(void* unused_p, regs* registers, memory* unused_m) {
+void p_jl(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 1) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -100,7 +101,7 @@ void p_jl(void* unused_p, regs* registers, memory* unused_m) {
 	}
 }
 // Jump if greater
-void p_jg(void* unused_p, regs* registers, memory* unused_m) {
+void p_jg(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 2) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -108,7 +109,7 @@ void p_jg(void* unused_p, regs* registers, memory* unused_m) {
 	}
 }
 // Jump if less or equal
-void p_jle(void* unused_p, regs* registers, memory* unused_m) {
+void p_jle(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 1) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -116,7 +117,7 @@ void p_jle(void* unused_p, regs* registers, memory* unused_m) {
 	}
 }
 //Jump if greater or equal
-void p_jge(void* unused_p, regs* registers, memory* unused_m) {
+void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 2) {
 		long long count = (unsigned long long)registers->ax->get() * *(registers->jmp_sign);
 		*(registers->process_step) += count;
@@ -125,42 +126,42 @@ void p_jge(void* unused_p, regs* registers, memory* unused_m) {
 }
 
 // Get Current working Adress [GCA] (adress of the current action) Put it on stack memory
-void p_gca(void* unused_p, regs* registers, memory* mem) {
+void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long saved_rax = registers->rax->get();
 
 	registers->rax->set(*(registers->process_step));
-	pushMem(registries_def::RAX, registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
 	registers->rax->set(saved_rax);
 }
 
 // Exit program
-void p_hlt(void* unused_p, regs* registers, memory* unsused_m) {
+void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m) {
 	*registers->stopRequested = true;
 }
 
 // Get immediatly to pointed address (mainly used with tags and procedure)
-void p_call(void* value_ptr, regs* registers, memory* unused_m) {
+void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m) {
 	*registers->process_call_address = *registers->process_step;
-	*registers->process_step = *(unsigned long long*)value_ptr;
+	*registers->process_step = *std::static_pointer_cast<unsigned long long>(value_ptr);
 }
 // Get immediatly to pointed address without saving caller address (mainly used with tags in loops)
-void p_lcall(void* value_ptr, regs* registers, memory* unused_m) {
-	*registers->process_step = *(unsigned long long*)value_ptr;
+void p_lcall(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m) {
+	*registers->process_step = *std::static_pointer_cast<unsigned long long>(value_ptr);
 }
 // Get back to caller address (should only be used with p_call)
-void p_ret(void* unused_p, regs* registers, memory* unused_m) {
+void p_ret(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	*registers->process_step = *registers->process_call_address;
 }
 
 // Saves actual saved caller address into private stack
 // Allow programmer to add a depth to calling tree
-void p_svcall(void* unused_p, regs* registers, memory* unused_m) {
+void p_svcall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	calling_tree.push_back(*registers->process_call_address);
 }
 // Restores last saved caller address from private stack
 // Pulls of one depth from calling tree
-void p_rscall(void* unused_p, regs* registers, memory* unused_m) {
+void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (!calling_tree.empty() || calling_tree.size() > 0) {
 		*registers->process_call_address = calling_tree[calling_tree.size() - 1];
 		calling_tree.pop_back();

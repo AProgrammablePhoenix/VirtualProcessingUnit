@@ -1,12 +1,13 @@
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <map>
+#include <memory>
 #include <sstream>
+#include <string>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
 #include "../Memory/memory_decl.h"
@@ -83,7 +84,7 @@ unsigned long long variables_decl::getTag(std::string tagname) {
 	if (this->tags.count(tagname)) {
 		return this->tags[tagname];
 	}
-	return NULL;
+	return 0;
 }
 void variables_decl::setTagsMap(std::map<std::string, unsigned long long> map) {
 	this->tags = map;
@@ -105,7 +106,7 @@ tag_decl_form variables_decl::getTagBranch(std::string tagname) {
 	else {
 		tag_decl_form err;
 		err.tagname = "undefined";
-		err.value = NULL;
+		err.value = 0;
 		return err;
 	}
 }
@@ -191,7 +192,7 @@ std::vector<code_file_decl_form> parse_code_file(std::string filename, std::vect
 			else if (!line.rfind("decltag ", 0)) {
 				tag_decl_form tag;
 				tag.tagname = line.substr(8);
-				tag.value = NULL;
+				tag.value = 0;
 				tagsvec->push_back(tag);
 			}
 			else if (!line.rfind("decl ", 0)) {
@@ -258,7 +259,6 @@ variables_decl build_variables_decl_tree(std::string filename) {
 			continue;
 		}
 		storage.setTag(tagsvec[i].tagname, tagsvec[i].value);
-		//storage.setTagsBranch(tagsvec[i]);
 	}
 
 	return storage;

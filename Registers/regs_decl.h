@@ -1,33 +1,29 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
-#pragma warning (push)
-#pragma warning (disable : 4293)
-#pragma warning (disable : 4554)
-
-template<typename T>
-struct reg_int {
+template<typename T> struct reg_int {
 public:
 	virtual void set(T value) {
 		return;
 	}
 	virtual T get() {
-		if (typeid (T) == typeid (std::string)) {
-#pragma warning (push)
-#pragma warning (disable : 4311)
-#pragma warning (disable : 4302)
-			return (T)"";
-		}
-		else {
-#pragma warning (disable : 6387)
-			return (T)NULL;
-#pragma warning (pop)
-		}
+		return (T)NULL;
 	}
 };
+template<> struct reg_int<std::string> {
+public:
+	virtual void set(std::string value) {
+		return;
+	}
+	virtual std::string get() {
+		return "";
+	}
+};
+
 
 struct baseReg : public reg_int<unsigned char> {
 public:
@@ -66,8 +62,8 @@ public:
 		unsigned char low = 0;
 		unsigned char high = 0;
 
-		low = (value >> 0) & ~(~0 << (7 - 0 + 1));
-		high = (value >> 8) & ~(~0 << (15 - 8 + 1));
+		low = (value >> 0U) & ~(~0 << 8U);
+		high = (value >> 8U) & ~(~0 << 8U);
 
 		*l = low;
 		*h = high;
@@ -102,8 +98,8 @@ public:
 		unsigned short low = 0;
 		unsigned short high = 0;
 
-		low = (value >> 0) & ~(~0 << (15 - 0 + 1));
-		high = (value >> 16) & ~(~0 << 31 - 16 + 1);
+		low = (value >> 0UL) & ~(~0 << 16UL);
+		high = (value >> 16UL) & ~(~0 << 16UL);
 
 		l->set(low);
 		*h = high;
@@ -137,8 +133,8 @@ struct extendedEEXReg : public reg_int<unsigned long long> {
 		unsigned int low;
 		unsigned int high;
 
-		low = (value >> 0) & ~(~0 << (31 - 0 + 1));
-		high = (value >> 32) & ~(~0 << (63 - 32 + 1));
+		low = (value >> 0ULL) & ~(~0ULL << 32ULL);
+		high = (value >> 32ULL) & ~(~0ULL << 32ULL);
 
 		l->set(low);
 		*h = high;
@@ -255,5 +251,3 @@ private:
 	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();
 };
-
-#pragma warning (pop)

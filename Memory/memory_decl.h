@@ -4,11 +4,9 @@
 #include <string>
 #include <vector>
 
-#include "mem_arrays.h"
 #include "dyn_vars.h"
+#include "mem_arrays.h"
 #include "mem_structs.h"
-
-#pragma warning (push)
 
 struct m_container {
 public:
@@ -106,5 +104,3 @@ private:
 		_memory.push_back(start_block);
 	}
 };
-
-#pragma warning (pop)

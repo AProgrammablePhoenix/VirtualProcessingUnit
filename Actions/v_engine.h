@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -14,7 +15,7 @@ public:
 	process(actions_engine* _engine, std::vector<action>* _actions);
 
 	void addAction(action _action);
-	void addAction(virtual_actions _action, void* value_ptr);
+	void addAction(virtual_actions _action, std::shared_ptr<void> value_ptr);
 
 	void start();
 	void execute1();

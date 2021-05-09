@@ -1,21 +1,22 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <unordered_set>
-#include <sstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <unordered_set>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
-#include "../Actions/v_engine.h"
 #include "../Actions/threading.h"
+#include "../Actions/v_engine.h"
 #include "../Memory/memory_decl.h"
-#include "variables.h"
 #include "action_parser.h"
+#include "variables.h"
 
 void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
@@ -23,21 +24,21 @@ void process_memory::set(variables_decl* var) {
 	for (unsigned long long i = 0; i < headers.size(); i++) {
 		if (headers[i].decl_type == "string") {
 			this->stored_strings[headers[i].decl_name] = headers[i].decl_value;
-			this->data_ptrs[headers[i].decl_name] = &this->stored_strings[headers[i].decl_name];
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<std::string>(this->stored_strings[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "unsigned number") {
 			unsigned long long value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
 			this->unsigned_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = &this->unsigned_numbers[headers[i].decl_name];
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<unsigned long long>(this->unsigned_numbers[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "signed number") {
 			long long value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
 			this->signed_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = &this->signed_numbers[headers[i].decl_name];
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<long long>(this->signed_numbers[headers[i].decl_name]);
 		}
 	}
 }
@@ -46,34 +47,34 @@ void process_memory::setTags(variables_decl* vars) {
 
 	for (unsigned long long i = 0; i < tags_headers.size(); i++) {
 		this->stored_tags[tags_headers[i].tagname] = tags_headers[i].value;
-		this->data_ptrs[tags_headers[i].tagname] = &this->stored_tags[tags_headers[i].tagname];
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<unsigned long long>(this->stored_tags[tags_headers[i].tagname]);
 	}
 }
 void process_memory::setTagValue(std::string tagname, unsigned long long value) {
 	this->stored_tags[tagname] = value;
 }
-void process_memory::set(std::string var_name, void* data_ptr) {
+void process_memory::set(std::string var_name, std::shared_ptr<void> data_ptr) {
 	if (!this->data_ptrs.count(var_name)) {
 		this->data_ptrs[var_name] = data_ptr;
 	}
 }
 void process_memory::setRegisters() {
-	this->data_ptrs["AX"] = (void*)registries_def::AX;
-	this->data_ptrs["BX"] = (void*)registries_def::BX;
-	this->data_ptrs["CX"] = (void*)registries_def::CX;
-	this->data_ptrs["DX"] = (void*)registries_def::DX;
+	this->data_ptrs["AX"] = std::make_shared<registries_def>(registries_def::AX);
+	this->data_ptrs["BX"] = std::make_shared<registries_def>(registries_def::BX);
+	this->data_ptrs["CX"] = std::make_shared<registries_def>(registries_def::CX);
+	this->data_ptrs["DX"] = std::make_shared<registries_def>(registries_def::DX);
 
-	this->data_ptrs["EAX"] = (void*)registries_def::EAX;
-	this->data_ptrs["EBX"] = (void*)registries_def::EBX;
-	this->data_ptrs["ECX"] = (void*)registries_def::ECX;
-	this->data_ptrs["EDX"] = (void*)registries_def::EDX;
+	this->data_ptrs["EAX"] = std::make_shared<registries_def>(registries_def::EAX);
+	this->data_ptrs["EBX"] = std::make_shared<registries_def>(registries_def::EBX);
+	this->data_ptrs["ECX"] = std::make_shared<registries_def>(registries_def::ECX);
+	this->data_ptrs["EDX"] = std::make_shared<registries_def>(registries_def::EDX);
 
-	this->data_ptrs["RAX"] = (void*)registries_def::RAX;
-	this->data_ptrs["RBX"] = (void*)registries_def::RBX;
-	this->data_ptrs["RCX"] = (void*)registries_def::RCX;
-	this->data_ptrs["RDX"] = (void*)registries_def::RDX;
+	this->data_ptrs["RAX"] = std::make_shared<registries_def>(registries_def::RAX);
+	this->data_ptrs["RBX"] = std::make_shared<registries_def>(registries_def::RBX);
+	this->data_ptrs["RCX"] = std::make_shared<registries_def>(registries_def::RCX);
+	this->data_ptrs["RDX"] = std::make_shared<registries_def>(registries_def::RDX);
 
-	this->data_ptrs["SR"] = (void*)extra_registries::SR;
+	this->data_ptrs["SR"] = std::make_shared<extra_registries>(extra_registries::SR);
 }
 bool process_memory::isTag(std::string tagname) {
 	if (this->stored_tags.count(tagname)) {
@@ -84,13 +85,13 @@ bool process_memory::isTag(std::string tagname) {
 	}
 }
 
-void* process_memory::getVarPtr(std::string var_name) {
+std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
 	if (this->data_ptrs.count(var_name)) {
 		return this->data_ptrs[var_name];
 	}
 	else {
 		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
-		return NULL;
+		return std::make_shared<unsigned int>(0);
 	}
 }
 std::string process_memory::getVarType(std::string var_name) {
@@ -473,7 +474,7 @@ std::vector<virtual_actions> convertSymbols(std::vector<std::vector<std::string>
 }
 void purgeParsed(std::vector<virtual_actions> *converted, std::vector<std::vector<std::string>> *parsed) {
 	for (unsigned long long i = 0; i < converted->size(); i++) {
-		if ((*converted)[i] == 0 || (*converted)[i] < virtual_actions::setAX) {
+		if ((unsigned long long)((*converted)[i]) == 0 || (*converted)[i] < virtual_actions::setAX) {
 			parsed->erase(parsed->begin() + i);
 			converted->erase(converted->begin() + i);
 			i--;
@@ -545,14 +546,15 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 				break;
 			}
 		}
-		if (symbols_converter[cleaned_parsed[i][0]] == 0 || symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::setAX) {
+		if ((unsigned long long)(symbols_converter[cleaned_parsed[i][0]]) == 0 ||
+				symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::setAX) {
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
 			i--;
 		}
 	}
 }
-std::vector<void*> convertVariables(std::vector<std::vector<std::string>> cleaned_parsed, process_memory* p_mem) {
-	std::vector<void*> arguments;
+std::vector<std::shared_ptr<void>> convertVariables(std::vector<std::vector<std::string>> cleaned_parsed, process_memory* p_mem) {
+	std::vector<std::shared_ptr<void>> arguments;
 
 	for (unsigned long long i = 0; i < cleaned_parsed.size(); i++) {
 		if (cleaned_parsed[i][1] == "0" || cleaned_parsed[i][1] == "NULL") {
@@ -578,7 +580,7 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 	out_mem->setRegisters();
 	out_mem->setTags(&vars);
 
-	std::vector<void*> converted_arguments = convertVariables(parsed, out_mem);
+	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
 
 	for (unsigned long long i = 0; i < converted_actions.size(); i++) {
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
@@ -596,7 +598,7 @@ std::vector<action> build_actions_only(std::string filename, process_memory* out
 	out_mem->setRegisters();
 	out_mem->setTags(&vars);
 
-	std::vector<void*> converted_arguments = convertVariables(parsed, out_mem);
+	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
 	std::vector<action> out_actions;
 
 	for (unsigned long long i = 0; i < converted_actions.size(); i++) {

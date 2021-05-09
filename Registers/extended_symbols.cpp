@@ -1,11 +1,12 @@
 #include <iostream>
-#include <string>
+#include <memory>
 #include <sstream>
+#include <string>
 
-#include "registers_symbols.h"
 #include "../Memory/memory_symbols.h"
+#include "registers_symbols.h"
 
-void b_getInput(void* unused_p, regs* registers, memory* mem) {
+void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;
 
 	std::getline(std::cin, input);
@@ -14,70 +15,74 @@ void b_getInput(void* unused_p, regs* registers, memory* mem) {
 	pushMemSR(unused_p, registers, mem);
 	registers->sr->set(saved_sr);
 }
-void b_toString(registries_def reg, regs* registers, memory* unused_m) {
+void b_toString(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
+	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg))->get();
+	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
 
 	std::stringstream ss;
 	ss << value;
 
-	std::string converted = ss.str();
-	b_setSR(&converted, registers, unused_m);
+	std::shared_ptr<std::string> converted = std::make_shared<std::string>(ss.str());
+	b_setSR(converted, registers, unused_m);
 }
-void b_mergeString(void* unused_p, regs* registers, memory* mem) {
+void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string pushed = registers->sr->get();
 	popMemSR(NULL, registers, mem);
 	std::string base = registers->sr->get();
 
 	registers->sr->set(base + pushed);
 }
-void b_substring(void* unused_p, regs* registers, memory* unused_m) {
+void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
-	unsigned short ax = 0;
-	unsigned short bx = 0;
+	std::shared_ptr<unsigned short> ax = std::make_shared<unsigned short>(0);
+	std::shared_ptr<unsigned short> bx = std::make_shared<unsigned short>(0);
 
-	b_get16AX(&ax, registers, unused_m);
-	b_get16BX(&bx, registers, unused_m);
+	b_get16AX(ax, registers, unused_m);
+	b_get16BX(bx, registers, unused_m);
 
-	registers->sr->set(sr.substr(ax, bx));
+	registers->sr->set(sr.substr(*ax, *bx));
 }
-void b_strlen(void* unused_p, regs* registers, memory* mem) {
+void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
 	unsigned long long saved_rax = registers->rax->get();
 
 	registers->rax->set(sr.size());
-	pushMem(registries_def::RAX, registers, mem);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	registers->rax->set(saved_rax);
 }
 
-void b_print(void* unused_p, regs* registers, memory* unused_m) {
+void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
 	std::cout << sr;
 }
-void b_println(void* unused_p, regs* registers, memory* unused_m) {
+void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
 	std::cout << sr << std::endl;
 }
-void b_printEOL(void* unused_p, regs* unused_r, memory* unused_m) {
+void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m) {
 	std::cout << std::endl;
 }
 
-void b_castreg(registries_def receiver, regs* registers, memory* mem) {
+void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
+	registries_def recv_id = *std::static_pointer_cast<registries_def>(receiver);
+
 	unsigned long long savedRAX = registers->rax->get();
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long value = registers->rax->get();
 	registers->rax->set(savedRAX);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 
-	if (receiver >= registries_def::AX && receiver <= registries_def::DX) {
-		((reg_int<unsigned short>*)ptr_table.access(receiver))->set((unsigned short)value);
+	if (recv_id >= registries_def::AX && recv_id <= registries_def::DX) {
+		((reg_int<unsigned short>*)ptr_table.access(recv_id))->set((unsigned short)value);
 	}
-	else if (receiver >= registries_def::EAX && receiver <= registries_def::EDX) {
-		((reg_int<unsigned int>*)ptr_table.access(receiver))->set((unsigned int)value);
+	else if (recv_id >= registries_def::EAX && recv_id <= registries_def::EDX) {
+		((reg_int<unsigned int>*)ptr_table.access(recv_id))->set((unsigned int)value);
 	}
 	else {
-		((reg_int<unsigned long long>*)ptr_table.access(receiver))->set((unsigned long long)value);
+		((reg_int<unsigned long long>*)ptr_table.access(recv_id))->set((unsigned long long)value);
 	}
 }
 
@@ -95,30 +100,30 @@ void b_castreg(registries_def receiver, regs* registers, memory* mem) {
 *	- unsigned_number -> string (reason: handled by "toString" instruction
 *	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
-void b_recast(void* unused_p, regs* registers, memory* mem) {
+void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned long long savedRAX = registers->rax->get();
 
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long value = registers->rax->get();
 
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long recast_type = registers->rax->get();
 
 	if (recast_type == 0) {
 		long long n_value = (long long)value;
 		registers->rax->set(n_value);
-		pushMem(registries_def::RAX, registers, mem);
+		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(savedRAX);
 	}
 	else if (recast_type == 1) {
 		unsigned long long n_value = (unsigned long long)((long long)value);
 		registers->rax->set(n_value);
-		pushMem(registries_def::RAX, registers, mem);
+		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(savedRAX);
 	}
 	else if (recast_type == 2) {
 		registers->rax->set(value);
-		pushMem(registries_def::RAX, registers, mem);
+		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(savedRAX);
 	}
 	else if (recast_type == 3) {
@@ -145,31 +150,31 @@ void b_recast(void* unused_p, regs* registers, memory* mem) {
 *	- 0 = string -> unsigned number
 *	- 1 = string -> signed number
 */
-void b_fromString(void* unused_p, regs* registers, memory* mem) {
+void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
 	unsigned long long saved_rax = registers->rax->get();
 
 	popMemSR(unused_p, registers, mem);
 	std::string value = registers->sr->get();
 
-	popMem(registries_def::RAX, registers, mem);
+	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	unsigned long long cast_type = registers->rax->get();
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
-		unsigned long long n_value = NULL;
+		unsigned long long n_value = 0;
 		ss >> n_value;
 		registers->rax->set(n_value);
-		pushMem(registries_def::RAX, registers, mem);
+		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(saved_rax);
 		registers->sr->set(saved_sr);
 	}
 	else if (cast_type == 1) {
 		std::stringstream ss(value);
-		long long n_value = NULL;
+		long long n_value = 0;
 		ss >> n_value;
 		registers->rax->set(n_value);
-		pushMem(registries_def::RAX, registers, mem);
+		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(saved_rax);
 		registers->sr->set(saved_sr);
 	}
