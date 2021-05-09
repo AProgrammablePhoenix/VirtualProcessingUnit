@@ -1,10 +1,10 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "v_engine.h"
 #include "action_decl.h"
 #include "actions_symbols.h"
+#include "v_engine.h"
 
 actions_engine temp_engine = actions_engine();
 

@@ -1,10 +1,10 @@
 #include <iostream>
-#include <string>
-#include <sstream>
 #include <memory>
+#include <sstream>
+#include <string>
 
-#include "registers_symbols.h"
 #include "../Memory/memory_symbols.h"
+#include "registers_symbols.h"
 
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;

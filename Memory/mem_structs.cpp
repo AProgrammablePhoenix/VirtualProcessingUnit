@@ -1,17 +1,17 @@
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "../Registers/regs_decl.h"
+#include "mem_structs.h"
 #include "memory_decl.h"
 #include "memory_symbols.h"
-#include "mem_structs.h"
 
+#define SNUM_PROPERTY "__int64"
 #define STR_PROPERTY "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_PROPERTY "unsigned __int64"
-#define SNUM_PROPERTY "__int64"
 
 __struct__::__struct__() {
 	if (!this->initialized) {

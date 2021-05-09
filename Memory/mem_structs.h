@@ -1,13 +1,13 @@
 #pragma once
 
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
-#include "memory_decl.h"
 #include "../Registers/regs_decl.h"
+#include "memory_decl.h"
 
 typedef struct memory memory;
 

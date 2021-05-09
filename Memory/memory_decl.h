@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "mem_arrays.h"
 #include "dyn_vars.h"
+#include "mem_arrays.h"
 #include "mem_structs.h"
 
 struct m_container {

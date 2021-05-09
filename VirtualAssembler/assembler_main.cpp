@@ -1,13 +1,13 @@
 #include <fstream>
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
 #include "../Compiler/action_parser.h"

@@ -1,10 +1,10 @@
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
-#include "v_engine.h"
 #include "threading.h"
+#include "v_engine.h"
 
 engine::engine() {
 	this->threading = true;

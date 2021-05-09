@@ -1,12 +1,9 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "registers_symbols.h"
 #include "regs_decl.h"
-
-#pragma warning (push)
-#pragma warning (disable:26812)
+#include "registers_symbols.h"
 
 void c_b_mov16AX(std::shared_ptr<void> reg_ptr, regs* registers) {
 	registers->ax->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
@@ -157,5 +154,3 @@ void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	std::shared_ptr<unsigned long long> value = std::make_shared<unsigned long long>(((reg_int<unsigned long long>*)ptr)->get());
 	c_b_mov64RDX(value, registers);
 }
-
-#pragma warning (pop)

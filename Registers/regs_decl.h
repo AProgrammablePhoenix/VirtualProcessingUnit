@@ -1,16 +1,11 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
-#pragma warning (push)
-#pragma warning (disable : 4293)
-#pragma warning (disable : 4554)
-
-template<typename T>
-struct reg_int {
+template<typename T> struct reg_int {
 public:
 	virtual void set(T value) {
 		return;
@@ -19,8 +14,7 @@ public:
 		return (T)NULL;
 	}
 };
-template <>
-struct reg_int<std::string> {
+template<> struct reg_int<std::string> {
 public:
 	virtual void set(std::string value) {
 		return;
@@ -257,5 +251,3 @@ private:
 	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();
 };
-
-#pragma warning (pop)

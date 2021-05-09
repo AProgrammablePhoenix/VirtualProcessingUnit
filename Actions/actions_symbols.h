@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "../Registers/registers_symbols.h"
 #include "../Memory/memory_symbols.h"
+#include "../Registers/registers_symbols.h"
 #include "process_symbols.h"
 
 enum class virtual_actions {

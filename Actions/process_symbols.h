@@ -1,8 +1,8 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "../Memory/memory_decl.h"
 #include "../Registers/registers_symbols.h"

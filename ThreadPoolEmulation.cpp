@@ -1,18 +1,17 @@
 ﻿#include <iostream>
 #include <string>
 
-#include "ThreadPoolEmulation.h"
-
 #include "./Registers/regs_decl.h"
 #include "./Registers/registers_symbols.h"
-
 #include "./Memory/memory_decl.h"
 #include "./Memory/memory_symbols.h"
 #include "./Actions/actions_symbols.h"
-#include "./Actions/v_engine.h"
 #include "./Actions/threading.h"
-#include "./Compiler/variables.h"
+#include "./Actions/v_engine.h"
 #include "./Compiler/action_parser.h"
+#include "./Compiler/variables.h"
+
+#include "ThreadPoolEmulation.h"
 
 std::vector<regs*> registers = std::vector<regs*>();
 std::vector<memory*> memory_table = std::vector<memory*>();

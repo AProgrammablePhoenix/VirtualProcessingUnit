@@ -1,17 +1,16 @@
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
-#include <map>
-#include <memory>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 #include "dyn_vars.h"
+#include "memory_decl.h"
 
+#define SNUM_TYPE "__int64"
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_TYPE "unsigned __int64"
-#define SNUM_TYPE "__int64"
 
 dyn_str_var::dyn_str_var() {
 	if (!this->initialized) {

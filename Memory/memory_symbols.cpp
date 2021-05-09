@@ -1,17 +1,17 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
-#include "memory_decl.h"
 #include "../Registers/regs_decl.h"
 #include "../Registers/registers_symbols.h"
 #include "mem_arrays.h"
 #include "mem_structs.h"
+#include "memory_decl.h"
 
 // Memory stack symbols
 void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {

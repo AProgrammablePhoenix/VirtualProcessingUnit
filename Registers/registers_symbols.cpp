@@ -1,11 +1,11 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "../Memory/memory_decl.h"
 #include "../Memory/memory_symbols.h"
-#include "registers_symbols.h"
 #include "regs_decl.h"
+#include "registers_symbols.h"
 
 void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* unsued_m) {
 	regsiters->ax->set(*std::static_pointer_cast<unsigned short>(a));

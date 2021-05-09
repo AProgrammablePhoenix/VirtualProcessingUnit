@@ -1,9 +1,9 @@
 #include <fstream>
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "../Compiler/action_parser.h"
 #include "runner.h"

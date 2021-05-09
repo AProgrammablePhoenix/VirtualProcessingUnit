@@ -1,11 +1,11 @@
-#include <iostream>
-#include <string>
 #include <cmath>
+#include <iostream>
 #include <memory>
+#include <string>
 
+#include "../Memory/memory_symbols.h"
 #include "regs_decl.h"
 #include "registers_symbols.h"
-#include "../Memory/memory_symbols.h"
 
 /* STACK status before calling:
 *	...

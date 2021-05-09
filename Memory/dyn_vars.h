@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
-#include <typeinfo>
 #include <memory>
+#include <string>
+#include <typeinfo>
+#include <vector>
 
 #include "../Registers/regs_decl.h"
 #include "memory_decl.h"

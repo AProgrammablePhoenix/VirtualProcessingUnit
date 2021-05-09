@@ -1,6 +1,6 @@
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
 #include "regs_decl.h"
 #include "registers_symbols.h"

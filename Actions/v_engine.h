@@ -1,9 +1,9 @@
 #pragma once
 
 #include <iostream>
+#include <memory>
 #include <string>
 #include <vector>
-#include <memory>
 
 #include "action_decl.h"
 #include "actions_symbols.h"

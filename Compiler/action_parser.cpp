@@ -1,22 +1,22 @@
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <map>
-#include <unordered_set>
-#include <sstream>
 #include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <map>
 #include <memory>
+#include <sstream>
+#include <string>
+#include <unordered_set>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
-#include "../Actions/v_engine.h"
 #include "../Actions/threading.h"
+#include "../Actions/v_engine.h"
 #include "../Memory/memory_decl.h"
-#include "variables.h"
 #include "action_parser.h"
+#include "variables.h"
 
 void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();

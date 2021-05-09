@@ -1,21 +1,20 @@
 #include <iostream>
-#include <string>
-#include <vector>
 #include <map>
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 #include "mem_arrays.h"
+#include "memory_decl.h"
 
+#define STATIC_SNUM_ARRAY "static __int64"
 #define STATIC_STR_ARRAY "static class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define STATIC_UNUM_ARRAY "static unsigned __int64"
-#define STATIC_SNUM_ARRAY "static __int64"
 
+#define DYNAMIC_SNUM_ARRAY "dynamic __int64"
 #define DYNAMIC_STR_ARRAY "dynamic class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define DYNAMIC_UNUM_ARRAY "dynamic unsigned __int64"
-#define DYNAMIC_SNUM_ARRAY "dynamic __int64"
-
 
 str_mem_array::str_mem_array() {
 	if (!this->initialized) {

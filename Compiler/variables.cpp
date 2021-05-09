@@ -1,13 +1,13 @@
-#include <iostream>
 #include <fstream>
-#include <string>
+#include <iostream>
 #include <map>
-#include <sstream>
 #include <memory>
+#include <sstream>
+#include <string>
 
 #if defined(__linux__)
-#include <stdio.h>
 #include <cstring>
+#include <stdio.h>
 #endif
 
 #include "../Memory/memory_decl.h"

@@ -1,27 +1,12 @@
 #pragma once
 
 #include <iostream>
-#include <string>
 #include <memory>
+#include <string>
 
-#include "memory_decl.h"
 #include "../Registers/regs_decl.h"
 #include "../Registers/registers_symbols.h"
-
-#pragma warning (push)
-#pragma warning (disable : 26812)
-
-/*
-enum memory_actions {
-	push = 0x003F00,
-	pop  = 0x004000,
-
-	pushSR = 0x003F01,
-	popSR  = 0x004001
-};
-*/
-
-#pragma warning (pop)
+#include "memory_decl.h"
 
 // Memory stack symbols
 void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
