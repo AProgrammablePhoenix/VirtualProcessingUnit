@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "dyn_vars.h"
 #include "memory_decl.h"
+#include "dyn_vars.h"
 
 #define SNUM_TYPE "__int64"
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"

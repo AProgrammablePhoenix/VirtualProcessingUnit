@@ -10,8 +10,7 @@
 #include "../Registers/regs_decl.h"
 #include "memory_decl.h"
 
-template<typename T>
-struct dyn_var_int {
+template<typename T> struct dyn_var_int {
 public:
 	virtual void dynget() {
 		return;
@@ -22,9 +21,24 @@ public:
 private:
 	regs* registers = NULL;
 	bool initialized = false;
-	T content;
+	T content = T();
 	std::string value_type = "";
 };
+template<> struct dyn_var_int<unsigned long long> {
+public:
+	virtual void dynget() {
+		return;
+	}
+	virtual void dynset() {
+		return;
+	}
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	unsigned long long content = 0;
+	std::string value_type = "";
+};
+
 struct dyn_str_var : dyn_var_int<std::string> {
 public:
 	dyn_str_var();

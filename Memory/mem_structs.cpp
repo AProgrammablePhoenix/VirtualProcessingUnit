@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "mem_structs.h"
 #include "memory_decl.h"
+#include "mem_structs.h"
 #include "memory_symbols.h"
 
 #define SNUM_PROPERTY "__int64"

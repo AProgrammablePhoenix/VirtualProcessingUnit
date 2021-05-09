@@ -216,7 +216,7 @@ public:
 	}
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
-		((void* (*)(std::shared_ptr<void>, regs*, memory*))a_db[(unsigned long long)action])(value_ptr, this->self_regs, this->self_mem);
+		(a_db[(unsigned long long)action])(value_ptr, this->self_regs, this->self_mem);
 	}
 
 	unsigned long long* getStepCounterPtr() {

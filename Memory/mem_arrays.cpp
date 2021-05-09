@@ -5,8 +5,9 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "mem_arrays.h"
 #include "memory_decl.h"
+#include "mem_arrays.h"
+
 
 #define STATIC_SNUM_ARRAY "static __int64"
 #define STATIC_STR_ARRAY "static class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
