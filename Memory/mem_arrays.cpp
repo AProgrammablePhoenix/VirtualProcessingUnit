@@ -8,11 +8,12 @@
 #include "memory_decl.h"
 #include "mem_arrays.h"
 
-
+#define STATIC_CHAR_ARRAY "static char"
 #define STATIC_SNUM_ARRAY "static __int64"
 #define STATIC_STR_ARRAY "static class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define STATIC_UNUM_ARRAY "static unsigned __int64"
 
+#define DYNAMIC_CHAR_ARRAY "dynamic char"
 #define DYNAMIC_SNUM_ARRAY "dynamic __int64"
 #define DYNAMIC_STR_ARRAY "dynamic class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define DYNAMIC_UNUM_ARRAY "dynamic unsigned __int64"
@@ -51,6 +52,45 @@ void str_mem_array::setAt(unsigned long long index) {
 	}
 }
 void str_mem_array::destroy() {
+	if (this->container) {
+		delete[] this->container;
+	}
+}
+
+char_mem_array::char_mem_array() {
+	if (!this->initialized) {
+		if (this->container != NULL) {
+			delete[] this->container;
+		}
+	}
+}
+char_mem_array::char_mem_array(regs* _registers, unsigned long long size) {
+	if (!this->initialized) {
+		if (this->container != NULL) {
+			delete[] this->container;
+		}
+		this->registers = _registers;
+		this->container = new char[size];
+		this->container_size = size;
+		this->values_type = "char";
+		this->initialized = true;
+	}
+}
+void char_mem_array::getAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container_size) {
+			this->registers->cr->set(this->container[index]);
+		}
+	}
+}
+void char_mem_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container_size) {
+			this->container[index] = this->registers->cr->get();
+		}
+	}
+}
+void char_mem_array::destroy() {
 	if (this->container) {
 		delete[] this->container;
 	}
@@ -173,6 +213,44 @@ void dyn_str_array::getSize() {
 	this->registers->rdx->set(this->container.size());
 }
 
+dyn_char_array::dyn_char_array() {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+	}
+}
+dyn_char_array::dyn_char_array(regs* _registers) {
+	if (!this->initialized) {
+		if (!this->container.empty()) {
+			this->container.clear();
+		}
+		this->registers = _registers;
+		this->values_type = "char";
+		this->initialized = true;
+	}
+}
+void dyn_char_array::getAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->registers->cr->set(this->container[index]);
+		}
+	}
+}
+void dyn_char_array::setAt(unsigned long long index) {
+	if (this->initialized) {
+		if (index < this->container.size()) {
+			this->container[index] = this->registers->cr->get();
+		}
+		else {
+			this->container.push_back(this->registers->cr->get());
+		}
+	}
+}
+void dyn_char_array::getSize() {
+	this->registers->rdx->set(this->container.size());
+}
+
 dyn_unum_array::dyn_unum_array() {
 	if (!this->initialized) {
 		if (!this->container.empty()) {
@@ -278,6 +356,13 @@ void mem_arrays::makeArray(std::string name, std::string type,  unsigned long lo
 			this->types_table[name] = STATIC_STR_ARRAY;
 			this->static_arrays.push_back(name);
 		}
+		else if (type == STATIC_CHAR_ARRAY) {
+			char_mem_array _array = char_mem_array(this->registers, size);
+			this->char_arrays[name] = _array;
+			this->arrays_table[name] = std::make_shared<char_mem_array>(this->char_arrays[name]);
+			this->types_table[name] = STATIC_CHAR_ARRAY;
+			this->static_arrays.push_back(name);
+		}
 		else if (type == DYNAMIC_UNUM_ARRAY || type == "dynamic unsigned number") {
 			dyn_unum_array _array = dyn_unum_array(this->registers);
 			this->dyn_unsigned_number_arrays[name] = _array;
@@ -296,6 +381,12 @@ void mem_arrays::makeArray(std::string name, std::string type,  unsigned long lo
 			this->arrays_table[name] = std::make_shared<dyn_str_array>(this->dyn_string_arrays[name]);
 			this->types_table[name] = DYNAMIC_STR_ARRAY;
 		}
+		else if (type == DYNAMIC_CHAR_ARRAY) {
+			dyn_char_array _array = dyn_char_array(this->registers);
+			this->dyn_char_arrays[name] = _array;
+			this->arrays_table[name] = std::make_shared<dyn_char_array>(this->dyn_char_arrays[name]);
+			this->types_table[name] = DYNAMIC_CHAR_ARRAY;
+		}
 	}
 }
 void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
@@ -309,6 +400,9 @@ void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
 		else if (types_table[arr_name] == STATIC_STR_ARRAY) {
 			(std::static_pointer_cast<mem_array_int<std::string>>(this->arrays_table[arr_name]))->getAt(index);
 		}
+		else if (types_table[arr_name] == STATIC_CHAR_ARRAY) {
+			(std::static_pointer_cast<mem_array_int<char>>(this->arrays_table[arr_name]))->getAt(index);
+		}
 		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<unsigned long long>>(this->arrays_table[arr_name])->getAt(index));
 		}
@@ -317,6 +411,9 @@ void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
 		}
 		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->getAt(index);
+		}
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->getAt(index);
 		}
 	}
 }
@@ -331,6 +428,9 @@ void mem_arrays::setArray(std::string arr_name, unsigned long long index) {
 		else if (types_table[arr_name] == STATIC_STR_ARRAY) {
 			(std::static_pointer_cast<mem_array_int<std::string>>(this->arrays_table[arr_name]))->setAt(index);
 		}
+		else if (types_table[arr_name] == STATIC_CHAR_ARRAY) {
+			(std::static_pointer_cast<mem_array_int<char>>(this->arrays_table[arr_name]))->setAt(index);
+		}
 		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<unsigned long long>>(this->arrays_table[arr_name]))->setAt(index);
 		}
@@ -339,6 +439,9 @@ void mem_arrays::setArray(std::string arr_name, unsigned long long index) {
 		}
 		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->setAt(index);
+		}
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->setAt(index);
 		}
 	}
 }
@@ -352,6 +455,9 @@ void mem_arrays::getDynSize(std::string arr_name) {
 		}
 		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->getSize();
+		}
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->getSize();
 		}
 	}
 }
@@ -374,6 +480,9 @@ void mem_arrays::destroy() {
 		}
 		else if (this->types_table[_array] == STATIC_STR_ARRAY) {
 			this->string_arrays[_array].destroy();
+		}
+		else if (this->types_table[_array] == STATIC_CHAR_ARRAY) {
+			this->char_arrays[_array].destroy();
 		}
 	}
 }

@@ -40,7 +40,8 @@ enum registries_def {
 };
 
 enum extra_registries {
-	SR = 0x000009
+	SR = 0x000009,
+	CR = 0x00000A
 };
 
 // Native registers ops
@@ -61,6 +62,7 @@ void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_setCR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
@@ -79,6 +81,7 @@ void b_get64RCX(std::shared_ptr<void> receiver, regs* registers, memory* unused_
 void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
 void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
 #pragma endregion
 
@@ -181,6 +184,8 @@ void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m
 void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem);
 void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 // Native binary ops
@@ -247,9 +252,10 @@ public:
 #pragma warning (pop)
 private:
 	regs* registers;
-	void* table[0x000009 + 1];
+	void* table[0x00000A + 1];
 
 	void init() {
 		table[extra_registries::SR] = registers->sr;
+		table[extra_registries::CR] = registers->cr;
 	}
 };

@@ -49,6 +49,10 @@ void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unsued_m) {
 	registers->sr->set(*std::static_pointer_cast<std::string>(a));
 }
+void b_setCR(std::shared_ptr<void> a, regs* registers, memory* unused_m) {
+	registers->cr->set(*std::static_pointer_cast<char>(a));
+
+}
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
@@ -92,4 +96,7 @@ void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_
 
 void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
 	*(std::static_pointer_cast<std::string>(receiver)) = registers->sr->get();
+}
+void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
+	*(std::static_pointer_cast<char>(receiver)) = registers->cr->get();
 }

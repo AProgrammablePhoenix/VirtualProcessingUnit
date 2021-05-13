@@ -25,6 +25,7 @@ private:
 	bool initialized = false;
 
 	std::map<std::string, std::string> string_properties;
+	std::map<std::string, char> char_properties;
 	std::map<std::string, unsigned long long> unum_properties;
 	std::map<std::string, long long> snum_properties;
 

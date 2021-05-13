@@ -49,8 +49,24 @@ void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
 	unsigned char* value = mem->pop();
 
 	((reg_int<std::string>*)ptr_table.access(extra_registries::SR))->set(std::string((const char*)value));
+
+	delete[] value;
 }
 
+void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	std::shared_ptr<char> value = std::make_shared<char>('\0');
+	b_getCR(value, registers, mem);
+
+	unsigned char* cptr = new unsigned char(*value);
+
+	mem->push(cptr);
+}
+void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
+	unsigned char* v = mem->pop();
+
+	((reg_int<char>*)ptr_table.access(extra_registries::CR))->set((char)*v);
+}
 
 // Memory arrays symbols
 /* Stack structure before calling:

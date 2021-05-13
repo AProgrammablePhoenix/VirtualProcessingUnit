@@ -9,6 +9,7 @@
 #include "mem_structs.h"
 #include "memory_symbols.h"
 
+#define CHAR_PROPERTY "char"
 #define SNUM_PROPERTY "__int64"
 #define STR_PROPERTY "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_PROPERTY "unsigned __int64"
@@ -51,6 +52,10 @@ void __struct__::declProperty(std::string property_name) {
 				this->types_table[property_name] = STR_PROPERTY;
 				this->string_properties[property_name] = "";
 			}
+			else if (property_type == CHAR_PROPERTY) {
+				this->types_table[property_name] = CHAR_PROPERTY;
+				this->char_properties[property_name] = '\0';
+			}
 			else if (property_type == UNUM_PROPERTY || property_type == "unsigned number") {
 				this->types_table[property_name] = UNUM_PROPERTY;
 				this->unum_properties[property_name] = 0;
@@ -72,6 +77,14 @@ void __struct__::get(std::string property_name) {
 				pushMemSR(NULL, this->registers, this->mem);
 
 				this->registers->sr->set(saved_sr);
+			}
+			else if (this->types_table[property_name] == CHAR_PROPERTY) {
+				char saved_cr = this->registers->cr->get();
+
+				this->registers->cr->set(this->char_properties[property_name]);
+				pushMemCR(NULL, this->registers, this->mem);
+
+				this->registers->cr->set(saved_cr);
 			}
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
 				unsigned long long saved_rax = this->registers->rax->get();
@@ -102,6 +115,14 @@ void __struct__::set(std::string property_name) {
 				this->string_properties[property_name] = this->registers->sr->get();
 
 				this->registers->sr->set(saved_sr);
+			}
+			else if (this->types_table[property_name] == CHAR_PROPERTY) {
+				char saved_cr = this->registers->cr->get();
+
+				popMemCR(NULL, this->registers, this->mem);
+				this->char_properties[property_name] = this->registers->cr->get();
+
+				this->registers->cr->set(saved_cr);
 			}
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
 				unsigned long long saved_rax = this->registers->rax->get();

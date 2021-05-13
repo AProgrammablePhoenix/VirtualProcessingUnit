@@ -169,6 +169,24 @@ private:
 	std::string value;
 };
 
+struct charReg : reg_int<char> {
+	charReg() {
+		this->value = '\0';
+	}
+	charReg(char c) {
+		this->value = c;
+	}
+
+	void set(char c) {
+		this->value = c;
+	}
+	char get() {
+		return this->value;
+	}
+private:
+	char value;
+};
+
 struct regs {
 public:
 	baseReg
@@ -205,6 +223,7 @@ public:
 	bool* stopRequested = &_stopRequested;
 	unsigned long long *process_call_address = &_process_call_address;
 
+	charReg* cr = &_cr;
 	stringReg* sr = &_sr;
 	stringReg* structPtr = &_structPtr;
 private:
@@ -248,6 +267,7 @@ private:
 	bool _stopRequested = false;
 	unsigned long long _process_call_address = 0;
 
+	charReg _cr = charReg();
 	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();
 };

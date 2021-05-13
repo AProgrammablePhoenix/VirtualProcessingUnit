@@ -15,6 +15,9 @@ void popMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void popMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
+void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+
 // Memory arrays symbols
 void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void m_setAt(std::shared_ptr<void>, regs* registers, memory* mem);

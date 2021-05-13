@@ -51,6 +51,18 @@ private:
 	std::string content;
 	std::string value_type = "";
 };
+struct dyn_char_var : dyn_var_int<char> {
+public:
+	dyn_char_var();
+	dyn_char_var(regs* _registers);
+	void dynget();
+	void dynset();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	char content = '\0';
+	std::string value_type = "";
+};
 struct dyn_unum_var : dyn_var_int<unsigned long long> {
 public:
 	dyn_unum_var();
@@ -89,6 +101,7 @@ private:
 	regs* registers;
 
 	std::map<std::string, dyn_str_var> dyn_string_vars;
+	std::map<std::string, dyn_char_var> dyn_char_vars;
 	std::map<std::string, dyn_unum_var> dyn_unsigned_number_vars;
 	std::map<std::string, dyn_snum_var> dyn_signed_number_vars;
 

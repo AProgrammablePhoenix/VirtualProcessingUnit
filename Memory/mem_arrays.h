@@ -44,6 +44,20 @@ private:
 	unsigned long long container_size = 0;
 	std::string values_type = "";
 };
+struct char_mem_array : mem_array_int<char> {
+public:
+	char_mem_array();
+	char_mem_array(regs* registers, unsigned long long size);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void destroy();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	char* container = NULL;
+	unsigned long long container_size = 0;
+	std::string values_type = "";
+};
 struct unum_mem_array : mem_array_int<unsigned long long> {
 public:
 	unum_mem_array();
@@ -104,6 +118,19 @@ private:
 	std::vector<std::string> container;
 	std::string values_type = "";
 };
+struct dyn_char_array : dyn_array_int<char> {
+public:
+	dyn_char_array();
+	dyn_char_array(regs* _registers);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<char> container;
+	std::string values_type = "";
+};
 struct dyn_unum_array : dyn_array_int<unsigned long long> {
 public:
 	dyn_unum_array();
@@ -147,10 +174,12 @@ private:
 	regs* registers;
 
 	std::map<std::string, str_mem_array> string_arrays;
+	std::map<std::string, char_mem_array> char_arrays;
 	std::map<std::string, unum_mem_array> unsigned_number_arrays;
 	std::map<std::string, snum_mem_array> signed_numbers_arrays;
 
 	std::map<std::string, dyn_str_array> dyn_string_arrays;
+	std::map<std::string, dyn_char_array> dyn_char_arrays;
 	std::map<std::string, dyn_unum_array> dyn_unsigned_number_arrays;
 	std::map<std::string, dyn_snum_array> dyn_signed_number_arrays;
 

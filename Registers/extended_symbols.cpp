@@ -3,8 +3,11 @@
 #include <sstream>
 #include <string>
 
+#include "../Compiler/variables.h"
 #include "../Memory/memory_symbols.h"
 #include "registers_symbols.h"
+
+unsigned long long usr_var_counter = 0;
 
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;
@@ -149,6 +152,7 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	CAST TYPES:
 *	- 0 = string -> unsigned number
 *	- 1 = string -> signed number
+*	- 2 = string -> char (only first char)
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
@@ -178,4 +182,38 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		registers->rax->set(saved_rax);
 		registers->sr->set(saved_sr);
 	}
+	else if (cast_type == 2) {
+		char saved_cr = registers->cr->get();
+		if (value.size() < 1) {
+			registers->rax->set(saved_rax);
+			registers->sr->set(saved_sr);
+			return;
+		}
+
+		char c = value[0];
+		registers->cr->set(c);
+		pushMemCR(NULL, registers, mem);
+		registers->rax->set(saved_rax);
+		registers->sr->set(saved_sr);
+		registers->cr->set(saved_cr);
+	}
+}
+
+/* Registers before calling:
+*  CR: input value
+*  SR: any value
+*  With output set up on SR, and previous value of SR is lost (unless you pushed it on the stack before)
+*/
+void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	char c = registers->cr->get();
+	b_setSR(std::make_shared<std::string>(std::string(1, c)), registers, mem);
+}
+
+/* Reverse string in SR:
+*	- Input/Output in SR
+*/
+void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	std::string vstr = registers->sr->get();
+	std::reverse(vstr.begin(), vstr.end());
+	registers->sr->set(vstr);
 }

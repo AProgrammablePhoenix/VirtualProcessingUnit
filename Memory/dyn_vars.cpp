@@ -8,6 +8,7 @@
 #include "memory_decl.h"
 #include "dyn_vars.h"
 
+#define CHAR_TYPE "char"
 #define SNUM_TYPE "__int64"
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_TYPE "unsigned __int64"
@@ -40,6 +41,34 @@ void dyn_str_var::dynset() {
 	}
 }
 
+dyn_char_var::dyn_char_var() {
+	if (!this->initialized) {
+		if (this->content != '\0') {
+			this->content = '\0';
+		}
+	}
+}
+dyn_char_var::dyn_char_var(regs* _registers) {
+	if (!this->initialized) {
+		if (!this->content != '\0') {
+			this->content = '\0';
+		}
+		this->registers = _registers;
+		this->value_type = "";
+		this->initialized = true;
+	}
+}
+void dyn_char_var::dynget() {
+	if (this->initialized) {
+		this->registers->cr->set(this->content);
+	}
+}
+void dyn_char_var::dynset() {
+	if (this->initialized) {
+		this->content = this->registers->cr->get();
+	}
+}
+
 dyn_unum_var::dyn_unum_var() {
 	if (!this->initialized) {
 		if (this->content) {
@@ -53,7 +82,7 @@ dyn_unum_var::dyn_unum_var(regs* _registers) {
 			this->content = 0;
 		}
 		this->registers = _registers;
-		this->value_type = UNUM_TYPE;
+		this->value_type = CHAR_TYPE;
 		this->initialized = true;
 	}
 }
@@ -122,6 +151,12 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 			this->variables_table[name] = std::make_shared<dyn_str_var>(this->dyn_string_vars[name]);
 			this->types_table[name] = STR_TYPE;
 		}
+		else if (type == CHAR_TYPE) {
+			dyn_char_var _var = dyn_char_var(this->registers);
+			this->dyn_char_vars[name] = _var;
+			this->variables_table[name] = std::make_shared<dyn_char_var>(this->dyn_char_vars[name]);
+			this->types_table[name] = CHAR_TYPE;
+		}
 	}
 }
 void mem_dyn_vars::dynGetVar(std::string name) {
@@ -135,6 +170,9 @@ void mem_dyn_vars::dynGetVar(std::string name) {
 		else if (this->types_table[name] == STR_TYPE) {
 			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynget();
 		}
+		else if (this->types_table[name] == CHAR_TYPE) {
+			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynget();
+		}
 	}
 }
 void mem_dyn_vars::dynSetVar(std::string name) {
@@ -147,6 +185,9 @@ void mem_dyn_vars::dynSetVar(std::string name) {
 		}
 		else if (this->types_table[name] == STR_TYPE) {
 			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynset();
+		}
+		else if (this->types_table[name] == CHAR_TYPE) {
+			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynset();
 		}
 	}
 }
