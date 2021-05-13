@@ -11,8 +11,6 @@
 #include "./Compiler/action_parser.h"
 #include "./Compiler/variables.h"
 
-#include "ThreadPoolEmulation.h"
-
 std::vector<regs*> registers = std::vector<regs*>();
 std::vector<memory*> memory_table = std::vector<memory*>();
 std::vector<actions_engine*> a_engines = std::vector<actions_engine*>();

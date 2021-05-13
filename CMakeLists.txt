@@ -24,7 +24,7 @@ target_link_libraries(memory registers)
 target_link_libraries(virtual_engine memory)
 target_link_libraries(compiler virtual_engine)
 
-add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" "ThreadPoolEmulation.h")
+add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" )
 
 target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
