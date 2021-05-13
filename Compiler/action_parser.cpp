@@ -394,7 +394,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			decl_form.decl_value = std::string(1, value);
 			std::stringstream().swap(ss);
 
-			vars->set(var_name, (unsigned char*)value);
+			vars->set(var_name, (unsigned char*)(unsigned long long)value);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 			return var_name;

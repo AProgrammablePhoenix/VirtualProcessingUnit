@@ -265,7 +265,7 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					}
 
 					char c = parsed[i].decl_value[0];
-					storage.set(parsed[i].decl_name, (unsigned char*)c);
+					storage.set(parsed[i].decl_name, (unsigned char*)(unsigned long long)c);
 					storage.setVariablesTree(parsed[i]);
 				}
 				else if (parsed[i].decl_type == "unsigned number") {
