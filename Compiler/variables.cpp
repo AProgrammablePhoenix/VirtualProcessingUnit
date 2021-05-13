@@ -132,7 +132,30 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 			decl_data.decl_name = "<parsing-error>";
 		}
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
+			std::cout << "Variable not compiled" << std::endl;
+			decl_data.decl_name = "<parsing-error>";
+		}
+
+		return decl_data;
+	}
+	else if (line.substr(5, 4) == "char") {
+		decl_data.decl_attr = "defined";
+		decl_data.decl_type = "char";
+
+		std::stringstream ss(line.substr(10));
+
+		if (std::getline(ss, decl_data.decl_name, ' ')) {
+			if (!std::getline(ss, decl_data.decl_value)) {
+				decl_data.decl_value = "<parsing-error>";
+			}
+		}
+		else {
+			decl_data.decl_name = "<parsing-error>";
+		}
+
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -148,7 +171,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -162,7 +185,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -233,6 +256,17 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_s;
+				}
+				else if (parsed[i].decl_type == "char") {
+					if (parsed[i].decl_value.size() < 1) {
+						std::cout << "Error at declaration of variable: '" << parsed[i].decl_name 
+							<< "' (type: char) :: invalid value length" << std::endl;
+						continue;
+					}
+
+					char c = parsed[i].decl_value[0];
+					storage.set(parsed[i].decl_name, (unsigned char*)c);
+					storage.setVariablesTree(parsed[i]);
 				}
 				else if (parsed[i].decl_type == "unsigned number") {
 					std::stringstream ss(parsed[i].decl_value);

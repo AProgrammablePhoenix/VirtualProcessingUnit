@@ -26,6 +26,10 @@ void process_memory::set(variables_decl* var) {
 			this->stored_strings[headers[i].decl_name] = headers[i].decl_value;
 			this->data_ptrs[headers[i].decl_name] = std::make_shared<std::string>(this->stored_strings[headers[i].decl_name]);
 		}
+		else if (headers[i].decl_type == "char") {
+			this->stored_chars[headers[i].decl_name] = headers[i].decl_value[0];
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<char>(this->stored_chars[headers[i].decl_name]);
+		}
 		else if (headers[i].decl_type == "unsigned number") {
 			unsigned long long value;
 			std::stringstream ss(headers[i].decl_value);
@@ -75,6 +79,7 @@ void process_memory::setRegisters() {
 	this->data_ptrs["RDX"] = std::make_shared<registries_def>(registries_def::RDX);
 
 	this->data_ptrs["SR"] = std::make_shared<extra_registries>(extra_registries::SR);
+	this->data_ptrs["CR"] = std::make_shared<extra_registries>(extra_registries::CR);
 }
 bool process_memory::isTag(std::string tagname) {
 	if (this->stored_tags.count(tagname)) {
@@ -100,6 +105,9 @@ std::string process_memory::getVarType(std::string var_name) {
 	}
 	else if (this->signed_numbers.count(var_name)) {
 		return "SNUM";
+	}
+	else if (this->stored_chars.count(var_name)) {
+		return "CHAR";
 	}
 	else if (this->stored_strings.count(var_name)) {
 		return "STR";
@@ -147,6 +155,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"setSR", virtual_actions::setSR},
 	{"getSR", virtual_actions::getSR},
+
+	{"setCR", virtual_actions::setCR},
+	{"getCR", virtual_actions::getCR},
 
 	{"movAX", virtual_actions::movAX},
 	{"movBX", virtual_actions::movBX},
@@ -238,12 +249,17 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"castreg", virtual_actions::castreg},
 	{"recast", virtual_actions::recast},
 	{"fromString", virtual_actions::fromString},
+	{"CRToSR", virtual_actions::CRToSR},
+	{"RevSR", virtual_actions::RevSR},
 
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},
 
 	{"pushSR", virtual_actions::pushSR},
 	{"popSR", virtual_actions::popSR},
+
+	{"pushCR", virtual_actions::pushCR},
+	{"popCR", virtual_actions::popCR},
 
 	{"declArray", virtual_actions::declArray},
 	{"setAt", virtual_actions::setAt},
@@ -352,6 +368,30 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			decl_form.decl_type = "signed number";
 			ss << value;
 			ss >> decl_form.decl_value;
+			std::stringstream().swap(ss);
+
+			vars->set(var_name, (unsigned char*)value);
+			vars->setVariablesTree(decl_form);
+			vars->sys_vars_count += 1;
+			return var_name;
+		}
+		else if (prefix == "C") {
+			std::string s_val = content.substr(2, content.size() - 3); // Char compiletime decl has a form of ${{C'<your char>'}}.
+			
+			char value;
+			std::stringstream ss(s_val);
+			ss.get(value);
+			std::stringstream().swap(ss);
+
+			ss << std::hex << vars->sys_vars_count;
+			std::string var_name = RES_VAR_TAG + ss.str();
+			std::stringstream().swap(ss);
+
+			code_file_decl_form decl_form;
+			decl_form.decl_attr = "defined";
+			decl_form.decl_name = var_name;
+			decl_form.decl_type = "char";
+			decl_form.decl_value = std::string(1, value);
 			std::stringstream().swap(ss);
 
 			vars->set(var_name, (unsigned char*)value);

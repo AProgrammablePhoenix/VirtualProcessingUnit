@@ -9,6 +9,7 @@
 
 // a user variable can't start with a variable name like that
 #define RES_VAR_TAG "__sys_"
+#define RES_USR_VAR_TAG "__usr_"
 
 struct code_file_decl_form {
 	std::string decl_attr;

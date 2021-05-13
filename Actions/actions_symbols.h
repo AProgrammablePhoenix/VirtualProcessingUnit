@@ -43,6 +43,9 @@ enum class virtual_actions {
 	setSR = 0x001801,
 	getSR = 0x001802,
 
+	setCR = 0x001803,
+	getCR = 0x001804,
+
 	movAX = 0x001900,
 	movBX = 0x001A00,
 	movCX = 0x001B00,
@@ -134,6 +137,8 @@ enum class virtual_actions {
 	castreg = 0x003A16,
 	recast = 0x003A17,
 	fromString = 0x003A18,
+	CRToSR = 0x003A19,
+	RevSR = 0x003A1A,
 
 	// Memory
 	push = 0x003F00,
@@ -141,6 +146,9 @@ enum class virtual_actions {
 
 	pushSR = 0x003F01,
 	popSR = 0x004001,
+
+	pushCR = 0x003F02,
+	popCR = 0x004002,
 
 	declArray = 0x004100,
 	setAt = 0x004110,
@@ -256,6 +264,7 @@ private:
 		a_db[(unsigned long long)virtual_actions::setRDX] = b_set64RDX;
 
 		a_db[(unsigned long long)virtual_actions::setSR] = b_setSR;
+		a_db[(unsigned long long)virtual_actions::setCR] = b_setCR;
 #pragma endregion
 #pragma region b_get
 		a_db[(unsigned long long)virtual_actions::getAX] = b_get16AX;
@@ -274,6 +283,7 @@ private:
 		a_db[(unsigned long long)virtual_actions::getRDX] = b_get64RDX;
 
 		a_db[(unsigned long long)virtual_actions::getSR] = b_getSR;
+		a_db[(unsigned long long)virtual_actions::getCR] = b_getCR;
 #pragma endregion
 #pragma region b_mov
 		a_db[(unsigned long long)virtual_actions::movAX] = b_mov16AX;
@@ -371,6 +381,8 @@ private:
 		a_db[(unsigned long long)virtual_actions::castreg] = b_castreg;
 		a_db[(unsigned long long)virtual_actions::recast] = b_recast;
 		a_db[(unsigned long long)virtual_actions::fromString] = b_fromString;
+		a_db[(unsigned long long)virtual_actions::CRToSR] = b_CRToSR;
+		a_db[(unsigned long long)virtual_actions::RevSR] = b_RevSR;
 #pragma endregion
 #pragma region b_binary
 		a_db[(unsigned long long)virtual_actions::_not] = b_not;
@@ -392,6 +404,9 @@ private:
 
 		a_db[(unsigned long long)virtual_actions::pushSR] = pushMemSR;
 		a_db[(unsigned long long)virtual_actions::popSR] = popMemSR;
+
+		a_db[(unsigned long long)virtual_actions::pushCR] = pushMemCR;
+		a_db[(unsigned long long)virtual_actions::popCR] = popMemCR;
 
 		a_db[(unsigned long long)virtual_actions::declArray] = m_declArray;
 		a_db[(unsigned long long)virtual_actions::setAt] = m_setAt;
