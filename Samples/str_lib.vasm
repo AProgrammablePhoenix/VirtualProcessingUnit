@@ -1,0 +1,99 @@
+; convert a string to char array, every char of the array is pushed onto the stack
+decltag strtoca
+; get str length
+strlen 0
+pop RDX
+
+; set loop values
+setBX ${{N1}}
+setCX ${{N2}}
+setRAX ${{N0}}
+
+decltag strtoca_loop
+pushSR 0
+
+movAX RAX
+
+substring 0
+
+; extract output and convert it to char
+push CX
+pushSR 0
+fromString 0
+popCR 0
+
+; restore original string
+popSR 0
+
+; push new char
+pushCR 0
+
+; increment iterator
+inc RAX
+
+; exit condition
+push RDX
+push RAX
+cmp 0
+pop RAX
+pop RDX
+
+; if RAX >= RDX: then return the function
+push RAX
+setAX ${{N2}}
+jge 0
+pop RAX
+lcall strtoca_loop
+
+pop RAX
+; push array length
+push RDX
+
+ret 0
+
+; catostr: transform char array into string. output in SR
+decltag catostr
+; pop array length
+pop RDX
+
+; init SR
+popCR 0
+CRToSR 0
+
+; set iterator
+setRAX ${{N1}}
+
+decltag catostr_loop
+
+; convert char to string
+popCR 0
+
+; push base string
+pushSR 0
+
+CRToSR 0
+
+; merge base with new character
+mergeString 0
+
+; increment iterator
+inc RAX
+
+; exit condition
+push RDX
+push RAX
+cmp 0
+pop RAX
+pop RDX
+
+push RAX
+setAX ${{N2}}
+jge 0
+pop RAX
+
+lcall catostr_loop
+
+pop RAX
+RevSR 0
+
+ret 0

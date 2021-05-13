@@ -1,0 +1,15 @@
+[include] str_lib.vasm
+
+setCR ${{C'C'}}
+CRToSR 0
+
+println 0
+
+setSR ${{S"Hello World!"}}
+call strtoca
+
+call catostr
+
+println 0
+
+hlt 0
