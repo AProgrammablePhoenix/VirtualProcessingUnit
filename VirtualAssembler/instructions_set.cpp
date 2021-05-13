@@ -191,5 +191,14 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::lcall,  0x8B},
 	{virtual_actions::ret,    0x8C},
 	{virtual_actions::svcall, 0x8D},
-	{virtual_actions::rscall, 0x8E}
+	{virtual_actions::rscall, 0x8E},
+
+	{virtual_actions::setCR,  0x8F},
+	{virtual_actions::getCR,  0x90},
+
+	{virtual_actions::pushCR, 0x91},
+	{virtual_actions::popCR,  0x92},
+
+	{virtual_actions::CRToSR, 0x93},
+	{virtual_actions::RevSR,  0x94},
 };

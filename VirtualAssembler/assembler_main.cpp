@@ -26,7 +26,7 @@ std::vector<byte> assembleAction(action _action) {
 	out.push_back(instructions_set[_action.getAction()]);
 
 	if (out[0] < 0x0D || out[0] == 0x1A || (out[0] > 0x59 && out[0] < 0x61) || (out[0] > 0x61 && out[0] < 0x64) 
-	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) || out[0] > 0x8B) {
+	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) || (out[0] > 0x8B && out[0] != 0x8F)) {
 		out.push_back(0);
 		return out;
 	}
@@ -53,9 +53,10 @@ std::vector<byte> assembleAction(action _action) {
 		}
 		delete[] b_str_size;
 
-		char* b_str = new char[str_size];
+		char* b_str = new char[str_size + 1];
+
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		strncpy_s(b_str, str_size, str.c_str(), str_size);
+		strncpy_s(b_str, str_size + 1, str.c_str(), str_size);
 #else
 		strncpy(b_str, str.c_str(), str_size);
 #endif
@@ -65,6 +66,11 @@ std::vector<byte> assembleAction(action _action) {
 		}
 
 		delete[] b_str;
+		return out;
+	}
+	else if (out[0] == 0x8F) {
+		char c = *std::static_pointer_cast<char>(_action.getValuePtr());
+		out.push_back(c);
 		return out;
 	}
 	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0] < 0x66)
@@ -108,7 +114,7 @@ void asFinal(std::string filename, std::vector<byte> linkedBytes) {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc < 3) {
+	if (argc > 3) {
 		std::cerr << "Usage: vas <inputFile> <outputFile>" << std::endl;
 		return 1;
 	}
