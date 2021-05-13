@@ -3,7 +3,7 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.8:
-- [ ] Add support for 'char' type
+- [x] Add support for 'char' type
 - [ ] Add support for 'double' type
 - [ ] Add those two types to the compiler
 - [ ] Add those two types to the instructions set of VAS and VEXE.
