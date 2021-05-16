@@ -114,7 +114,7 @@ void asFinal(std::string filename, std::vector<byte> linkedBytes) {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc > 3) {
+	if (argc < 3) {
 		std::cerr << "Usage: vas <inputFile> <outputFile>" << std::endl;
 		return 1;
 	}
