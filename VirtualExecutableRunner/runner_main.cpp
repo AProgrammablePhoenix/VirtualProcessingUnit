@@ -18,6 +18,18 @@ unsigned long long byteArrayToUlong(byte* _array) {
 	return ret;
 }
 
+double byteArrayToDouble(byte* _array) {
+	double ret = 0;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	memcpy_s(&ret, sizeof(double), _array, sizeof(double));
+#else
+	memcpy(&ret, _array, sizeof(double));
+#endif
+
+	return ret;
+}
+
 void executeByteArray(std::vector<unsigned char>* byteArray) {
 	std::vector<action>* actions = new std::vector<action>;
 
@@ -25,7 +37,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 		if ((*byteArray)[i] < 0x0D || (*byteArray)[i] == 0x1A ||
 			((*byteArray)[i] > 0x59 && (*byteArray)[i] < 0x61) || ((*byteArray)[i] > 0x61 && (*byteArray)[i] < 0x64)
 			|| ((*byteArray)[i] > 0x65 && (*byteArray)[i] < 0x74) || ((*byteArray)[i] > 0x7D && (*byteArray)[i] < 0x8A)
-			|| ((*byteArray)[i] > 0x8B && (*byteArray)[i] != 0x8F)) {
+			|| ((*byteArray)[i] > 0x8B && (*byteArray)[i] != 0x8F && (*byteArray)[i] != 0x95)) {
 
 			unsigned char _op = (*byteArray)[i];
 			unsigned char _arg = 0;
@@ -92,6 +104,25 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
 			action _action(real_op, std::make_shared<char>(_arg));
+			actions->push_back(_action);
+
+			continue;
+		}
+		else if ((*byteArray)[i] == 0x95) {
+			unsigned char _op = (*byteArray)[i];
+			virtual_actions real_op = findKeyByValue(instructions_set, _op);
+			i++;
+
+			unsigned char* b_value = new unsigned char[8];
+			for (size_t j = 0; j < 8; i++, j++) {
+				b_value[j] = (*byteArray)[i];
+			}
+			i--;
+
+			double value = byteArrayToDouble(b_value);
+			delete[] b_value;
+
+			action _action(real_op, std::make_shared<double>(value));
 			actions->push_back(_action);
 
 			continue;

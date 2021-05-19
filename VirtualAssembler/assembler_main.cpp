@@ -20,13 +20,22 @@ void ulongToByteArray(unsigned long long value, byte** output) {
 		(*output)[j] = (value >> (i * 8)) & 0xff;
 	}
 }
+void doubleToByteArray(double value, byte** output) {
+	*output = new byte[8];
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN8__)
+	memcpy_s(*output, sizeof(double), &value, sizeof(double));
+#else
+	memcpy(*output, &value, sizeof(double));
+#endif
+}
 
 std::vector<byte> assembleAction(action _action) {
 	std::vector<byte> out;
 	out.push_back(instructions_set[_action.getAction()]);
 
 	if (out[0] < 0x0D || out[0] == 0x1A || (out[0] > 0x59 && out[0] < 0x61) || (out[0] > 0x61 && out[0] < 0x64) 
-	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) || (out[0] > 0x8B && out[0] != 0x8F)) {
+	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) 
+	|| (out[0] > 0x8B && out[0] != 0x8F && out[0] != 0x95)) {
 		out.push_back(0);
 		return out;
 	}
@@ -71,6 +80,18 @@ std::vector<byte> assembleAction(action _action) {
 	else if (out[0] == 0x8F) {
 		char c = *std::static_pointer_cast<char>(_action.getValuePtr());
 		out.push_back(c);
+		return out;
+	}
+	else if (out[0] == 0x95) {
+		std::cout << "h" << std::endl;
+		double value = *std::static_pointer_cast<double>(_action.getValuePtr());
+		byte* converted = new byte[8];
+		doubleToByteArray(value, &converted);
+		
+		for (byte i = 0; i < 8; i++) {
+			out.push_back(converted[i]);
+		}
+		delete[] converted;
 		return out;
 	}
 	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0] < 0x66)

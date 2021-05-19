@@ -201,4 +201,21 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::CRToSR, 0x93},
 	{virtual_actions::RevSR,  0x94},
+
+	{virtual_actions::setDR, 0x95},
+	{virtual_actions::getDR, 0x96},
+
+	{virtual_actions::pushDR, 0x97},
+	{virtual_actions::popDR, 0x98},
+
+	{virtual_actions::DRToSR, 0x99},
+	{virtual_actions::DRToULL, 0x9A},
+	{virtual_actions::DRToLL, 0x9B},
+	{virtual_actions::_dlog, 0x9C},
+	{virtual_actions::_dlog2, 0x9D},
+	{virtual_actions::_dlog10, 0x9E},
+	{virtual_actions::_dpow, 0x9F},
+
+	{virtual_actions::incDR, 0xA0},
+	{virtual_actions::decDR, 0xA1},
 };
