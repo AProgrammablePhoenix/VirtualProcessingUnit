@@ -4,6 +4,6 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 
 Towards V1.8:
 - [x] Add support for 'char' type
-- [ ] Add support for 'double' type
-- [ ] Add those two types to the compiler
-- [ ] Add those two types to the instructions set of VAS and VEXE.
+- [x] Add support for 'double' type
+- [x] Add those two types to the compiler
+- [x] Add those two types to the instructions set of VAS and VEXE.
