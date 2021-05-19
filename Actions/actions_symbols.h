@@ -46,6 +46,9 @@ enum class virtual_actions {
 	setCR = 0x001803,
 	getCR = 0x001804,
 
+	setDR = 0x001805,
+	getDR = 0x001806,
+
 	movAX = 0x001900,
 	movBX = 0x001A00,
 	movCX = 0x001B00,
@@ -63,6 +66,9 @@ enum class virtual_actions {
 
 	inc = 0x002500,
 	dec = 0x002600,
+
+	incDR = 0x002501,
+	decDR = 0x002502,
 
 	mulAX = 0x002700,
 	mulBX = 0x002800,
@@ -140,6 +146,10 @@ enum class virtual_actions {
 	CRToSR = 0x003A19,
 	RevSR = 0x003A1A,
 
+	DRToSR = 0x003A1B,
+	DRToULL = 0x003A1C,
+	DRToLL = 0x003A1D,
+
 	// Memory
 	push = 0x003F00,
 	pop = 0x004000,
@@ -149,6 +159,9 @@ enum class virtual_actions {
 
 	pushCR = 0x003F02,
 	popCR = 0x004002,
+
+	pushDR = 0x003F03,
+	popDR = 0x004003,
 
 	declArray = 0x004100,
 	setAt = 0x004110,
@@ -176,6 +189,11 @@ enum class virtual_actions {
 	_log10 = 0x004280,
 	_pow = 0x004290,
 
+	_dlog = 0x004261,
+	_dlog2 = 0x004271,
+	_dlog10 = 0x004281,
+	_dpow = 0x004291,
+
 	// Process
 	ijmp = 0x003017,
 	jmp = 0x003018,
@@ -200,7 +218,7 @@ enum class virtual_actions {
 
 typedef void* (*core_function)(std::shared_ptr<void>, regs*, memory*);
 
-extern void (*a_db[0x004290 + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x004291 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -265,6 +283,7 @@ private:
 
 		a_db[(unsigned long long)virtual_actions::setSR] = b_setSR;
 		a_db[(unsigned long long)virtual_actions::setCR] = b_setCR;
+		a_db[(unsigned long long)virtual_actions::setDR] = b_setDR;
 #pragma endregion
 #pragma region b_get
 		a_db[(unsigned long long)virtual_actions::getAX] = b_get16AX;
@@ -284,6 +303,7 @@ private:
 
 		a_db[(unsigned long long)virtual_actions::getSR] = b_getSR;
 		a_db[(unsigned long long)virtual_actions::getCR] = b_getCR;
+		a_db[(unsigned long long)virtual_actions::getDR] = b_getDR;
 #pragma endregion
 #pragma region b_mov
 		a_db[(unsigned long long)virtual_actions::movAX] = b_mov16AX;
@@ -303,6 +323,8 @@ private:
 #pragma endregion
 		a_db[(unsigned long long)virtual_actions::inc] = b_inc;
 		a_db[(unsigned long long)virtual_actions::dec] = b_dec;
+		a_db[(unsigned long long)virtual_actions::incDR] = b_incDR;
+		a_db[(unsigned long long)virtual_actions::decDR] = b_decDR;
 #pragma region b_mul
 		a_db[(unsigned long long)virtual_actions::mulAX] = b_mul16AX;
 		a_db[(unsigned long long)virtual_actions::mulBX] = b_mul16BX;
@@ -383,6 +405,9 @@ private:
 		a_db[(unsigned long long)virtual_actions::fromString] = b_fromString;
 		a_db[(unsigned long long)virtual_actions::CRToSR] = b_CRToSR;
 		a_db[(unsigned long long)virtual_actions::RevSR] = b_RevSR;
+		a_db[(unsigned long long)virtual_actions::DRToSR] = b_DRToSR;
+		a_db[(unsigned long long)virtual_actions::DRToULL] = b_DRToULL;
+		a_db[(unsigned long long)virtual_actions::DRToLL] = b_DRToLL;
 #pragma endregion
 #pragma region b_binary
 		a_db[(unsigned long long)virtual_actions::_not] = b_not;
@@ -396,6 +421,10 @@ private:
 		a_db[(unsigned long long)virtual_actions::_log2] = b_log2;
 		a_db[(unsigned long long)virtual_actions::_log10] = b_log10;
 		a_db[(unsigned long long)virtual_actions::_pow] = b_pow;
+		a_db[(unsigned long long)virtual_actions::_dlog] = b_dlog;
+		a_db[(unsigned long long)virtual_actions::_dlog2] = b_dlog2;
+		a_db[(unsigned long long)virtual_actions::_dlog10] = b_dlog10;
+		a_db[(unsigned long long)virtual_actions::_dpow] = b_dpow;
 #pragma endregion
 
 #pragma region mem
@@ -407,6 +436,9 @@ private:
 
 		a_db[(unsigned long long)virtual_actions::pushCR] = pushMemCR;
 		a_db[(unsigned long long)virtual_actions::popCR] = popMemCR;
+
+		a_db[(unsigned long long)virtual_actions::pushDR] = pushMemDR;
+		a_db[(unsigned long long)virtual_actions::popDR] = popMemDR;
 
 		a_db[(unsigned long long)virtual_actions::declArray] = m_declArray;
 		a_db[(unsigned long long)virtual_actions::setAt] = m_setAt;
