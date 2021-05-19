@@ -117,6 +117,7 @@ public:
 };
 
 struct extendedEEXReg : public reg_int<unsigned long long> {
+public:
 	extendedEXReg* l;
 	unsigned int* h;
 
@@ -152,6 +153,7 @@ struct extendedEEXReg : public reg_int<unsigned long long> {
 };
 
 struct stringReg : reg_int<std::string> {
+public:
 	stringReg() {
 		value = "";
 	}
@@ -170,6 +172,7 @@ private:
 };
 
 struct charReg : reg_int<char> {
+public:
 	charReg() {
 		this->value = '\0';
 	}
@@ -185,6 +188,25 @@ struct charReg : reg_int<char> {
 	}
 private:
 	char value;
+};
+
+struct doubleReg: reg_int<double> {
+public:
+	doubleReg() {
+		this->value = 0;
+	}
+	doubleReg(double d) {
+		this->value = d;
+	}
+
+	void set(double d) {
+		this->value = d;
+	}
+	double get() {
+		return this->value;
+	}
+private:
+	double value;
 };
 
 struct regs {
@@ -223,6 +245,7 @@ public:
 	bool* stopRequested = &_stopRequested;
 	unsigned long long *process_call_address = &_process_call_address;
 
+	doubleReg* dr = &_dr;
 	charReg* cr = &_cr;
 	stringReg* sr = &_sr;
 	stringReg* structPtr = &_structPtr;
@@ -267,6 +290,7 @@ private:
 	bool _stopRequested = false;
 	unsigned long long _process_call_address = 0;
 
+	doubleReg _dr = doubleReg();
 	charReg _cr = charReg();
 	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();

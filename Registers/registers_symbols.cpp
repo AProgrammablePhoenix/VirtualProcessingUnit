@@ -53,6 +53,9 @@ void b_setCR(std::shared_ptr<void> a, regs* registers, memory* unused_m) {
 	registers->cr->set(*std::static_pointer_cast<char>(a));
 
 }
+void b_setDR(std::shared_ptr<void> a, regs* registers, memory* unused_m) {
+	registers->dr->set(*std::static_pointer_cast<double>(a));
+}
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) {
@@ -99,4 +102,7 @@ void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unsued_m) 
 }
 void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
 	*(std::static_pointer_cast<char>(receiver)) = registers->cr->get();
+}
+void b_getDR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
+	*(std::static_pointer_cast<double>(receiver)) = registers->dr->get();
 }

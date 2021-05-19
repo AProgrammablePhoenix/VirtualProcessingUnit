@@ -41,7 +41,8 @@ enum registries_def {
 
 enum extra_registries {
 	SR = 0x000009,
-	CR = 0x00000A
+	CR = 0x00000A,
+	DR = 0x00000B,
 };
 
 // Native registers ops
@@ -63,6 +64,7 @@ void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 void b_setCR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_setDR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
@@ -82,6 +84,7 @@ void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_
 
 void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
+void b_getDR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 
 #pragma endregion
 
@@ -107,6 +110,8 @@ void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 #pragma region native_maths_ops
 void b_inc(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_dec(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_decDR(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 
 void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_mul16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
@@ -186,6 +191,9 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 // Native binary ops
@@ -194,12 +202,20 @@ void b_not(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_log2(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_log10(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+
+void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+
+
 void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
 struct registries_ptr_table {
@@ -252,10 +268,11 @@ public:
 #pragma warning (pop)
 private:
 	regs* registers;
-	void* table[0x00000A + 1];
+	void* table[0x00000B + 1];
 
 	void init() {
 		table[extra_registries::SR] = registers->sr;
 		table[extra_registries::CR] = registers->cr;
+		table[extra_registries::DR] = registers->dr;
 	}
 };

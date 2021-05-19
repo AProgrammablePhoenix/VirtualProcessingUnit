@@ -18,6 +18,13 @@ void b_dec(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get() - 1);
 }
 
+void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	registers->dr->set(registers->dr->get() + 1);
+}
+void b_decDR(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	registers->dr->set(registers->dr->get() - 1);
+}
+
 
 void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);

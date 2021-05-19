@@ -154,6 +154,7 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	- 0 = string -> unsigned number
 *	- 1 = string -> signed number
 *	- 2 = string -> char (only first char)
+*	- 3 = string -> double
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
@@ -198,6 +199,16 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		registers->sr->set(saved_sr);
 		registers->cr->set(saved_cr);
 	}
+	else if (cast_type == 3) {
+		double saved_dr = registers->dr->get(), d_value = 0;
+		std::stringstream ss(value);
+		ss >> d_value;
+		registers->dr->set(d_value);
+		pushMemDR(nullptr, registers, mem);
+		registers->rax->set(saved_rax);
+		registers->sr->set(saved_sr);
+		registers->dr->set(saved_dr);
+	}
 }
 
 /* Registers before calling:
@@ -217,4 +228,46 @@ void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string vstr = registers->sr->get();
 	std::reverse(vstr.begin(), vstr.end());
 	registers->sr->set(vstr);
+}
+
+/*	Registers before calling:
+*	DR: input value
+*	SR: any value
+*	With output set up on SR, and previous value of SR is lost (unlss you pushed it on the stack before)
+*/
+void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	double d = registers->dr->get();
+	std::ostringstream ss;
+	ss << std::fixed << d;
+	std::string s_value = ss.str();
+	b_setSR(std::make_shared<std::string>(s_value), registers, mem);
+}
+
+/* Registers before calling:
+*	DR: input value
+*	With output pushed onto stack
+* 
+*   Convert value in DR to unsigned long long
+*/
+void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	double d = registers->dr->get();
+	unsigned long long n = (unsigned long long)std::llround(d);
+
+	unsigned long long saved_rax = registers->rax->get();
+	registers->rax->set(n);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+
+	registers->rax->set(saved_rax);
+}
+
+// Same as DRToULL but it converts value in DR to long long
+void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	double d = registers->dr->get();
+	long long n = std::llround(d);
+
+	unsigned long long saved_rax = registers->rax->get();
+	registers->rax->set((unsigned long long)n);
+	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+
+	registers->rax->set(saved_rax);
 }
