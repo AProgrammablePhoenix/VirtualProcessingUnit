@@ -87,6 +87,18 @@ private:
 	long long content = 0;
 	std::string value_type = "";
 };
+struct dyn_double_var : dyn_var_int<double> {
+public:
+	dyn_double_var();
+	dyn_double_var(regs* _registers);
+	void dynget();
+	void dynset();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	double content = 0;
+	std::string value_type = "";
+};
 
 struct mem_dyn_vars {
 public:
@@ -104,6 +116,7 @@ private:
 	std::map<std::string, dyn_char_var> dyn_char_vars;
 	std::map<std::string, dyn_unum_var> dyn_unsigned_number_vars;
 	std::map<std::string, dyn_snum_var> dyn_signed_number_vars;
+	std::map<std::string, dyn_double_var> dyn_double_vars;
 
 	std::map<std::string, std::shared_ptr<void>> variables_table;
 	std::map<std::string, std::string> types_table;

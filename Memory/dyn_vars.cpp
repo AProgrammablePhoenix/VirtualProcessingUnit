@@ -9,6 +9,7 @@
 #include "dyn_vars.h"
 
 #define CHAR_TYPE "char"
+#define DOUBLE_TYPE "double"
 #define SNUM_TYPE "__int64"
 #define STR_TYPE "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_TYPE "unsigned __int64"
@@ -125,6 +126,34 @@ void dyn_snum_var::dynset() {
 	}
 }
 
+dyn_double_var::dyn_double_var() {
+	if (!this->initialized) {
+		if (this->content) {
+			this->content = 0;
+		}
+	}
+}
+dyn_double_var::dyn_double_var(regs* _registers) {
+	if (!this->initialized) {
+		if (this->content) {
+			this->content = 0;
+		}
+		this->registers = _registers;
+		this->value_type = DOUBLE_TYPE;
+		this->initialized = true;
+	}
+}
+void dyn_double_var::dynget() {
+	if (this->initialized) {
+		this->registers->dr->set(this->content);
+	}
+}
+void dyn_double_var::dynset() {
+	if (this->initialized) {
+		this->content = this->registers->dr->get();
+	}
+}
+
 mem_dyn_vars::mem_dyn_vars() {
 	this->registers = NULL;
 }
@@ -157,6 +186,12 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 			this->variables_table[name] = std::make_shared<dyn_char_var>(this->dyn_char_vars[name]);
 			this->types_table[name] = CHAR_TYPE;
 		}
+		else if (type == DOUBLE_TYPE) {
+			dyn_double_var _var = dyn_double_var(this->registers);
+			this->dyn_double_vars[name] = _var;
+			this->variables_table[name] = std::make_shared<dyn_double_var>(this->dyn_double_vars[name]);
+			this->types_table[name] = DOUBLE_TYPE;
+		}
 	}
 }
 void mem_dyn_vars::dynGetVar(std::string name) {
@@ -173,6 +208,9 @@ void mem_dyn_vars::dynGetVar(std::string name) {
 		else if (this->types_table[name] == CHAR_TYPE) {
 			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynget();
 		}
+		else if (this->types_table[name] == DOUBLE_TYPE) {
+			(std::static_pointer_cast<dyn_var_int<double>>(this->variables_table[name]))->dynget();
+		}
 	}
 }
 void mem_dyn_vars::dynSetVar(std::string name) {
@@ -188,6 +226,9 @@ void mem_dyn_vars::dynSetVar(std::string name) {
 		}
 		else if (this->types_table[name] == CHAR_TYPE) {
 			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynset();
+		}
+		else if (this->types_table[name] == DOUBLE_TYPE) {
+			(std::static_pointer_cast<dyn_var_int<double>>(this->variables_table[name]))->dynset();
 		}
 	}
 }

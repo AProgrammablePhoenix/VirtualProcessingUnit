@@ -66,6 +66,38 @@ void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	unsigned char* v = mem->pop();
 
 	((reg_int<char>*)ptr_table.access(extra_registries::CR))->set((char)*v);
+
+	delete[] v;
+}
+
+void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	std::shared_ptr<double> value = std::make_shared<double>(0);
+	b_getDR(value, registers, mem);
+
+	unsigned char* uc_d = new unsigned char[sizeof(double)];
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	memcpy_s(uc_d, sizeof(double), value.get(), sizeof(double));
+#else
+	memcpy(uc_d, value.get(), sizeof(double));
+#endif
+
+	mem->push(uc_d, sizeof(double));
+}
+void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
+	unsigned char* v = mem->pop();
+	double d = 0;
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	memcpy_s(&d, sizeof(double), v, sizeof(double));
+#else
+	memcpy(&d, v, sizeof(double));
+#endif
+
+	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
+
+	delete[] v;
 }
 
 // Memory arrays symbols

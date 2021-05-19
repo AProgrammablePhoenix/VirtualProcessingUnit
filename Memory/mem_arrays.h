@@ -86,6 +86,20 @@ private:
 	unsigned long long container_size = 0;
 	std::string values_type = "";
 };
+struct double_mem_array : mem_array_int<double> {
+public:
+	double_mem_array();
+	double_mem_array(regs* _registers, unsigned long long size);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void destroy();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	double* container = NULL;
+	unsigned long long container_size = 0;
+	std::string values_type = "";
+};
 
 template<typename T>
 struct dyn_array_int {
@@ -157,6 +171,19 @@ private:
 	std::vector<long long> container;
 	std::string values_types = "";
 };
+struct dyn_double_array : dyn_array_int<double> {
+public:
+	dyn_double_array();
+	dyn_double_array(regs* _registers);
+	void getAt(unsigned long long index);
+	void setAt(unsigned long long index);
+	void getSize();
+private:
+	regs* registers = NULL;
+	bool initialized = false;
+	std::vector<double> container;
+	std::string values_types = "";
+};
 
 struct mem_arrays {
 public:
@@ -177,11 +204,13 @@ private:
 	std::map<std::string, char_mem_array> char_arrays;
 	std::map<std::string, unum_mem_array> unsigned_number_arrays;
 	std::map<std::string, snum_mem_array> signed_numbers_arrays;
+	std::map<std::string, double_mem_array> double_arrays;
 
 	std::map<std::string, dyn_str_array> dyn_string_arrays;
 	std::map<std::string, dyn_char_array> dyn_char_arrays;
 	std::map<std::string, dyn_unum_array> dyn_unsigned_number_arrays;
 	std::map<std::string, dyn_snum_array> dyn_signed_number_arrays;
+	std::map<std::string, dyn_double_array> dyn_double_arrays;
 
 	std::map<std::string, std::shared_ptr<void>> arrays_table;
 	std::map<std::string, std::string> types_table;

@@ -10,6 +10,7 @@
 #include "memory_symbols.h"
 
 #define CHAR_PROPERTY "char"
+#define DOUBLE_PROPERTY "double"
 #define SNUM_PROPERTY "__int64"
 #define STR_PROPERTY "class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >"
 #define UNUM_PROPERTY "unsigned __int64"
@@ -64,6 +65,10 @@ void __struct__::declProperty(std::string property_name) {
 				this->types_table[property_name] = SNUM_PROPERTY;
 				this->snum_properties[property_name] = 0;
 			}
+			else if (property_type == DOUBLE_PROPERTY) {
+				this->types_table[property_name] = DOUBLE_PROPERTY;
+				this->double_properties[property_name] = 0;
+			}
 		}
 	}
 }
@@ -94,13 +99,21 @@ void __struct__::get(std::string property_name) {
 
 				this->registers->rax->set(saved_rax);
 			}
-			else {
+			else if (this->types_table[property_name] == SNUM_PROPERTY) {
 				unsigned long long saved_rax = this->registers->rax->get();
 
 				this->registers->rax->set((unsigned long long)this->snum_properties[property_name]);
 				pushMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 
 				this->registers->rax->set(saved_rax);
+			}
+			else {
+				double saved_dr = this->registers->dr->get();
+
+				this->registers->dr->set(this->double_properties[property_name]);
+				pushMemDR(nullptr, this->registers, this->mem);
+
+				this->registers->dr->set(saved_dr);
 			}
 		}
 	}
@@ -132,13 +145,21 @@ void __struct__::set(std::string property_name) {
 
 				this->registers->rax->set(saved_rax);
 			}
-			else {
+			else if (this->types_table[property_name] == SNUM_PROPERTY) {
 				unsigned long long saved_rax = this->registers->rax->get();
 
 				popMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
 				this->snum_properties[property_name] = (long long)this->registers->rax->get();
 
 				this->registers->rax->set(saved_rax);
+			}
+			else {
+				double saved_dr = this->registers->dr->get();
+
+				popMemDR(nullptr, this->registers, this->mem);
+				this->double_properties[property_name] = this->registers->dr->get();
+
+				this->registers->dr->set(saved_dr);
 			}
 		}
 	}
