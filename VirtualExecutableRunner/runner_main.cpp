@@ -5,6 +5,11 @@
 #include <string>
 #include <vector>
 
+#if defined(__linux__)
+#include <cstring>
+#include <stdio.h>
+#endif
+
 #include "../Compiler/action_parser.h"
 #include "runner.h"
 
