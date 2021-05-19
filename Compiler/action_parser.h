@@ -26,6 +26,7 @@ public:
 private:
 	std::map<std::string, unsigned long long> unsigned_numbers;
 	std::map<std::string, long long> signed_numbers;
+	std::map<std::string, double> stored_doubles;
 	std::map<std::string, char> stored_chars;
 	std::map<std::string, std::string> stored_strings;
 	std::map<std::string, unsigned long long> stored_tags;

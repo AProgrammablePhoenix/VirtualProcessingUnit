@@ -44,6 +44,13 @@ void process_memory::set(variables_decl* var) {
 			this->signed_numbers[headers[i].decl_name] = value;
 			this->data_ptrs[headers[i].decl_name] = std::make_shared<long long>(this->signed_numbers[headers[i].decl_name]);
 		}
+		else if (headers[i].decl_type == "double") {
+			double n_value;
+			std::stringstream ss(headers[i].decl_value);
+			ss >> n_value;
+			this->stored_doubles[headers[i].decl_name] = n_value;
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<double>(this->stored_doubles[headers[i].decl_name]);
+		}
 	}
 }
 void process_memory::setTags(variables_decl* vars) {
@@ -80,6 +87,7 @@ void process_memory::setRegisters() {
 
 	this->data_ptrs["SR"] = std::make_shared<extra_registries>(extra_registries::SR);
 	this->data_ptrs["CR"] = std::make_shared<extra_registries>(extra_registries::CR);
+	this->data_ptrs["DR"] = std::make_shared<extra_registries>(extra_registries::DR);
 }
 bool process_memory::isTag(std::string tagname) {
 	if (this->stored_tags.count(tagname)) {
@@ -105,6 +113,9 @@ std::string process_memory::getVarType(std::string var_name) {
 	}
 	else if (this->signed_numbers.count(var_name)) {
 		return "SNUM";
+	}
+	else if (this->stored_doubles.count(var_name)) {
+		return "DOUBLE";
 	}
 	else if (this->stored_chars.count(var_name)) {
 		return "CHAR";
@@ -159,6 +170,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"setCR", virtual_actions::setCR},
 	{"getCR", virtual_actions::getCR},
 
+	{"setDR", virtual_actions::setDR},
+	{"getDR", virtual_actions::getDR},
+
 	{"movAX", virtual_actions::movAX},
 	{"movBX", virtual_actions::movBX},
 	{"movCX", virtual_actions::movCX},
@@ -176,6 +190,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"inc", virtual_actions::inc},
 	{"dec", virtual_actions::dec},
+	{"incDR", virtual_actions::incDR},
+	{"decDR", virtual_actions::decDR},
 
 	{"mulAX", virtual_actions::mulAX},
 	{"mulBX", virtual_actions::mulBX},
@@ -252,6 +268,10 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"CRToSR", virtual_actions::CRToSR},
 	{"RevSR", virtual_actions::RevSR},
 
+	{"DRToSR", virtual_actions::DRToSR},
+	{"DRToULL", virtual_actions::DRToULL},
+	{"DRToLL", virtual_actions::DRToLL},
+
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},
 
@@ -260,6 +280,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"pushCR", virtual_actions::pushCR},
 	{"popCR", virtual_actions::popCR},
+
+	{"pushDR", virtual_actions::pushDR},
+	{"popDR", virtual_actions::popDR},
 
 	{"declArray", virtual_actions::declArray},
 	{"setAt", virtual_actions::setAt},
@@ -287,6 +310,11 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"log2", virtual_actions::_log2},
 	{"log10", virtual_actions::_log10},
 	{"pow", virtual_actions::_pow},
+
+	{"dlog", virtual_actions::_dlog},
+	{"dlog2", virtual_actions::_dlog2},
+	{"dlog10", virtual_actions::_dlog10},
+	{"dpow", virtual_actions::_dpow},
 
 	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
@@ -373,6 +401,41 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			vars->set(var_name, (unsigned char*)value);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
+			return var_name;
+		}
+		else if (prefix == "D") {
+			std::string s_val = content.substr(1);
+
+			double value;
+			std::stringstream ss(s_val);
+			ss >> value;
+			std::stringstream().swap(ss);
+
+			ss << std::hex << vars->sys_vars_count;
+			std::string var_name = RES_VAR_TAG + ss.str();
+			std::stringstream().swap(ss);
+
+			code_file_decl_form decl_form;
+			decl_form.decl_attr = "defined";
+			decl_form.decl_name = var_name;
+			decl_form.decl_type = "double";
+			ss << value;
+			ss >> decl_form.decl_value;
+			std::stringstream().swap(ss);
+
+			unsigned char *uc_d = new unsigned char[sizeof(double)];
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN__)
+			memcpy_s(uc_d, sizeof(double), &value, sizeof(double));
+#else
+			memcpy(uc_d, &value, sizeof(double));
+#endif
+			vars->set(var_name, uc_d, sizeof(double));
+			vars->setVariablesTree(decl_form);
+			vars->sys_vars_count += 1;
+
+			delete[] uc_d;
+
 			return var_name;
 		}
 		else if (prefix == "C") {

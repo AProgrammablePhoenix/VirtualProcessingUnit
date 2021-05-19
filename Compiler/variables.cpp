@@ -191,6 +191,20 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 			decl_data.decl_name = "<parsing-error>";
 		}
 	}
+	else if(line.substr(5, 6) == "double") {
+		decl_data.decl_attr = "defined";
+		decl_data.decl_type = "double";
+
+		std::stringstream ss(line.substr(12));
+
+		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
+
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
+			std::cout << "Variable not compiled" << std::endl;
+			decl_data.decl_name = "<parsing-error>";
+		}
+	}
 	else {
 		decl_data.decl_attr = "undefined";
 		decl_data.decl_type = "undefined";
@@ -281,6 +295,24 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					ss >> n_value;
 					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
 					storage.setVariablesTree(parsed[i]);
+				}
+				else if (parsed[i].decl_type == "double") {
+					std::stringstream ss(parsed[i].decl_value);
+					double n_value;
+					ss >> n_value;
+
+					unsigned char* uc_d = new unsigned char[sizeof(double)];
+					
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+					memcpy_s(uc_d, sizeof(double), &n_value, sizeof(double));
+#else
+					std::memcpy(uc_d, &n_value, sizeof(double));
+#endif
+
+					storage.set(parsed[i].decl_name, uc_d, sizeof(double));
+					storage.setVariablesTree(parsed[i]);
+
+					delete[] uc_d;
 				}
 			}
 		}
