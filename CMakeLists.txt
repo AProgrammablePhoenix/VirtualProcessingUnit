@@ -15,7 +15,7 @@ add_library(memory STATIC
 add_library(virtual_engine STATIC
 			"Actions/actions_symbols.h"  "Actions/action_decl.h" "Actions/action_decl.cpp" "Actions/v_engine.h"
 			"Actions/v_engine.cpp" "Actions/threading.h" "Actions/threading.cpp" "Actions/process_symbols.h"
-			"Actions/process_symbols.cpp")
+			"Actions/process_symbols.cpp" "Actions/interrupts.cpp" "Actions/interrupts.h")
 
 add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h")
