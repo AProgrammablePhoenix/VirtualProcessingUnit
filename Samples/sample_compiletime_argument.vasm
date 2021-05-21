@@ -8,14 +8,14 @@ movRDX RAX
 setRAX ${{N3}}
 push RAX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 setSR ${{S"Compiletime values interpretation test: Passed"}}
 pushSR 0
-println 0
+int ${{N6}}
 
 setRAX ${{N1024}}
 toString RAX
-println 0
+int ${{N6}}

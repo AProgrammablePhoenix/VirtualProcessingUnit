@@ -1,15 +1,19 @@
+; expected output:
+; C
+; Hello World!
+
 [include] str_lib.vasm
 
 setCR ${{C'C'}}
-CRToSR 0
+int ${{N10}}
 
-println 0
+int ${{N6}}
 
 setSR ${{S"Hello World!"}}
 call strtoca
 
 call catostr
 
-println 0
+int ${{N6}}
 
 hlt 0

@@ -7,22 +7,22 @@
 decl double a 33.333333
 
 setDR a
-DRToSR 0
-println 0
+int ${{N12}}
+int ${{N6}}
 
-DRToULL 0
+int ${{N13}}
 pop RAX
 toString RAX
-println 0
+int ${{N6}}
 
 setDR ${{D1}}
 incDR 0
 
-DRToSR 0
-println 0
+int ${{N12}}
+int ${{N6}}
 
 pushDR 0
 dpow 0
 popDR 0
-DRToSR 0
-println 0
+int ${{N12}}
+int ${{N6}}

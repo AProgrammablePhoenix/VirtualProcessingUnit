@@ -33,7 +33,7 @@ push RAX
 setSR signed_number_array
 pushSR 0
 setSR array1_name
-declArray 0
+int ${{N15}}
 
 ; declArray of array2
 setRAX zero
@@ -41,7 +41,7 @@ push RAX
 setSR dyn_snums_array
 pushSR 0
 setSR array2_name
-declArray 0
+int ${{N15}}
 
 ; set indexes of array1
 setRAX zero
@@ -49,28 +49,28 @@ push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_0
-setAt 0
+int ${{N16}}
 
 setRAX one
 push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_1
-setAt 0
+int ${{N16}}
 
 setRAX two
 push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_2
-setAt 0
+int ${{N16}}
 
 setRAX three
 push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_3
-setAt 0
+int ${{N16}}
 
 ; set indexes of array2
 setRAX zero
@@ -78,19 +78,19 @@ push RAX
 setSR array2_name
 pushSR 0
 setRDX array2_0
-setAt 0
+int ${{N16}}
 
 inc RAX
 push RAX
 pushSR 0
 setRDX array2_1
-setAt 0
+int ${{N16}}
 
 inc RAX
 push RAX
 pushSR 0
 setRDX array2_2
-setAt 0
+int ${{N16}}
 
 
 ; fetch indexes of array1
@@ -100,13 +100,13 @@ setRAX zero
 
 push RAX
 pushSR 0
-getAt 0
+int ${{N17}}
 setAX three
 push AX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 setRAX zero
 
@@ -115,14 +115,14 @@ inc RAX
 push RAX
 setSR array1_name
 pushSR 0
-getAt 0
+int ${{N17}}
 movRCX RAX
 setAX three
 push AX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 movRAX RCX
 
 inc RAX
@@ -142,19 +142,19 @@ lcall fetch_array1
 
 ; fetch indexes of array2
 setSR array2_name
-getDynSize 0
+int ${{N18}}
 movRBX RDX
 setRAX zero
 
 push RAX
 pushSR 0
-getAt 0
+int ${{N17}}
 setAX three
 push AX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 setRAX zero
 
@@ -163,14 +163,14 @@ inc RAX
 push RAX
 setSR array2_name
 pushSR 0
-getAt 0
+int ${{N17}}
 movRCX RAX
 setAX three
 push AX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 movRAX RCX
 
 inc RAX

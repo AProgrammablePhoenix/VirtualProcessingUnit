@@ -7,6 +7,6 @@
 call function
 
 setSR ${{S"File inclusion test passed"}}
-println 0
+int ${{N6}}
 
 hlt 0

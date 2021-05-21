@@ -8,6 +8,6 @@ log2 RAX
 push RAX
 pow RBX
 toString RAX
-println 0
+int ${{N6}}
 toString RBX
-println 0
+int ${{N6}}

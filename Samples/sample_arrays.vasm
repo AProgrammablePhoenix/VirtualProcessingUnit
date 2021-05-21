@@ -45,7 +45,7 @@ setSR unsigned_number_array
 pushSR 0
 
 setSR array1_name
-declArray 0
+int ${{N15}}
 
 
 ; declArray of array2
@@ -56,7 +56,7 @@ setSR string_array
 pushSR 0
 
 setSR array2_name
-declArray 0
+int ${{N15}}
 
 
 ; set indexes of array1
@@ -65,21 +65,21 @@ push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_0
-setAt 0
+int ${{N16}}
 
 setRAX one
 push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_1
-setAt 0
+int ${{N16}}
 
 setRAX two
 push RAX
 setSR array1_name
 pushSR 0
 setRDX array1_2
-setAt 0
+int ${{N16}}
 
 ; set indexes of array2
 setRAX zero
@@ -87,14 +87,14 @@ push RAX
 setSR array2_name
 pushSR 0
 setSR array2_0
-setAt 0
+int ${{N16}}
 
 setRAX one
 push RAX
 setSR array2_name
 pushSR 0
 setSR array2_1
-setAt 0
+int ${{N16}}
 
 
 ; fetch array1 indexes
@@ -102,40 +102,40 @@ setRAX zero
 push RAX
 setSR array1_name
 pushSR 0
-getAt 0
+int ${{N17}}
 toString RDX
-println 0
+int ${{N6}}
 
 setRAX one
 push RAX
 setSR array1_name
 pushSR 0
-getAt 0
+int ${{N17}}
 toString RDX
-println 0
+int ${{N6}}
 
 setRAX two
 push RAX
 setSR array1_name
 pushSR 0
-getAt 0
+int ${{N17}}
 toString RDX
-println 0
+int ${{N6}}
 
 ; fetch array2 indexes
 setRAX zero
 push RAX
 setSR array2_name
 pushSR 0
-getAt 0
-println 0
+int ${{N17}}
+int ${{N6}}
 
 setRAX one
 push RAX
 setSR array2_name
 pushSR 0
-getAt 0
-println 0
+int ${{N17}}
+int ${{N6}}
 
 
 ; declArray of array3
@@ -146,7 +146,7 @@ setSR dyn_unum_array
 pushSR 0
 
 setSR array3_name
-declArray 0
+int ${{N15}}
 
 decl unsigned_number n_loops 9
 
@@ -156,7 +156,7 @@ push RAX
 setSR array3_name
 pushSR 0
 setRDX zero
-setAt 0
+int ${{N16}}
 
 decltag looping
 inc RAX
@@ -164,7 +164,7 @@ push RAX
 setSR array3_name
 pushSR 0
 inc RDX
-setAt 0
+int ${{N16}}
 
 inc RAX
 
@@ -187,25 +187,25 @@ lcall looping
 
 ; fetch all array3 indexes
 setSR array3_name
-getDynSize 0
+int ${{N18}}
 movRBX RDX
 setRAX zero
 
 push RAX
 setSR array3_name
 pushSR 0
-getAt 0
+int ${{N17}}
 toString RDX
-println 0
+int ${{N6}}
 
 decltag fetch_looping
 inc RAX
 push RAX
 setSR array3_name
 pushSR 0
-getAt 0
+int ${{N17}}
 toString RDX
-println 0
+int ${{N6}}
 
 inc RAX
 

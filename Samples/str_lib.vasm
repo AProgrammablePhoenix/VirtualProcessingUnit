@@ -1,7 +1,7 @@
 ; convert a string to char array, every char of the array is pushed onto the stack
 decltag strtoca
 ; get str length
-strlen 0
+int ${{N4}}
 pop RDX
 
 ; set loop values
@@ -14,12 +14,12 @@ pushSR 0
 
 movAX RAX
 
-substring 0
+int ${{N3}}
 
 ; extract output and convert it to char
 push CX
 pushSR 0
-fromString 0
+int ${{N9}}
 popCR 0
 
 ; restore original string
@@ -71,10 +71,10 @@ popCR 0
 ; push base string
 pushSR 0
 
-CRToSR 0
+int ${{N10}}
 
 ; merge base with new character
-mergeString 0
+int ${{N2}}
 
 ; increment iterator
 inc RAX
@@ -94,6 +94,6 @@ pop RAX
 lcall catostr_loop
 
 pop RAX
-RevSR 0
+int ${{N11}}
 
 ret 0

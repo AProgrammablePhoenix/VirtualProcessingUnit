@@ -1,4 +1,4 @@
 decl string init_msg Threading engine initialized
 
 setSR init_msg
-println 0
+int ${{N6}}

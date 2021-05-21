@@ -16,47 +16,47 @@ decl unsigned_number three 3
 setSR signed_number_type
 pushSR 0
 setSR var1_name
-dyndecl 0
+int ${{N19}}
 
 ; dyndecl of var2
 setSR signed_number_type
 pushSR 0
 setSR var2_name
-dyndecl 0
+int ${{N19}}
 
 
 ; set var1
 setSR var1_name
 pushSR 0
 setRDX var1_value
-dynset 0
+int ${{N20}}
 
 ; set var2
 setSR var2_name
 pushSR 0
 setRDX var2_value
-dynset 0
+int ${{N20}}
 
 
 ; fetch variables
 ; get var1
 setSR var1_name
 pushSR 0
-dynget 0
+int ${{N21}}
 setRAX three
 push RAX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 ; get var2
 setSR var2_name
 pushSR 0
-dynget 0
+int ${{N21}}
 setRAX three
 push RAX
 push RDX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}

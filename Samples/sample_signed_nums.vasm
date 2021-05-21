@@ -14,16 +14,16 @@ decl unsigned_number three 3
 ; test basic positive signed number assignment
 setRAX a
 toString RAX
-println 0
+int ${{N6}}
 
 ; test negative signed number assignment
 setAX three
 push AX
 setRAX b
 push RAX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 ; test addition between positive and negative signed numbers
 setAX three
@@ -32,9 +32,9 @@ setRAX b
 setRBX c
 addRAX RBX
 push RAX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}
 
 ; test addition between two negative signed numbers
 setAX three
@@ -43,6 +43,6 @@ setRAX b
 setRBX d
 addRAX RBX
 push RAX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}

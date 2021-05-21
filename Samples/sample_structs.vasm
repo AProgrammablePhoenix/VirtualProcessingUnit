@@ -12,71 +12,71 @@ decl string struct1_name struct1
 ; decl struct1
 setSR struct1_name
 pushSR 0
-struct 0
+int ${{N22}}
 
 ; set structure pointer to struct1
 pushSR 0
-struct.select 0
+int ${{N24}}
 
 ; decl properties
 setSR string_type
 pushSR 0
 setSR ${{S"property1"}}
 pushSR 0
-struct.declprop 0
+int ${{N23}}
 
 setSR unum_type
 pushSR 0
 setSR ${{S"property2"}}
 pushSR 0
-struct.declprop 0
+int ${{N23}}
 
 setSR snum_type
 pushSR 0
 setSR ${{S"property3"}}
 pushSR 0
-struct.declprop 0
+int ${{N23}}
 
 ; set properties
 setSR ${{S"Hello World!"}}
 pushSR 0
 setSR ${{S"property1"}}
 pushSR 0
-struct.set 0
+int ${{N26}}
 
 setRAX ${{N4096}}
 push RAX
 setSR ${{S"property2"}}
 pushSR 0
-struct.set 0
+int ${{N26}}
 
 setRAX ${{_N-2048}}
 push RAX
 setSR ${{S"property3"}}
 pushSR 0
-struct.set 0
+int ${{N26}}
 
 ; get properties
 setSR ${{S"property1"}}
 pushSR 0
-struct.get 0
+int ${{N25}}
 popSR 0
-println 0
+int ${{N6}}
 
 setSR ${{S"property2"}}
 pushSR 0
-struct.get 0
+int ${{N25}}
 pop RAX
 toString RAX
-println 0
+int ${{N6}}
 
 setSR ${{S"property3"}}
 pushSR 0
-struct.get 0
+int ${{N25}}
 pop RAX
 setRBX ${{N3}}
 push RBX
 push RAX
-recast 0
+int ${{N8}}
 popSR 0
-println 0
+int ${{N6}}

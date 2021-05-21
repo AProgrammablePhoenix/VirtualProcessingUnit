@@ -1,6 +1,6 @@
 decltag function
 
 setSR ${{S"This message comes from imported module!"}}
-println 0
+int ${{N6}}
 
 ret 0
