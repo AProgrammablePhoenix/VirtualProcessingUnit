@@ -6,9 +6,13 @@
 
 #include "../Memory/memory_symbols.h"
 #include "../Registers/registers_symbols.h"
+#include "interrupts.h"
 #include "process_symbols.h"
 
 enum class virtual_actions {
+	// Interrupts
+	_int  = 0x000001,
+
 	// Registers
 	getAX = 0x000100,
 	getBX = 0x000200,
@@ -216,8 +220,6 @@ enum class virtual_actions {
 	rscall = 0x0030AE
 };
 
-typedef void* (*core_function)(std::shared_ptr<void>, regs*, memory*);
-
 extern void (*a_db[0x004291 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
@@ -232,17 +234,22 @@ public:
 			delete this->self_mem;
 		}
 
+		this->self_ints = interrupts(this->self_mem, this->self_regs);
 		this->init();
 	}
 
 	actions_engine(memory*& memory, regs*& registers) {
 		this->self_mem = memory;
 		this->self_regs = registers;
+		this->self_ints = interrupts(memory, registers);
 		this->init();
 	}
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
-		(a_db[(unsigned long long)action])(value_ptr, this->self_regs, this->self_mem);
+		if (action == virtual_actions::_int)
+			this->_intcall(value_ptr, nullptr, nullptr);
+		else
+			(a_db[(unsigned long long)action])(value_ptr, this->self_regs, this->self_mem);
 	}
 
 	unsigned long long* getStepCounterPtr() {
@@ -263,6 +270,9 @@ public:
 private:
 	memory* self_mem;
 	regs* self_regs;
+	interrupts self_ints;
+
+	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_mem);
 
 	void init() {
 #pragma region b_set
