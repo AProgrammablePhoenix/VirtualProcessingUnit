@@ -3,7 +3,6 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.8:
-- [x] Add support for 'char' type
-- [x] Add support for 'double' type
-- [x] Add those two types to the compiler
-- [x] Add those two types to the instructions set of VAS and VEXE.
+- [ ] Add new instruction: int (interrupts)
+- [ ] Add support for a major part of current instructions to int instruction set.
+- [ ] Remove instructions that are supported by int action from the base instructions set, to reduce as high as possible the size of base instruction set.
