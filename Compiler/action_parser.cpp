@@ -256,23 +256,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"subRDX", virtual_actions::subRDX},
 
 	{"toString", virtual_actions::toString},
-	{"mergeString", virtual_actions::mergeString},
-	{"substring", virtual_actions::substring},
-	{"strlen", virtual_actions::_strlen},
-	{"rdstdin", virtual_actions::rdstdin},
-	{"print", virtual_actions::print},
-	{"println", virtual_actions::println},
-	{"printEOL", virtual_actions::printEOL},
 
 	{"castreg", virtual_actions::castreg},
-	{"recast", virtual_actions::recast},
-	{"fromString", virtual_actions::fromString},
-	{"CRToSR", virtual_actions::CRToSR},
-	{"RevSR", virtual_actions::RevSR},
-
-	{"DRToSR", virtual_actions::DRToSR},
-	{"DRToULL", virtual_actions::DRToULL},
-	{"DRToLL", virtual_actions::DRToLL},
 
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},
@@ -285,21 +270,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"pushDR", virtual_actions::pushDR},
 	{"popDR", virtual_actions::popDR},
-
-	{"declArray", virtual_actions::declArray},
-	{"setAt", virtual_actions::setAt},
-	{"getAt", virtual_actions::getAt},
-	{"getDynSize", virtual_actions::getDynSize},
-
-	{"dyndecl", virtual_actions::dyndecl},
-	{"dynset", virtual_actions::dynset},
-	{"dynget", virtual_actions::dynget},
-
-	{"struct",virtual_actions::_struct},
-	{"struct.declprop", virtual_actions::_struct_declprop},
-	{"struct.select", virtual_actions::_struct_select},
-	{"struct.get", virtual_actions::_struct_get},
-	{"struct.set", virtual_actions::_struct_set},
 
 	{"not", virtual_actions::_not},
 	{"and", virtual_actions::_and},
