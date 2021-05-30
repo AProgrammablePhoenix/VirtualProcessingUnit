@@ -39,10 +39,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 	std::vector<action>* actions = new std::vector<action>;
 
 	for (size_t i = 0; i < byteArray->size(); i++) {
-		if ((*byteArray)[i] < 0x0D || (*byteArray)[i] == 0x1A ||
-			((*byteArray)[i] > 0x59 && (*byteArray)[i] < 0x61) || ((*byteArray)[i] > 0x61 && (*byteArray)[i] < 0x64)
-			|| ((*byteArray)[i] > 0x65 && (*byteArray)[i] < 0x74) || ((*byteArray)[i] > 0x7D && (*byteArray)[i] < 0x8A)
-			|| ((*byteArray)[i] > 0x8B && (*byteArray)[i] != 0x8F && (*byteArray)[i] != 0x95)) {
+		if (zero_args_opcodes.find((*byteArray)[i]) != zero_args_opcodes.end()) {
 
 			unsigned char _op = (*byteArray)[i];
 			unsigned char _arg = 0;
@@ -55,7 +52,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if (((*byteArray)[i] > 0x0C && (*byteArray)[i] < 0x19) || (*byteArray)[i] == 0x8A || (*byteArray)[i] == 0x8B) {
+		else if (uint64_args_opcodes.find((*byteArray)[i]) != uint64_args_opcodes.end()) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
@@ -74,7 +71,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if ((*byteArray)[i] == 0x19) {
+		else if ((*byteArray)[i] == ops[virtual_actions::setSR]) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
@@ -101,7 +98,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if ((*byteArray)[i] == 0x8F) {
+		else if ((*byteArray)[i] == ops[virtual_actions::setCR]) {
 			unsigned char _op = (*byteArray)[i];
 			++i;
 			char _arg = (char)((*byteArray)[i]);
@@ -113,7 +110,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if ((*byteArray)[i] == 0x95) {
+		else if ((*byteArray)[i] == ops[virtual_actions::setDR]) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
@@ -132,8 +129,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			continue;
 		}
-		else if (((*byteArray)[i] > 0x1A && ((*byteArray)[i] < 0x5A)) || (*byteArray)[i] == 0x61 || ((*byteArray)[i] > 0x63
-			&& (*byteArray)[i] < 0x66) || ((*byteArray)[i] > 0x73 && (*byteArray)[i] < 0x7E)) {
+		else if (reg_args_opcodes.find((*byteArray)[i]) != reg_args_opcodes.end()) {
 			unsigned char _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;

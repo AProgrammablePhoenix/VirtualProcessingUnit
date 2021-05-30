@@ -2,6 +2,7 @@
 #include <iostream>
 #include <map>
 #include <memory>
+#include <unordered_set>
 #include <string>
 #include <vector>
 
@@ -33,13 +34,11 @@ std::vector<byte> assembleAction(action _action) {
 	std::vector<byte> out;
 	out.push_back(instructions_set[_action.getAction()]);
 
-	if (out[0] < 0x0D || out[0] == 0x1A || (out[0] > 0x59 && out[0] < 0x61) || (out[0] > 0x61 && out[0] < 0x64) 
-	|| (out[0] > 0x65 && out[0] < 0x74) || (out[0] > 0x7D && out[0] < 0x8A) 
-	|| (out[0] > 0x8B && out[0] != 0x8F && out[0] != 0x95)) {
+	if (zero_args_opcodes.find(out[0]) != zero_args_opcodes.end()) {
 		out.push_back(0);
 		return out;
 	}
-	else if ((out[0] > 0x0C && out[0] < 0x19) || out[0] == 0x8A || out[0] == 0x8B) {
+	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
 		unsigned long long value = *std::static_pointer_cast<unsigned long long>(_action.getValuePtr());
 		byte* converted = new byte[8];
 		ulongToByteArray(value, &converted);
@@ -50,7 +49,7 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] converted;
 		return out;
 	}
-	else if (out[0] == 0x19) {
+	else if (out[0] == ops[virtual_actions::setSR]) {
 		std::string str = *std::static_pointer_cast<std::string>(_action.getValuePtr());
 		unsigned long long str_size = str.size();
 
@@ -77,13 +76,12 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] b_str;
 		return out;
 	}
-	else if (out[0] == 0x8F) {
+	else if (out[0] == ops[virtual_actions::setCR]) {
 		char c = *std::static_pointer_cast<char>(_action.getValuePtr());
 		out.push_back(c);
 		return out;
 	}
-	else if (out[0] == 0x95) {
-		std::cout << "h" << std::endl;
+	else if (out[0] == ops[virtual_actions::setDR]) {
 		double value = *std::static_pointer_cast<double>(_action.getValuePtr());
 		byte* converted = new byte[8];
 		doubleToByteArray(value, &converted);
@@ -94,8 +92,7 @@ std::vector<byte> assembleAction(action _action) {
 		delete[] converted;
 		return out;
 	}
-	else if ((out[0] > 0x1A && out[0] < 0x5A) || out[0] == 0x61 || (out[0] > 0x63 && out[0] < 0x66)
-			|| (out[0] > 0x73 && out[0] < 0x7E)) {
+	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
 		unsigned char reg_value = (*std::static_pointer_cast<unsigned long long>(_action.getValuePtr())) & 0xff;
 		reg_value = registers_set[(registries_def)reg_value];
 
