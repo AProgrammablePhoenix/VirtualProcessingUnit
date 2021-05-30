@@ -43,26 +43,14 @@ void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 /*
 * [Same as above, but for DR registry (double manipulations)]
 */
-void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	extra_registries reg_id = *std::static_pointer_cast<extra_registries>(reg);
-
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	((reg_int<double>*)ptr_table.access(reg_id))->set(
-		log2(((reg_int<double>*)ptr_table.access(reg_id))->get()));
+void b_dlog2(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	registers->dr->set(log2(registers->dr->get()));
 }
-void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	extra_registries reg_id = *std::static_pointer_cast<extra_registries>(reg);
-
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	((reg_int<double>*)ptr_table.access(reg_id))->set(
-		log10(((reg_int<double>*)ptr_table.access(reg_id))->get()));
+void b_dlog10(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	registers->dr->set(log10(registers->dr->get()));
 }
-void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	extra_registries reg_id = *std::static_pointer_cast<extra_registries>(reg);
-
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	((reg_int<double>*)ptr_table.access(reg_id))->set(
-		logb(((reg_int<double>*)ptr_table.access(reg_id))->get()));
+void b_dlog(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	registers->dr->set(logb(registers->dr->get()));
 }
 
 /* STACK status before calling:
@@ -142,7 +130,7 @@ void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 /*
 * [Same as above, but for DR registry (double manipulations) ; Output in stack]
 */
-void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+void b_dpow(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double saved_dr = registers->dr->get();
 	popMemDR(nullptr, registers, mem);
 	double _pow = registers->dr->get();

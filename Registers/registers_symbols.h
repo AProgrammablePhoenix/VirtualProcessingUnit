@@ -203,9 +203,9 @@ void b_log2(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_log10(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
 
-void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
-void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
-void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* unused_m);
+void b_dlog2(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_dlog10(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_dlog(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 
 
 void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem);
@@ -215,7 +215,7 @@ void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
-void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_dpow(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 struct registries_ptr_table {
