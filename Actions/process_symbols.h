@@ -22,8 +22,8 @@ void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m);
 
-void p_call(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_lcall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m);
+void p_lcall(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m);
 void p_ret(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 
 void p_svcall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
