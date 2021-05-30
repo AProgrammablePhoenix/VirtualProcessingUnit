@@ -5,4 +5,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 Towards V1.8:
 - [x] Add new instruction: int (interrupts)
 - [x] Add support for a major part of current instructions to int instruction set.
-- [ ] Remove instructions that are supported by int action from the base instructions set, to reduce as high as possible the size of base instruction set.
+- [x] Remove instructions that are supported by int action from the base instructions set, to reduce as high as possible the size of base instruction set.
