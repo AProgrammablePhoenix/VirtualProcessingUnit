@@ -276,6 +276,9 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::movRCX],
 	ops[virtual_actions::movRDX],
 
+	ops[virtual_actions::inc],
+	ops[virtual_actions::dec],
+
 	ops[virtual_actions::mulAX],
 	ops[virtual_actions::mulBX],
 	ops[virtual_actions::mulCX],
