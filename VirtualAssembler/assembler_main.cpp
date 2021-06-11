@@ -14,7 +14,7 @@
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
 
-void ulongToByteArray(unsigned long long value, byte** output) {
+void ulongToByteArray(size_t value, byte** output) {
 	*output = new byte[8];
 
 	for (long long j = 0, i = 7; i >= 0; i--, j++) {
@@ -39,7 +39,7 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
-		unsigned long long value = *std::static_pointer_cast<unsigned long long>(_action.getValuePtr());
+		size_t value = *std::static_pointer_cast<size_t>(_action.getValuePtr());
 		byte* converted = new byte[8];
 		ulongToByteArray(value, &converted);
 		
@@ -51,7 +51,7 @@ std::vector<byte> assembleAction(action _action) {
 	}
 	else if (out[0] == ops[virtual_actions::setSR]) {
 		std::string str = *std::static_pointer_cast<std::string>(_action.getValuePtr());
-		unsigned long long str_size = str.size();
+		size_t str_size = str.size();
 
 		byte* b_str_size = new byte[8];
 		ulongToByteArray(str_size, &b_str_size);
@@ -93,7 +93,7 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
-		unsigned char reg_value = (*std::static_pointer_cast<unsigned long long>(_action.getValuePtr())) & 0xff;
+		unsigned char reg_value = (*std::static_pointer_cast<size_t>(_action.getValuePtr())) & 0xff;
 		reg_value = registers_set[(registries_def)reg_value];
 
 		out.push_back(reg_value);

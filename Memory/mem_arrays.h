@@ -7,15 +7,14 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 
 template<typename T>
 struct mem_array_int {
 public:
-	virtual void getAt(unsigned long long index) {
+	virtual void getAt(size_t index) {
 		return;
 	}
-	virtual void setAt(unsigned long long index) {
+	virtual void setAt(size_t index) {
 		return;
 	}
 	virtual void destroy() {
@@ -27,87 +26,87 @@ private:
 	regs* registers = NULL;
 	bool initialized = false;
 	T* container = NULL;
-	unsigned long long container_size = 0;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
 struct str_mem_array : mem_array_int<std::string> {
 public:
 	str_mem_array();
-	str_mem_array(regs* _registers, unsigned long long size);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	str_mem_array(regs* _registers, size_t size);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
 	std::string* container = NULL;
-	unsigned long long container_size = 0;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
 struct char_mem_array : mem_array_int<char> {
 public:
 	char_mem_array();
-	char_mem_array(regs* registers, unsigned long long size);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	char_mem_array(regs* registers, size_t size);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
 	char* container = NULL;
-	unsigned long long container_size = 0;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
-struct unum_mem_array : mem_array_int<unsigned long long> {
+struct unum_mem_array : mem_array_int<size_t> {
 public:
 	unum_mem_array();
-	unum_mem_array(regs* _registers, unsigned long long size);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	unum_mem_array(regs* _registers, size_t size);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
-	unsigned long long* container = NULL;
-	unsigned long long container_size = 0;
+	size_t* container = NULL;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
 struct snum_mem_array : mem_array_int<long long> {
 public:
 	snum_mem_array();
-	snum_mem_array(regs* _registers, unsigned long long size);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	snum_mem_array(regs* _registers, size_t size);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
 	long long* container = NULL;
-	unsigned long long container_size = 0;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
 struct double_mem_array : mem_array_int<double> {
 public:
 	double_mem_array();
-	double_mem_array(regs* _registers, unsigned long long size);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	double_mem_array(regs* _registers, size_t size);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void destroy();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
 	double* container = NULL;
-	unsigned long long container_size = 0;
+	size_t container_size = 0;
 	std::string values_type = "";
 };
 
 template<typename T>
 struct dyn_array_int {
 public:
-	virtual void getAt(unsigned long long index) {
+	virtual void getAt(size_t index) {
 		return;
 	}
-	virtual void setAt(unsigned long long index) {
+	virtual void setAt(size_t index) {
 		return;
 	}
 	virtual void getSize() {
@@ -123,8 +122,8 @@ struct dyn_str_array : dyn_array_int<std::string> {
 public:
 	dyn_str_array();
 	dyn_str_array(regs* _registers);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void getSize();
 private:
 	regs* registers = NULL;
@@ -136,8 +135,8 @@ struct dyn_char_array : dyn_array_int<char> {
 public:
 	dyn_char_array();
 	dyn_char_array(regs* _registers);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void getSize();
 private:
 	regs* registers = NULL;
@@ -145,25 +144,25 @@ private:
 	std::vector<char> container;
 	std::string values_type = "";
 };
-struct dyn_unum_array : dyn_array_int<unsigned long long> {
+struct dyn_unum_array : dyn_array_int<size_t> {
 public:
 	dyn_unum_array();
 	dyn_unum_array(regs* _registers);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void getSize();
 private:
 	regs* registers = NULL;
 	bool initialized = false;
-	std::vector<unsigned long long> container;
+	std::vector<size_t> container;
 	std::string values_types = "";
 };
 struct dyn_snum_array : dyn_array_int<long long> {
 public:
 	dyn_snum_array();
 	dyn_snum_array(regs* _registers);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void getSize();
 private:
 	regs* registers = NULL;
@@ -175,8 +174,8 @@ struct dyn_double_array : dyn_array_int<double> {
 public:
 	dyn_double_array();
 	dyn_double_array(regs* _registers);
-	void getAt(unsigned long long index);
-	void setAt(unsigned long long index);
+	void getAt(size_t index);
+	void setAt(size_t index);
 	void getSize();
 private:
 	regs* registers = NULL;
@@ -189,9 +188,9 @@ struct mem_arrays {
 public:
 	mem_arrays();
 	mem_arrays(regs* _registers);
-	void makeArray(std::string name, std::string type, unsigned long long size);
-	void getArray(std::string arr_name, unsigned long long index);
-	void setArray(std::string arr_name, unsigned long long index);
+	void makeArray(std::string name, std::string type, size_t size);
+	void getArray(std::string arr_name, size_t index);
+	void setArray(std::string arr_name, size_t index);
 	void getDynSize(std::string arr_name);
 
 	std::string getArrayType(std::string arr_name);

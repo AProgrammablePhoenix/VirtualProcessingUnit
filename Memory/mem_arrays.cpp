@@ -27,7 +27,7 @@ str_mem_array::str_mem_array() {
 		}
 	}
 }
-str_mem_array::str_mem_array(regs* _registers, unsigned long long size) {
+str_mem_array::str_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
@@ -39,14 +39,14 @@ str_mem_array::str_mem_array(regs* _registers, unsigned long long size) {
 		this->initialized = true;
 	}
 }
-void str_mem_array::getAt(unsigned long long index) {
+void str_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->registers->sr->set(this->container[index]);
 		}
 	}
 }
-void str_mem_array::setAt(unsigned long long index) {
+void str_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->container[index] = this->registers->sr->get();
@@ -66,7 +66,7 @@ char_mem_array::char_mem_array() {
 		}
 	}
 }
-char_mem_array::char_mem_array(regs* _registers, unsigned long long size) {
+char_mem_array::char_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
@@ -78,14 +78,14 @@ char_mem_array::char_mem_array(regs* _registers, unsigned long long size) {
 		this->initialized = true;
 	}
 }
-void char_mem_array::getAt(unsigned long long index) {
+void char_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->registers->cr->set(this->container[index]);
 		}
 	}
 }
-void char_mem_array::setAt(unsigned long long index) {
+void char_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->container[index] = this->registers->cr->get();
@@ -105,26 +105,26 @@ unum_mem_array::unum_mem_array() {
 		}
 	}
 }
-unum_mem_array::unum_mem_array(regs* _registers, unsigned long long size) {
+unum_mem_array::unum_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
 		}
 		this->registers = _registers;
-		this->container = new unsigned long long[size];
+		this->container = new size_t[size];
 		this->container_size = size;
 		this->values_type = "unsigned __int64";
 		this->initialized = true;
 	}
 }
-void unum_mem_array::getAt(unsigned long long index) {
+void unum_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->registers->rdx->set(this->container[index]);
 		}
 	}
 }
-void unum_mem_array::setAt(unsigned long long index) {
+void unum_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->container[index] = this->registers->rdx->get();
@@ -145,7 +145,7 @@ snum_mem_array::snum_mem_array() {
 		}
 	}
 }
-snum_mem_array::snum_mem_array(regs* _registers, unsigned long long size) {
+snum_mem_array::snum_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
@@ -157,14 +157,14 @@ snum_mem_array::snum_mem_array(regs* _registers, unsigned long long size) {
 		this->initialized = true;
 	}
 }
-void snum_mem_array::getAt(unsigned long long index) {
+void snum_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
-			this->registers->rdx->set((unsigned long long)this->container[index]);
+			this->registers->rdx->set((size_t)this->container[index]);
 		}
 	}
 }
-void snum_mem_array::setAt(unsigned long long index) {
+void snum_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->container[index] = (long long)this->registers->rdx->get();
@@ -184,7 +184,7 @@ double_mem_array::double_mem_array() {
 		}
 	}
 }
-double_mem_array::double_mem_array(regs* _registers, unsigned long long size) {
+double_mem_array::double_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
@@ -196,14 +196,14 @@ double_mem_array::double_mem_array(regs* _registers, unsigned long long size) {
 		this->initialized = true;
 	}
 }
-void double_mem_array::getAt(unsigned long long index) {
+void double_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->registers->dr->set(this->container[index]);
 		}
 	}
 }
-void double_mem_array::setAt(unsigned long long index) {
+void double_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
 			this->container[index] = this->registers->dr->get();
@@ -233,14 +233,14 @@ dyn_str_array::dyn_str_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_str_array::getAt(unsigned long long index) {
+void dyn_str_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->registers->sr->set(this->container[index]);
 		}
 	}
 }
-void dyn_str_array::setAt(unsigned long long index) {
+void dyn_str_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->container[index] = this->registers->sr->get();
@@ -271,14 +271,14 @@ dyn_char_array::dyn_char_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_char_array::getAt(unsigned long long index) {
+void dyn_char_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->registers->cr->set(this->container[index]);
 		}
 	}
 }
-void dyn_char_array::setAt(unsigned long long index) {
+void dyn_char_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->container[index] = this->registers->cr->get();
@@ -309,14 +309,14 @@ dyn_unum_array::dyn_unum_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_unum_array::getAt(unsigned long long index) {
+void dyn_unum_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->registers->rdx->set(this->container[index]);
 		}
 	}
 }
-void dyn_unum_array::setAt(unsigned long long index) {
+void dyn_unum_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->container[index] = this->registers->rdx->get();
@@ -347,14 +347,14 @@ dyn_snum_array::dyn_snum_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_snum_array::getAt(unsigned long long index) {
+void dyn_snum_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
-			this->registers->rdx->set((unsigned long long)this->container[index]);
+			this->registers->rdx->set((size_t)this->container[index]);
 		}
 	}
 }
-void dyn_snum_array::setAt(unsigned long long index) {
+void dyn_snum_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->container[index] = (long long)this->registers->rdx->get();
@@ -385,14 +385,14 @@ dyn_double_array::dyn_double_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_double_array::getAt(unsigned long long index) {
+void dyn_double_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->registers->dr->set(this->container[index]);
 		}
 	}
 }
-void dyn_double_array::setAt(unsigned long long index) {
+void dyn_double_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
 			this->container[index] = this->registers->dr->get();
@@ -412,7 +412,7 @@ mem_arrays::mem_arrays() {
 mem_arrays::mem_arrays(regs* _registers) {
 	this->registers = _registers;
 }
-void mem_arrays::makeArray(std::string name, std::string type,  unsigned long long size) {
+void mem_arrays::makeArray(std::string name, std::string type,  size_t size) {
 	if (!this->arrays_table.count(name)) {
 		if (type == STATIC_UNUM_ARRAY || type == "static unsigned number") {
 			unum_mem_array _array = unum_mem_array(this->registers, size);
@@ -481,10 +481,10 @@ void mem_arrays::makeArray(std::string name, std::string type,  unsigned long lo
 		}
 	}
 }
-void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
+void mem_arrays::getArray(std::string arr_name, size_t index) {
 	if (this->arrays_table.count(arr_name)) {
 		if (types_table[arr_name] == STATIC_UNUM_ARRAY) {
-			(std::static_pointer_cast<mem_array_int<unsigned long long>>(this->arrays_table[arr_name]))->getAt(index);
+			(std::static_pointer_cast<mem_array_int<size_t>>(this->arrays_table[arr_name]))->getAt(index);
 		}
 		else if (types_table[arr_name] == STATIC_SNUM_ARRAY) {
 			(std::static_pointer_cast<mem_array_int<long long>>(this->arrays_table[arr_name]))->getAt(index);
@@ -499,7 +499,7 @@ void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
 			(std::static_pointer_cast<mem_array_int<double>>(this->arrays_table[arr_name]))->getAt(index);
 		}
 		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
-			(std::static_pointer_cast<dyn_array_int<unsigned long long>>(this->arrays_table[arr_name])->getAt(index));
+			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name])->getAt(index));
 		}
 		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->getAt(index);
@@ -515,10 +515,10 @@ void mem_arrays::getArray(std::string arr_name, unsigned long long index) {
 		}
 	}
 }
-void mem_arrays::setArray(std::string arr_name, unsigned long long index) {
+void mem_arrays::setArray(std::string arr_name, size_t index) {
 	if (this->arrays_table.count(arr_name)) {
 		if (types_table[arr_name] == STATIC_UNUM_ARRAY) {
-			(std::static_pointer_cast<mem_array_int<unsigned long long>>(this->arrays_table[arr_name]))->setAt(index);
+			(std::static_pointer_cast<mem_array_int<size_t>>(this->arrays_table[arr_name]))->setAt(index);
 		}
 		else if (types_table[arr_name] == STATIC_SNUM_ARRAY) {
 			(std::static_pointer_cast<mem_array_int<long long>>(this->arrays_table[arr_name]))->setAt(index);
@@ -533,7 +533,7 @@ void mem_arrays::setArray(std::string arr_name, unsigned long long index) {
 			(std::static_pointer_cast<mem_array_int<double>>(this->arrays_table[arr_name]))->setAt(index);
 		}
 		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
-			(std::static_pointer_cast<dyn_array_int<unsigned long long>>(this->arrays_table[arr_name]))->setAt(index);
+			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name]))->setAt(index);
 		}
 		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->setAt(index);
@@ -552,7 +552,7 @@ void mem_arrays::setArray(std::string arr_name, unsigned long long index) {
 void mem_arrays::getDynSize(std::string arr_name) {
 	if (this->arrays_table.count(arr_name)) {
 		if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
-			(std::static_pointer_cast<dyn_array_int<unsigned long long>>(this->arrays_table[arr_name]))->getSize();
+			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name]))->getSize();
 		}
 		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->getSize();

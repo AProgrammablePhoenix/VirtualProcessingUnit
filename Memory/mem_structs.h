@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 
 typedef struct memory memory;
 
@@ -26,7 +25,7 @@ private:
 
 	std::map<std::string, std::string> string_properties;
 	std::map<std::string, char> char_properties;
-	std::map<std::string, unsigned long long> unum_properties;
+	std::map<std::string, size_t> unum_properties;
 	std::map<std::string, long long> snum_properties;
 	std::map<std::string, double> double_properties;
 

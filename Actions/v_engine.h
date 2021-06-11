@@ -26,7 +26,7 @@ public:
 private:
 	actions_engine engine;
 	std::vector<action> actions;
-	unsigned long long *step;
+	size_t *step;
 	bool terminated;
 
 	void execute();

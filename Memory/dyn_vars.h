@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "../Registers/regs_decl.h"
-#include "memory_decl.h"
 
 template<typename T> struct dyn_var_int {
 public:
@@ -24,7 +23,7 @@ private:
 	T content = T();
 	std::string value_type = "";
 };
-template<> struct dyn_var_int<unsigned long long> {
+template<> struct dyn_var_int<size_t> {
 public:
 	virtual void dynget() {
 		return;
@@ -35,7 +34,7 @@ public:
 private:
 	regs* registers = NULL;
 	bool initialized = false;
-	unsigned long long content = 0;
+	size_t content = 0;
 	std::string value_type = "";
 };
 
@@ -63,7 +62,7 @@ private:
 	char content = '\0';
 	std::string value_type = "";
 };
-struct dyn_unum_var : dyn_var_int<unsigned long long> {
+struct dyn_unum_var : dyn_var_int<size_t> {
 public:
 	dyn_unum_var();
 	dyn_unum_var(regs* _registers);
@@ -72,7 +71,7 @@ public:
 private:
 	regs* registers = NULL;
 	bool initialized = false;
-	unsigned long long content = 0;
+	size_t content = 0;
 	std::string value_type = "";
 };
 struct dyn_snum_var : dyn_var_int<long long> {

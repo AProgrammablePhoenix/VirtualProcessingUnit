@@ -116,7 +116,7 @@ public:
 	}
 };
 
-struct extendedEEXReg : public reg_int<unsigned long long> {
+struct extendedEEXReg : public reg_int<size_t> {
 public:
 	extendedEXReg* l;
 	unsigned int* h;
@@ -130,7 +130,7 @@ public:
 		h = high;
 	}
 
-	void set(unsigned long long value) {
+	void set(size_t value) {
 		unsigned int low;
 		unsigned int high;
 
@@ -141,8 +141,8 @@ public:
 		*h = high;
 	}
 
-	unsigned long long get() {
-		unsigned long long value;
+	size_t get() {
+		size_t value;
 
 		value = *h;
 		value <<= 32;
@@ -239,11 +239,11 @@ public:
 		*rcx = &_rcx,
 		*rdx = &_rdx;
 
-	unsigned long long* process_step = &_process_step;
+	size_t* process_step = &_process_step;
 	unsigned char* cmp_out = &_cmp_out;
 	short* jmp_sign = &_jmp_sign;
 	bool* stopRequested = &_stopRequested;
-	unsigned long long *process_call_address = &_process_call_address;
+	size_t *process_call_address = &_process_call_address;
 
 	doubleReg* dr = &_dr;
 	charReg* cr = &_cr;
@@ -284,11 +284,11 @@ private:
 		_rcx = extendedEEXReg(&_ecx, &rcx_h),
 		_rdx = extendedEEXReg(&_edx, &rdx_h);
 
-	unsigned long long _process_step = 0;
+	size_t _process_step = 0;
 	unsigned char _cmp_out = 0xFF;
 	short _jmp_sign = 1;
 	bool _stopRequested = false;
-	unsigned long long _process_call_address = 0;
+	size_t _process_call_address = 0;
 
 	doubleReg _dr = doubleReg();
 	charReg _cr = charReg();

@@ -21,7 +21,7 @@
 void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
 
-	for (unsigned long long i = 0; i < headers.size(); i++) {
+	for (size_t i = 0; i < headers.size(); i++) {
 		if (headers[i].decl_type == "string") {
 			this->stored_strings[headers[i].decl_name] = headers[i].decl_value;
 			this->data_ptrs[headers[i].decl_name] = std::make_shared<std::string>(this->stored_strings[headers[i].decl_name]);
@@ -31,11 +31,11 @@ void process_memory::set(variables_decl* var) {
 			this->data_ptrs[headers[i].decl_name] = std::make_shared<char>(this->stored_chars[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "unsigned number") {
-			unsigned long long value;
+			size_t value;
 			std::stringstream ss(headers[i].decl_value);
 			ss >> value;
 			this->unsigned_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<unsigned long long>(this->unsigned_numbers[headers[i].decl_name]);
+			this->data_ptrs[headers[i].decl_name] = std::make_shared<size_t>(this->unsigned_numbers[headers[i].decl_name]);
 		}
 		else if (headers[i].decl_type == "signed number") {
 			long long value;
@@ -56,12 +56,12 @@ void process_memory::set(variables_decl* var) {
 void process_memory::setTags(variables_decl* vars) {
 	std::vector<tag_decl_form> tags_headers = vars->getTagsTree();
 
-	for (unsigned long long i = 0; i < tags_headers.size(); i++) {
+	for (size_t i = 0; i < tags_headers.size(); i++) {
 		this->stored_tags[tags_headers[i].tagname] = tags_headers[i].value;
-		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<unsigned long long>(this->stored_tags[tags_headers[i].tagname]);
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<size_t>(this->stored_tags[tags_headers[i].tagname]);
 	}
 }
-void process_memory::setTagValue(std::string tagname, unsigned long long value) {
+void process_memory::setTagValue(std::string tagname, size_t value) {
 	this->stored_tags[tagname] = value;
 }
 void process_memory::set(std::string var_name, std::shared_ptr<void> data_ptr) {
@@ -256,7 +256,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"subRDX", virtual_actions::subRDX},
 
 	{"toString", virtual_actions::toString},
-
 	{"castreg", virtual_actions::castreg},
 
 	{"push", virtual_actions::push},
@@ -270,6 +269,20 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"pushDR", virtual_actions::pushDR},
 	{"popDR", virtual_actions::popDR},
+
+	{"nsms", virtual_actions::nsms},
+
+	{"movsm", virtual_actions::movsm},
+	{"movgm", virtual_actions::movgm},
+
+	{"movsmSR", virtual_actions::movsmSR},
+	{"movgmSR", virtual_actions::movgmSR},
+
+	{"movsmCR", virtual_actions::movsmCR},
+	{"movgmCR", virtual_actions::movgmCR},
+
+	{"movsmDR", virtual_actions::movsmDR},
+	{"movgmDR", virtual_actions::movgmDR},
 
 	{"not", virtual_actions::_not},
 	{"and", virtual_actions::_and},
@@ -328,7 +341,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 		if (prefix == "N") { // Unsigned number
 			std::string s_val = content.substr(1);
 
-			unsigned long long value;
+			size_t value;
 			std::stringstream ss(s_val);
 			ss >> value;
 			std::stringstream().swap(ss);
@@ -429,7 +442,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			decl_form.decl_value = std::string(1, value);
 			std::stringstream().swap(ss);
 
-			vars->set(var_name, (unsigned char*)(unsigned long long)value);
+			vars->set(var_name, (unsigned char*)(size_t)value);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 			return var_name;
@@ -520,11 +533,11 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 			parsed.push_back(std::vector<std::string>({action, argument}));
 		}
 
-		for (unsigned long long i = 0; i < toInclude.size(); i++) {
+		for (size_t i = 0; i < toInclude.size(); i++) {
 			if (!global_toInclude.count(toInclude[i])) {
 				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars);
 
-				for (unsigned long long j = 0; j < loaded.size(); j++) {
+				for (size_t j = 0; j < loaded.size(); j++) {
 					parsed.push_back(loaded[j]);
 				}
 				global_toInclude.insert(toInclude[i]);
@@ -541,15 +554,15 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 std::vector<virtual_actions> convertSymbols(std::vector<std::vector<std::string>> parsed) {
 	std::vector<virtual_actions> converted;
 
-	for (unsigned long long i = 0; i < parsed.size(); i++) {
+	for (size_t i = 0; i < parsed.size(); i++) {
 		converted.push_back(symbols_converter[parsed[i][0]]);
 	}
 
 	return converted;
 }
 void purgeParsed(std::vector<virtual_actions> *converted, std::vector<std::vector<std::string>> *parsed) {
-	for (unsigned long long i = 0; i < converted->size(); i++) {
-		if ((unsigned long long)((*converted)[i]) == 0 || (*converted)[i] < virtual_actions::_int) {
+	for (size_t i = 0; i < converted->size(); i++) {
+		if ((size_t)((*converted)[i]) == 0 || (*converted)[i] < virtual_actions::_int) {
 			parsed->erase(parsed->begin() + i);
 			converted->erase(converted->begin() + i);
 			i--;
@@ -587,10 +600,10 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename, bo
 		}
 
 		if (main) {
-			for (unsigned long long i = 0; i < global_include_list.size(); i++) {
+			for (size_t i = 0; i < global_include_list.size(); i++) {
 				std::vector<std::vector<std::string>> loaded = makeCleanedParsed(global_include_list[i], false);
 
-				for (unsigned long long j = 0; j < loaded.size(); j++) {
+				for (size_t j = 0; j < loaded.size(); j++) {
 					parsed.push_back(loaded[j]);
 				}
 			}
@@ -605,7 +618,7 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename, bo
 }
 
 void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variables_decl* vars) {
-	for (unsigned long long i = 0; i < cleaned_parsed.size(); i++) {
+	for (size_t i = 0; i < cleaned_parsed.size(); i++) {
 		if (cleaned_parsed[i][0] == "decltag") {
 			vars->setTag(cleaned_parsed[i][1], i - 1);
 
@@ -621,7 +634,7 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 				break;
 			}
 		}
-		if ((unsigned long long)(symbols_converter[cleaned_parsed[i][0]]) == 0 ||
+		if ((size_t)(symbols_converter[cleaned_parsed[i][0]]) == 0 ||
 				symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::_int) {
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
 			i--;
@@ -631,7 +644,7 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 std::vector<std::shared_ptr<void>> convertVariables(std::vector<std::vector<std::string>> cleaned_parsed, process_memory* p_mem) {
 	std::vector<std::shared_ptr<void>> arguments;
 
-	for (unsigned long long i = 0; i < cleaned_parsed.size(); i++) {
+	for (size_t i = 0; i < cleaned_parsed.size(); i++) {
 		if (cleaned_parsed[i][1] == "0" || cleaned_parsed[i][1] == "NULL") {
 			arguments.push_back(NULL);
 		}
@@ -657,7 +670,7 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 
 	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
 
-	for (unsigned long long i = 0; i < converted_actions.size(); i++) {
+	for (size_t i = 0; i < converted_actions.size(); i++) {
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
 	}
 }
@@ -676,7 +689,7 @@ std::vector<action> build_actions_only(std::string filename, process_memory* out
 	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
 	std::vector<action> out_actions;
 
-	for (unsigned long long i = 0; i < converted_actions.size(); i++) {
+	for (size_t i = 0; i < converted_actions.size(); i++) {
 		out_actions.push_back(action(converted_actions[i], converted_arguments[i]));
 	}
 

@@ -13,11 +13,11 @@ public:
 	engine(process *proc);
 	engine(std::vector<process> procs);
 
-	unsigned long long pushProcess(process* proc);
+	size_t pushProcess(process* proc);
 	void popProcess();
 
-	process getProcessById(unsigned long long id);
-	void deleteProcessById(unsigned long long id);
+	process getProcessById(size_t id);
+	void deleteProcessById(size_t id);
 	
 	void setThreading(bool state);
 	void start();

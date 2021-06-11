@@ -106,16 +106,16 @@ void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 }
 
 void c_b_mov64RAX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rax->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rax->set(*std::static_pointer_cast<size_t>(reg_ptr));
 }
 void c_b_mov64RBX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rbx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rbx->set(*std::static_pointer_cast<size_t>(reg_ptr));
 }
 void c_b_mov64RCX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rcx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rcx->set(*std::static_pointer_cast<size_t>(reg_ptr));
 }
 void c_b_mov64RDX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rdx->set(*std::static_pointer_cast<unsigned long long>(reg_ptr));
+	registers->rdx->set(*std::static_pointer_cast<size_t>(reg_ptr));
 }
 
 void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
@@ -124,7 +124,7 @@ void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
-	std::shared_ptr<unsigned long long> value = std::make_shared<unsigned long long>(((reg_int<unsigned long long>*)ptr)->get());
+	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RAX(value, registers);
 }
 void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
@@ -133,7 +133,7 @@ void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
-	std::shared_ptr<unsigned long long> value = std::make_shared<unsigned long long>(((reg_int<unsigned long long>*)ptr)->get());
+	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RBX(value, registers);
 }
 void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
@@ -142,7 +142,7 @@ void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
-	std::shared_ptr<unsigned long long> value = std::make_shared<unsigned long long>(((reg_int<unsigned long long>*)ptr)->get());
+	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RCX(value, registers);
 }
 void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
@@ -151,6 +151,6 @@ void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
-	std::shared_ptr<unsigned long long> value = std::make_shared<unsigned long long>(((reg_int<unsigned long long>*)ptr)->get());
+	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RDX(value, registers);
 }

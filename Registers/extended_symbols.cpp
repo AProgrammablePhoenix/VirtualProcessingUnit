@@ -9,8 +9,6 @@
 #include "../Memory/memory_symbols.h"
 #include "registers_symbols.h"
 
-unsigned long long usr_var_counter = 0;
-
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;
 
@@ -24,7 +22,7 @@ void b_toString(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
 
 	std::stringstream ss;
 	ss << value;
@@ -51,7 +49,7 @@ void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused
 }
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
-	unsigned long long saved_rax = registers->rax->get();
+	size_t saved_rax = registers->rax->get();
 
 	registers->rax->set(sr.size());
 	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
@@ -73,9 +71,9 @@ void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m
 void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 	registries_def recv_id = *std::static_pointer_cast<registries_def>(receiver);
 
-	unsigned long long savedRAX = registers->rax->get();
+	size_t savedRAX = registers->rax->get();
 	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	unsigned long long value = registers->rax->get();
+	size_t value = registers->rax->get();
 	registers->rax->set(savedRAX);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -87,7 +85,7 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 		((reg_int<unsigned int>*)ptr_table.access(recv_id))->set((unsigned int)value);
 	}
 	else {
-		((reg_int<unsigned long long>*)ptr_table.access(recv_id))->set((unsigned long long)value);
+		((reg_int<size_t>*)ptr_table.access(recv_id))->set((size_t)value);
 	}
 }
 
@@ -106,13 +104,13 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 *	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
 void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	unsigned long long savedRAX = registers->rax->get();
+	size_t savedRAX = registers->rax->get();
 
 	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	unsigned long long value = registers->rax->get();
+	size_t value = registers->rax->get();
 
 	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	unsigned long long recast_type = registers->rax->get();
+	size_t recast_type = registers->rax->get();
 
 	if (recast_type == 0) {
 		long long n_value = (long long)value;
@@ -121,7 +119,7 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		registers->rax->set(savedRAX);
 	}
 	else if (recast_type == 1) {
-		unsigned long long n_value = (unsigned long long)((long long)value);
+		size_t n_value = (size_t)((long long)value);
 		registers->rax->set(n_value);
 		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 		registers->rax->set(savedRAX);
@@ -159,17 +157,17 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
-	unsigned long long saved_rax = registers->rax->get();
+	size_t saved_rax = registers->rax->get();
 
 	popMemSR(unused_p, registers, mem);
 	std::string value = registers->sr->get();
 
 	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	unsigned long long cast_type = registers->rax->get();
+	size_t cast_type = registers->rax->get();
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
-		unsigned long long n_value = 0;
+		size_t n_value = 0;
 		ss >> n_value;
 		registers->rax->set(n_value);
 		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
@@ -248,13 +246,13 @@ void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	DR: input value
 *	With output pushed onto stack
 * 
-*   Convert value in DR to unsigned long long
+*   Convert value in DR to size_t
 */
 void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double d = registers->dr->get();
-	unsigned long long n = (unsigned long long)std::llround(d);
+	size_t n = (size_t)std::llround(d);
 
-	unsigned long long saved_rax = registers->rax->get();
+	size_t saved_rax = registers->rax->get();
 	registers->rax->set(n);
 	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
@@ -266,8 +264,8 @@ void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double d = registers->dr->get();
 	long long n = std::llround(d);
 
-	unsigned long long saved_rax = registers->rax->get();
-	registers->rax->set((unsigned long long)n);
+	size_t saved_rax = registers->rax->get();
+	registers->rax->set((size_t)n);
 	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 
 	registers->rax->set(saved_rax);

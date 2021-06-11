@@ -10,86 +10,36 @@
 
 struct m_container {
 public:
-	void set(unsigned char data[]) {
-		delete[] this->obj;
-		obj = new unsigned char[sizeof(unsigned long long)];
-		this->obj = data;
-	}
+	void set(unsigned char data[]);
+	void set(unsigned char data[], size_t length);
 
-	void set(unsigned char data[], unsigned long long length) {
-		delete[] this->obj;
-		obj = new unsigned char[length];
-		this->obj = data;
-	}
-
-	unsigned char* get() {
-		return this->obj;
-	}
+	unsigned char* get();
 private:
-	unsigned char *obj = new unsigned char[sizeof(unsigned long long)];
+	unsigned char *obj = new unsigned char[sizeof(size_t)];
 };
 
 struct memory {
 public:
-	memory(regs* _registers) {
-		this->_arrays = mem_arrays(_registers);
-		this->_dynvars = mem_dyn_vars(_registers);
-		this->_structs = mem_structs(_registers, this);
-		this->init();
-	}
+	memory(regs* _registers);
 
-	void push(unsigned char data[]) {
-		m_container buffer;
-		buffer.set(data);
-		this->_memory.push_back(buffer);
-	}
-	void push(unsigned char data[], unsigned long long length) {
-		m_container buffer;
-		buffer.set(data, length);
-		this->_memory.push_back(buffer);
-	}
+	void push(unsigned char data[]);
+	void push(unsigned char data[], size_t length);
 
-	unsigned char *pop() {
-		if (this->_memory.size() < 2) {
-			return NULL;
-		}
-		else {
-			m_container buffer = this->_memory[this->_memory.size() - 1];			
-			this->_memory.pop_back();
-			return buffer.get();
-		}
-	}
+	unsigned char* pop();
 
-	unsigned char *access(unsigned long long addr) {
-		if (this->_memory.size() < 2 || this->_memory.size() <= addr) {
-			return NULL;
-		}
-		else {
-			return this->_memory[addr].get();
-		}
-	}
+	unsigned char* access(size_t addr);
 
-	void set(unsigned char *data, unsigned long long addr) {
-		if (addr >= this->_memory.size() || addr == 0) {
-			return;
-		}
-		else {
-			this->_memory[addr].set(data);
-			return;
-		}
-	}
-	void set(unsigned char* data, unsigned long long length, unsigned long long addr) {
-		if (addr >= this->_memory.size() || addr == 0) {
-			return;
-		}
-		else {
-			this->_memory[addr].set(data, length);
-		}
-	}
+	void set(unsigned char* data, size_t addr);
+	void set(unsigned char* data, size_t length, size_t addr);
 
-	void destroy() {
-		this->_arrays.destroy();
-	}
+	// Set Memory Size
+	void _SMS(size_t newlen);
+	// New Memory Set
+	void _NMS(unsigned char* data, size_t count, size_t addr);
+	// New Memory Get
+	void _NMG(unsigned char* data, size_t count, size_t addr);
+
+	void destroy();
 
 	mem_arrays _arrays;
 	mem_dyn_vars _dynvars;
@@ -98,9 +48,12 @@ private:
 	regs* registers;
 	std::vector<m_container> _memory;
 
-	void init() {
-		m_container start_block;
-		start_block.set((unsigned char*)"NULL_AREA[MEMORY_START]");
-		_memory.push_back(start_block);
-	}
+	// At the start of program, the memory has a size of 2048 bytes, but may/should be expanded by user by calling SMS (Set Memory Size)
+	// with unsigned __int64 as argument, describing new size of the memory
+	unsigned char* _newmem = new unsigned char[2048];
+
+	size_t _newmemlen = 2048;
+	bool resized = false;
+
+	void init();
 };

@@ -1,0 +1,67 @@
+; expected output:
+; 4096
+; Hello World!
+; P
+; 3.140000
+; Hello_World!
+
+nsms ${{N16384}}
+
+setRAX ${{N4096}}
+push RAX
+setAX ${{N2}}
+movsm AX
+movgm AX
+
+; RAX should not contain this value after memory get
+setRAX ${{N15000}}
+
+pop RAX
+
+toString RAX
+int ${{N6}} ; expected: 4096
+
+setSR ${{S"Hello World!"}}
+setAX ${{N10}}
+movsmSR AX
+
+; in case the program has unexpected behaviour
+setSR ${{S"Test failed!"}}
+
+movgmSR AX
+int ${{N6}}
+
+setCR ${{C'P'}}
+setAX ${{N0}}
+movsmCR AX
+
+; in cas the program has unexpected behaviour
+setCR ${{C'F'}}
+
+movgmCR AX
+int ${{N10}}
+int ${{N6}}
+
+setDR ${{D3.14}}
+setAX ${{N31}}
+movsmDR AX
+
+; in cas the program has unexpected behaviour
+setDR ${{D-1}}
+
+movgmDR AX
+int ${{N12}}
+int ${{N6}}
+
+
+; test of character replacement in stored string (addr = 10 => previous stored SR)
+setCR ${{C'_'}}
+setAX ${{N23}} ; location of character ' ' in "Hello World!" in memory
+movsmCR AX
+
+; reload new string in SR
+setAX ${{N10}}
+movgmSR AX
+
+; should print "Hello_World!" now
+int ${{N6}}

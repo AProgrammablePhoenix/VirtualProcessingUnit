@@ -28,7 +28,7 @@ void variables_decl::set(std::string var_name, unsigned char value[]) {
 	var.set(value);
 	this->vars[var_name] = var;
 }
-void variables_decl::set(std::string var_name, unsigned char value[], unsigned long long length) {
+void variables_decl::set(std::string var_name, unsigned char value[], size_t length) {
 	std::map<std::string, m_container>::iterator it;
 	it = this->vars.find(var_name);
 	if (it != this->vars.end()) {
@@ -77,19 +77,19 @@ std::vector<code_file_decl_form> variables_decl::getVariablesTree() {
 	return this->variables_vector;
 }
 
-void variables_decl::setTag(std::string tagname, unsigned long long value) {
+void variables_decl::setTag(std::string tagname, size_t value) {
 	this->tags[tagname] = value;
 }
-unsigned long long variables_decl::getTag(std::string tagname) {
+size_t variables_decl::getTag(std::string tagname) {
 	if (this->tags.count(tagname)) {
 		return this->tags[tagname];
 	}
 	return 0;
 }
-void variables_decl::setTagsMap(std::map<std::string, unsigned long long> map) {
+void variables_decl::setTagsMap(std::map<std::string, size_t> map) {
 	this->tags = map;
 }
-std::map<std::string, unsigned long long> variables_decl::getTagsMap() {
+std::map<std::string, size_t> variables_decl::getTagsMap() {
 	return this->tags;
 }
 
@@ -251,7 +251,7 @@ variables_decl build_variables_decl_tree(std::string filename) {
 	std::vector<tag_decl_form> tagsvec;
 	std::vector<code_file_decl_form> parsed = parse_code_file(filename, &tagsvec);
 
-	for (unsigned long long i = 0; i < parsed.size(); i++) {
+	for (size_t i = 0; i < parsed.size(); i++) {
 		if (parsed[i].decl_attr == "defined") {
 			if (parsed[i].decl_type == "undefined" || parsed[i].decl_name == "<parsing-error>" ||
 				parsed[i].decl_value == "<parsing-error>") {
@@ -279,12 +279,12 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					}
 
 					char c = parsed[i].decl_value[0];
-					storage.set(parsed[i].decl_name, (unsigned char*)(unsigned long long)c);
+					storage.set(parsed[i].decl_name, (unsigned char*)(size_t)c);
 					storage.setVariablesTree(parsed[i]);
 				}
 				else if (parsed[i].decl_type == "unsigned number") {
 					std::stringstream ss(parsed[i].decl_value);
-					unsigned long long n_value;
+					size_t n_value;
 					ss >> n_value;
 					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
 					storage.setVariablesTree(parsed[i]);
@@ -320,7 +320,7 @@ variables_decl build_variables_decl_tree(std::string filename) {
 			continue;
 		}
 	}
-	for (unsigned long long i = 0; i < tagsvec.size(); i++) {
+	for (size_t i = 0; i < tagsvec.size(); i++) {
 		if (tagsvec[i].tagname == "undefined") {
 			continue;
 		}

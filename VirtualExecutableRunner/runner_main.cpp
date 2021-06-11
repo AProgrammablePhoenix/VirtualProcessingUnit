@@ -13,11 +13,11 @@
 #include "../Compiler/action_parser.h"
 #include "runner.h"
 
-unsigned long long byteArrayToUlong(byte* _array) {
-	unsigned long long ret = 0;
+size_t byteArrayToUlong(byte* _array) {
+	size_t ret = 0;
 
 	for (long long i = 7, j = 0; i >= 0; i--, j++) {
-		ret |= ((unsigned long long)_array[j] << (i * 8));
+		ret |= ((size_t)_array[j] << (i * 8));
 	}
 
 	return ret;
@@ -63,10 +63,10 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			}
 			i--;
 
-			unsigned long long value = byteArrayToUlong(b_value);
+			size_t value = byteArrayToUlong(b_value);
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<unsigned long long>(value));
+			action _action(real_op, std::make_shared<size_t>(value));
 			actions->push_back(_action);
 
 			continue;
@@ -81,7 +81,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 				b_str_size[j] = (*byteArray)[i];
 			}
 
-			unsigned long long str_size = byteArrayToUlong(b_str_size);
+			size_t str_size = byteArrayToUlong(b_str_size);
 			delete[] b_str_size;
 
 			char* b_str = new char[str_size];

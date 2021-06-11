@@ -14,13 +14,13 @@ engine::engine(process *proc) {
 	this->threading = true;
 }
 engine::engine(std::vector<process> procs) {
-	for (unsigned long long i = 0; i < procs.size(); i++) {
+	for (size_t i = 0; i < procs.size(); i++) {
 		this->processes.push_back(procs[i]);
 	}
 	this->threading = true;
 }
 
-unsigned long long engine::pushProcess(process* proc) {
+size_t engine::pushProcess(process* proc) {
 	this->processes.push_back(*proc);
 	return this->processes.size() - 1;
 }
@@ -28,7 +28,7 @@ void engine::popProcess() {
 	this->processes.pop_back();
 }
 
-process engine::getProcessById(unsigned long long id) {
+process engine::getProcessById(size_t id) {
 	if (id >= this->processes.size()) {
 		return NULL;
 	}
@@ -36,7 +36,7 @@ process engine::getProcessById(unsigned long long id) {
 		return this->processes[id];
 	}
 }
-void engine::deleteProcessById(unsigned long long id) {
+void engine::deleteProcessById(size_t id) {
 	if (id >= this->processes.size()) {
 		return;
 	}
@@ -69,14 +69,14 @@ void engine::start() {
 		}
 	}
 	else {
-		for (unsigned long long i = 0; i < this->processes.size(); i++) {
+		for (size_t i = 0; i < this->processes.size(); i++) {
 			this->processes[i].start();
 		}
 	}
 }
 
 void engine::destroy() {
-	for (unsigned long long i = 0; i < this->processes.size(); i++) {
+	for (size_t i = 0; i < this->processes.size(); i++) {
 		this->processes[i].destroy();
 	}
 }

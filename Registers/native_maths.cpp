@@ -9,13 +9,13 @@ void b_inc(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get() + 1);
+	((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() + 1);
 }
 void b_dec(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<unsigned long long>*)ptr_table.access(reg_id))->set(((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get() - 1);
+	((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() - 1);
 }
 
 void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
@@ -112,40 +112,40 @@ void b_mul64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rax = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RAX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(value * rax);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(value * rax);
 	b_set64RAX(res, registers, unused_m);
 }
 void b_mul64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rbx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RBX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(value * rbx);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(value * rbx);
 	b_set64RBX(res, registers, unused_m);
 }
 void b_mul64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rcx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RCX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(value * rcx);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(value * rcx);
 	b_set64RCX(res, registers, unused_m);
 }
 void b_mul64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rdx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RDX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(value * rdx);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(value * rdx);
 	b_set64RDX(res, registers, unused_m);
 }
 
@@ -236,40 +236,40 @@ void b_div64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rax = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RAX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rax / value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rax / value);
 	b_set64RAX(res, registers, unused_m);
 }
 void b_div64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rbx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RBX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rbx / value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rbx / value);
 	b_set64RBX(res, registers, unused_m);
 }
 void b_div64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rcx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RCX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rcx / value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rcx / value);
 	b_set64RCX(res, registers, unused_m);
 }
 void b_div64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rdx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RDX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rdx / value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rdx / value);
 	b_set64RDX(res, registers, unused_m);
 }
 
@@ -360,40 +360,40 @@ void b_add64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rax = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RAX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rax + value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rax + value);
 	b_set64RAX(res, registers, unused_m);
 }
 void b_add64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rbx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RBX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rbx + value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rbx + value);
 	b_set64RBX(res, registers, unused_m);
 }
 void b_add64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rcx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RCX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rcx + value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rcx + value);
 	b_set64RCX(res, registers, unused_m);
 }
 void b_add64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rdx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RDX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rdx + value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rdx + value);
 	b_set64RDX(res, registers, unused_m);
 }
 
@@ -484,39 +484,39 @@ void b_sub64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rax = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RAX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rax - value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rax - value);
 	b_set64RAX(res, registers, unused_m);
 }
 void b_sub64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rbx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RBX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rbx - value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rbx - value);
 	b_set64RBX(res, registers, unused_m);
 }
 void b_sub64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rcx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RCX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rcx - value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rcx - value);
 	b_set64RCX(res, registers, unused_m);
 }
 void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned long long value = ((reg_int<unsigned long long>*)ptr_table.access(reg_id))->get();
-	unsigned long long rdx = ((reg_int<unsigned long long>*)ptr_table.access(registries_def::RDX))->get();
+	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
 
-	std::shared_ptr<unsigned long long> res = std::make_shared<unsigned long long>(rdx - value);
+	std::shared_ptr<size_t> res = std::make_shared<size_t>(rdx - value);
 	b_set64RDX(res, registers, unused_m);
 }

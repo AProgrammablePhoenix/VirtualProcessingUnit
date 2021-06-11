@@ -189,6 +189,18 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::_dlog2,  0x85},
 	{virtual_actions::_dlog10, 0x86},
 	{virtual_actions::_dpow,   0x87},
+
+	{virtual_actions::movsm,   0x88},
+	{virtual_actions::movgm,   0x89},
+
+	{virtual_actions::movsmSR, 0x8A},
+	{virtual_actions::movgmSR, 0x8B},
+
+	{virtual_actions::movsmCR, 0x8C},
+	{virtual_actions::movgmCR, 0x8D},
+
+	{virtual_actions::movsmDR, 0x8E},
+	{virtual_actions::movgmDR, 0x8F}
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -333,6 +345,18 @@ std::unordered_set<byte> reg_args_opcodes = {
 
 	ops[virtual_actions::push],
 	ops[virtual_actions::pop],
+
+	ops[virtual_actions::movsm],
+	ops[virtual_actions::movgm],
+
+	ops[virtual_actions::movsmSR],
+	ops[virtual_actions::movgmSR],
+
+	ops[virtual_actions::movsmCR],
+	ops[virtual_actions::movgmCR],
+
+	ops[virtual_actions::movsmDR],
+	ops[virtual_actions::movgmDR],
 
 	ops[virtual_actions::toString],
 	ops[virtual_actions::castreg],
