@@ -241,7 +241,7 @@ void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 #if defined(ISWIN)
 	memcpy_s(temp, sizeof(double), &value, sizeof(double));
 #else
-	std::memcpy(temp, &value, sizeof(double))
+	std::memcpy(temp, &value, sizeof(double));
 #endif
 	mem->_NMS(temp, sizeof(double), _addr);
 	delete[] temp;
