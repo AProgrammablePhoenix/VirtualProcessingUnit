@@ -50,9 +50,10 @@ private:
 
 	// At the start of program, the memory has a size of 2048 bytes, but may/should be expanded by user by calling SMS (Set Memory Size)
 	// with unsigned __int64 as argument, describing new size of the memory
-	unsigned char* _newmem = new unsigned char[2048];
+	unsigned char* _newmem = nullptr;
 
 	size_t _newmemlen = 2048;
+	static constexpr size_t stacksize = 32768; // 32 Ko of stack
 	bool resized = false;
 
 	void init();

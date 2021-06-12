@@ -77,7 +77,7 @@ void memory::set(unsigned char* data, size_t length, size_t addr) {
 
 void memory::_SMS(size_t newlen) {
 	if (!this->resized && newlen > _newmemlen) {
-		unsigned char* temp = new unsigned char[newlen];
+		unsigned char* temp = new unsigned char[newlen + this->stacksize];
 		std::copy(this->_newmem, this->_newmem + 2048, temp);
 		delete[] this->_newmem;
 		this->_newmem = temp;
@@ -89,14 +89,14 @@ void memory::_NMS(unsigned char* data, size_t count, size_t addr) {
 	if (addr > this->_newmemlen)
 		return;
 	for (size_t i = addr, j = 0; i < addr + count && j < count; i++, j++) {
-		this->_newmem[i] = data[j];
+		this->_newmem[i + this->stacksize] = data[j];
 	}
 }
 void memory::_NMG(unsigned char* data, size_t count, size_t addr) {
 	if (addr > this->_newmemlen)
 		return;
 	for (size_t i = addr, j = 0; i < addr + count && j < count; i++, j++) {
-		data[j] = this->_newmem[i];
+		data[j] = this->_newmem[i + this->stacksize];
 	}
 }
 
@@ -104,6 +104,8 @@ void memory::destroy() {
 	this->_arrays.destroy();
 }
 void memory::init() {
+	this->_newmem = new unsigned char[this->_newmemlen + this->stacksize];
+
 	m_container start_block;
 	start_block.set((unsigned char*)"NULL_AREA[MEMORY_START]");
 	_memory.push_back(start_block);
