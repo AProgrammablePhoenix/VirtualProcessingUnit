@@ -200,7 +200,9 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::movgmCR, 0x8D},
 
 	{virtual_actions::movsmDR, 0x8E},
-	{virtual_actions::movgmDR, 0x8F}
+	{virtual_actions::movgmDR, 0x8F},
+
+	{virtual_actions::nsms,	   0x90},
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -272,7 +274,9 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::setRDX],
 
 	ops[virtual_actions::call],
-	ops[virtual_actions::lcall]
+	ops[virtual_actions::lcall],
+
+	ops[virtual_actions::nsms]
 };
 std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::movAX],
