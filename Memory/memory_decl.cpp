@@ -27,56 +27,30 @@ memory::memory(regs* _registers) {
 	this->_structs = mem_structs(_registers, this);
 	this->init();
 }
-void memory::push(unsigned char data[]) {
-	m_container buffer;
-	buffer.set(data);
-	this->_memory.push_back(buffer);
-}
-void memory::push(unsigned char data[], size_t length) {
-	m_container buffer;
-	buffer.set(data, length);
-	this->_memory.push_back(buffer);
-}
-unsigned char* memory::pop() {
-	if (this->_memory.size() < 2) {
-		return NULL;
-	}
-	else {
-		m_container buffer = this->_memory[this->_memory.size() - 1];
-		this->_memory.pop_back();
-		return buffer.get();
+void memory::push(unsigned char* data, size_t count = 8) {
+	if (this->stacktop + count - 1 < this->stacksize) {
+		for (size_t addr = this->stacktop; addr < this->stacktop + count; addr++) {
+			this->_newmem[addr] = data[addr - this->stacktop];
+		}
+		this->stacktop += count;
 	}
 }
-unsigned char* memory::access(size_t addr) {
-	if (this->_memory.size() < 2 || this->_memory.size() <= addr) {
-		return NULL;
-	}
-	else {
-		return this->_memory[addr].get();
-	}
-}
-void memory::set(unsigned char *data, size_t addr) {
-	if (addr >= this->_memory.size() || addr == 0) {
-		return;
-	}
-	else {
-		this->_memory[addr].set(data);
-		return;
-	}
-}
-void memory::set(unsigned char* data, size_t length, size_t addr) {
-	if (addr >= this->_memory.size() || addr == 0) {
-		return;
-	}
-	else {
-		this->_memory[addr].set(data, length);
+void memory::pop(unsigned char* data, size_t count = 8) {
+	if (this->stacktop - count >= 0) {
+		for (size_t addr = this->stacktop - 1, oaddr = count - 1;
+			addr >= this->stacktop - count && addr < this->stacksize && oaddr >= 0;
+			addr--, oaddr--) {
+				data[oaddr] = this->_newmem[addr];
+				this->_newmem[addr] = 0;
+		}
+		this->stacktop -= count;
 	}
 }
 
 void memory::_SMS(size_t newlen) {
 	if (!this->resized && newlen > _newmemlen) {
 		unsigned char* temp = new unsigned char[newlen + this->stacksize];
-		std::copy(this->_newmem, this->_newmem + 2048, temp);
+		std::copy(this->_newmem, this->_newmem + 2048 + this->stacksize, temp);
 		delete[] this->_newmem;
 		this->_newmem = temp;
 		this->_newmemlen = newlen;

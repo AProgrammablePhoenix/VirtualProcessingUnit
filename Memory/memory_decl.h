@@ -22,15 +22,8 @@ struct memory {
 public:
 	memory(regs* _registers);
 
-	void push(unsigned char data[]);
-	void push(unsigned char data[], size_t length);
-
-	unsigned char* pop();
-
-	unsigned char* access(size_t addr);
-
-	void set(unsigned char* data, size_t addr);
-	void set(unsigned char* data, size_t length, size_t addr);
+	void push(unsigned char* data, size_t count);
+	void pop(unsigned char* data, size_t count);
 
 	// Set Memory Size
 	void _SMS(size_t newlen);
@@ -54,6 +47,7 @@ private:
 
 	size_t _newmemlen = 2048;
 	static constexpr size_t stacksize = 32768; // 32 Ko of stack
+	size_t stacktop = 0;
 	bool resized = false;
 
 	void init();

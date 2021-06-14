@@ -22,56 +22,104 @@ void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	void* regptr = ptr_table.access(reg_id);
+	size_t value = ((reg_int<size_t>*)regptr)->get();
 
-	mem->push((unsigned char*)value);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+#if defined(ISWIN)
+	memcpy_s(temp, sizeof(size_t), &value, sizeof(size_t));
+#else
+	std::memcpy(temp, &value, sizeof(size_t));
+#endif
+
+	mem->push(temp, sizeof(size_t));
+	delete[] temp;
 }
 void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
 	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned char* value = mem->pop();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
 
-	((reg_int<size_t>*)ptr_table.access(reg_id))->set((size_t)value);
+	mem->pop(temp, sizeof(size_t));
+	size_t value = 0;
+
+#if defined(ISWIN)
+	memcpy_s(&value, sizeof(size_t), temp, sizeof(size_t));
+#else
+std:memcpy(&value, temp, sizeof(size_t));
+#endif
+	((reg_int<size_t>*)ptr_table.access(reg_id))->set(value);
+
+	delete[] temp;
 }
 
 void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::shared_ptr<std::string> value = std::make_shared<std::string>("");
 	b_getSR(value, registers, mem);
 
-	unsigned char *uc_s = new unsigned char[value->size() + 1];
+	size_t rssize = value->size() + 1;
+
+	unsigned char* ssize = new unsigned char[sizeof(size_t)];
+	unsigned char *uc_s = new unsigned char[rssize];
 #if defined(ISWIN)
-	memcpy_s(uc_s, value->size() + 1, value->c_str(), value->size() + 1);
+	memcpy_s(ssize, sizeof(size_t), &rssize, sizeof(size_t));
+	memcpy_s(uc_s, rssize, value->c_str(), rssize);
 #else
+	std::memcpy(ssize, &rssize, sizeof(size_t));
 	std::memcpy(uc_s, value->c_str(), value->size() + 1);
 #endif
 
-	mem->push(uc_s, value->size() + 1);
+	mem->push(uc_s, rssize);
+	mem->push(ssize, sizeof(size_t));
+
+	delete[] uc_s;
+	delete[] ssize;
 }
 void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	unsigned char* value = mem->pop();
+	unsigned char* ssize = new unsigned char[sizeof(size_t)];
+	unsigned char* value = nullptr;
 
+	mem->pop(ssize, sizeof(size_t));
+
+	size_t rssize = 0;
+#if defined(ISWIN)
+	memcpy_s(&rssize, sizeof(size_t), ssize, sizeof(size_t));
+	value = new unsigned char[rssize];
+	mem->pop(value, rssize);
+#else
+	std::memcpy(&rssize, ssize, sizeof(size_t));
+	value = new unsigned char[rssize];
+	mem->pop(value, rssize);
+#endif
+
+	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
 	((reg_int<std::string>*)ptr_table.access(extra_registries::SR))->set(std::string((const char*)value));
 
 	delete[] value;
+	delete[] ssize;
 }
 
 void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-std::shared_ptr<char> value = std::make_shared<char>('\0');
-b_getCR(value, registers, mem);
+	std::shared_ptr<char> value = std::make_shared<char>('\0');
+	b_getCR(value, registers, mem);
 
-unsigned char* cptr = new unsigned char(*value);
+	unsigned char* cptr = new unsigned char[1];
+	cptr[0] = *value;
 
-mem->push(cptr);
+	mem->push(cptr, 1);
+	delete[] cptr;
 }
 void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	unsigned char* cptr = new unsigned char[1];
+	mem->pop(cptr, 1);
+
+	char c = cptr[0];
+
 	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	unsigned char* v = mem->pop();
+	((reg_int<char>*)ptr_table.access(extra_registries::CR))->set(c);
 
-	((reg_int<char>*)ptr_table.access(extra_registries::CR))->set((char)*v);
-
-	delete[] v;
+	delete[] cptr;
 }
 
 void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
@@ -87,21 +135,23 @@ void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 #endif
 
 	mem->push(uc_d, sizeof(double));
+	delete[] uc_d;
 }
 void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	unsigned char* v = mem->pop();
-	double d = 0;
+	unsigned char* uc_d = new unsigned char[sizeof(double)];
+	mem->pop(uc_d, sizeof(double));
 
+	double d = 0;
 #if defined(ISWIN)
-	memcpy_s(&d, sizeof(double), v, sizeof(double));
+	memcpy_s(&d, sizeof(double), uc_d, sizeof(double));
 #else
-	memcpy(&d, v, sizeof(double));
+	memcpy(&d, uc_d, sizeof(double));
 #endif
 
 	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
 
-	delete[] v;
+	delete[] uc_d;
 }
 
 // New memory addressing symbols
