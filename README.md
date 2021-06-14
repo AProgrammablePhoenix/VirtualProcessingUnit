@@ -3,7 +3,7 @@ Actually, the language used to run tasks is not directly C++, it's VASM (which m
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
 Towards V1.10.1:
-- [x] Add memory container (unsigned char array | unsigned char*)
-- [x] Add base symbols for memory addressing.
-- [x] Add support of the previous symbols to the compiler, virtual assembler/runner.
-- [x] Patch currently known memory leaks
+- [x] Finalize new stack structure
+- [ ] Add memory space manager to be able to store data structures into a specific readonly place.
+- [ ] Modify compiler to use new memory space manager
+- [ ] Delete old memory symbols
