@@ -56,9 +56,11 @@ decltag catostr
 ; pop array length
 pop RDX
 
+; reset SR
+
 ; init SR
 popCR 0
-CRToSR 0
+int ${{N10}}
 
 ; set iterator
 setRAX ${{N1}}

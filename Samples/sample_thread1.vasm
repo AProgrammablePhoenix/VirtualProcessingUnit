@@ -1,3 +1,5 @@
+; sample outdated
+
 decl string thread1_termination_message Value of EDX during compiled program execution: 
 decl string running_message Compiled program running...
 decl unsigned_number edx_before_value 4
