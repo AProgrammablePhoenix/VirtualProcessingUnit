@@ -220,7 +220,7 @@ void b_dpow(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
 struct registries_ptr_table {
 public:
-	registries_ptr_table(regs* _registers) {
+	registries_ptr_table(regs*& _registers) {
 		this->registers = _registers;
 		this->init();
 	}

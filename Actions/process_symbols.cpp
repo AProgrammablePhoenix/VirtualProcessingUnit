@@ -18,7 +18,7 @@ void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 }
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t saved_rax = registers->rax->get();
-	size_t saved_rbx = registers->rax->get();
+	size_t saved_rbx = registers->rbx->get();
 
 	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
 	popMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
