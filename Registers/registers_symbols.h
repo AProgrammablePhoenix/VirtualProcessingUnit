@@ -47,24 +47,24 @@ enum extra_registries {
 
 // Native registers ops
 #pragma region native_regs_ops
-void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* unused_m);
-void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* mem);
+void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* mem);
 
-void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* mem);
 
-void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* mem);
 
-void b_setSR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_setCR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
-void b_setDR(std::shared_ptr<void> a, regs* registers, memory* unused_m);
+void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem);
+void b_setDR(std::shared_ptr<void> a, regs* registers, memory* mem);
 
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);

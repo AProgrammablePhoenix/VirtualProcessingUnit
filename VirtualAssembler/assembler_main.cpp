@@ -4,11 +4,16 @@
 #include <memory>
 #include <unordered_set>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #if defined(__linux__)
 #include <cstring>
 #include <stdio.h>
+#endif
+
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+	#define ISWIN 1
 #endif
 
 #include "../Compiler/action_parser.h"
@@ -30,7 +35,7 @@ void doubleToByteArray(double value, byte** output) {
 #endif
 }
 
-std::vector<byte> assembleAction(action _action) {
+std::vector<byte> assembleAction(action _action, memory* mem) {
 	std::vector<byte> out;
 	out.push_back(instructions_set[_action.getAction()]);
 
@@ -39,19 +44,20 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
-		size_t value = *std::static_pointer_cast<size_t>(_action.getValuePtr());
-		byte* converted = new byte[8];
-		ulongToByteArray(value, &converted);
+		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+
+		byte* uc_n = new byte[sizeof(size_t)];
+		mem->_ROZVG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));		
 		
 		for (byte i = 0; i < 8; i++) {
-			out.push_back(converted[i]);
+			out.push_back(uc_n[i]);
 		}
-		delete[] converted;
+		delete[] uc_n;
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setSR]) {
-		std::string str = *std::static_pointer_cast<std::string>(_action.getValuePtr());
-		size_t str_size = str.size();
+		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		size_t str_size = std::get<1>(varinfos);		
 
 		byte* b_str_size = new byte[8];
 		ulongToByteArray(str_size, &b_str_size);
@@ -61,13 +67,8 @@ std::vector<byte> assembleAction(action _action) {
 		}
 		delete[] b_str_size;
 
-		char* b_str = new char[str_size + 1];
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-		strncpy_s(b_str, str_size + 1, str.c_str(), str_size);
-#else
-		strncpy(b_str, str.c_str(), str_size);
-#endif
+		byte* b_str = new byte[str_size];
+		mem->_ROZVG(b_str, str_size, std::get<0>(varinfos));
 
 		for (byte i = 0; i < str_size; i++) {
 			out.push_back(b_str[i]);
@@ -77,19 +78,25 @@ std::vector<byte> assembleAction(action _action) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setCR]) {
-		char c = *std::static_pointer_cast<char>(_action.getValuePtr());
-		out.push_back(c);
+		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		byte* uc_c = new byte[1];
+
+		mem->_ROZVG(uc_c, 1, std::get<0>(varinfos));
+		out.push_back(uc_c[0]);
+
+		delete[] uc_c;
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setDR]) {
-		double value = *std::static_pointer_cast<double>(_action.getValuePtr());
-		byte* converted = new byte[8];
-		doubleToByteArray(value, &converted);
+		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+
+		byte* uc_d = new byte[sizeof(double)];
+		mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
 		
 		for (byte i = 0; i < 8; i++) {
-			out.push_back(converted[i]);
+			out.push_back(uc_d[i]);
 		}
-		delete[] converted;
+		delete[] uc_d;
 		return out;
 	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
@@ -106,17 +113,22 @@ std::vector<byte> assembleAction(action _action) {
 
 std::vector<byte> as(std::string filename) {
 	process_memory* p_mem = new process_memory;
-	std::vector<action> built_actions = build_actions_only(filename, p_mem);
+	regs* registers = new regs();
+	memory* mem = new memory(registers);
+
+	std::vector<action> built_actions = build_actions_only(filename, p_mem, mem);
 	std::vector<byte> linked;
 
 	for (size_t i = 0; i < built_actions.size(); i++) {
-		std::vector<byte> temp = assembleAction(built_actions[i]);
+		std::vector<byte> temp = assembleAction(built_actions[i], mem);
 		for (size_t j = 0; j < temp.size(); j++) {
 			linked.push_back(temp[j]);
 		}
 	}
 
 	delete p_mem;
+	delete mem;
+	delete registers;
 
 	return linked;
 }

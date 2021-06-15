@@ -6,25 +6,25 @@ project ("vexe")
 
 add_library(registers STATIC
 			"Registers/regs_decl.h" "Registers/registers_symbols.h" "Registers/registers_symbols.cpp"
-			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp" "Registers/native_binary.cpp")
+			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp" "Registers/native_binary.cpp" "utility.h")
 
 add_library(memory STATIC
 			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" "Memory/mem_arrays.cpp"
-			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h" "Memory/mem_structs.cpp" "Memory/mem_structs.h" "Memory/memory_decl.cpp")
+			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h" "Memory/mem_structs.cpp" "Memory/mem_structs.h" "Memory/memory_decl.cpp" "utility.h")
 
 add_library(virtual_engine STATIC
 			"Actions/actions_symbols.h"  "Actions/action_decl.h" "Actions/action_decl.cpp" "Actions/v_engine.h"
 			"Actions/v_engine.cpp" "Actions/threading.h" "Actions/threading.cpp" "Actions/process_symbols.h"
-			"Actions/process_symbols.cpp" "Actions/interrupts.cpp" "Actions/interrupts.h")
+			"Actions/process_symbols.cpp" "Actions/interrupts.cpp" "Actions/interrupts.h" "utility.h")
 
 add_library(compiler STATIC
-			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h")
+			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h" "utility.h")
 
 target_link_libraries(memory registers)
 target_link_libraries(virtual_engine memory)
 target_link_libraries(compiler virtual_engine)
 
-add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp" )
+add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp"  "utility.h")
 
 target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
@@ -32,7 +32,7 @@ target_link_libraries(ThreadPoolEmulation virtual_engine)
 target_link_libraries(ThreadPoolEmulation compiler)
 
 # vas: virtual assembler
-add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp")
+add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp" "utility.h")
 
 target_link_libraries(vas registers)
 target_link_libraries(vas memory)
@@ -40,7 +40,7 @@ target_link_libraries(vas virtual_engine)
 target_link_libraries(vas compiler)
 
 # vexe: virtual executable runner
-add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h")
+add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h" "utility.h")
 
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)

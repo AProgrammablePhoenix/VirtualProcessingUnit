@@ -5,6 +5,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <tuple>
 #include <unordered_set>
 
 #if defined(__linux__)
@@ -12,6 +13,7 @@
 #include <stdio.h>
 #endif
 
+#include "../utility.h"
 #include "../Actions/threading.h"
 #include "../Actions/v_engine.h"
 #include "../Memory/memory_decl.h"
@@ -22,43 +24,26 @@ void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
 
 	for (size_t i = 0; i < headers.size(); i++) {
-		if (headers[i].decl_type == "string") {
-			this->stored_strings[headers[i].decl_name] = headers[i].decl_value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<std::string>(this->stored_strings[headers[i].decl_name]);
-		}
-		else if (headers[i].decl_type == "char") {
-			this->stored_chars[headers[i].decl_name] = headers[i].decl_value[0];
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<char>(this->stored_chars[headers[i].decl_name]);
-		}
-		else if (headers[i].decl_type == "unsigned number") {
-			size_t value;
-			std::stringstream ss(headers[i].decl_value);
-			ss >> value;
-			this->unsigned_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<size_t>(this->unsigned_numbers[headers[i].decl_name]);
-		}
-		else if (headers[i].decl_type == "signed number") {
-			long long value;
-			std::stringstream ss(headers[i].decl_value);
-			ss >> value;
-			this->signed_numbers[headers[i].decl_name] = value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<long long>(this->signed_numbers[headers[i].decl_name]);
-		}
-		else if (headers[i].decl_type == "double") {
-			double n_value;
-			std::stringstream ss(headers[i].decl_value);
-			ss >> n_value;
-			this->stored_doubles[headers[i].decl_name] = n_value;
-			this->data_ptrs[headers[i].decl_name] = std::make_shared<double>(this->stored_doubles[headers[i].decl_name]);
-		}
+		this->data_ptrs[headers[i].decl_name] = std::make_shared<std::tuple<size_t, size_t>>(var->newgetVarInfos(headers[i].decl_name));
 	}
 }
 void process_memory::setTags(variables_decl* vars) {
 	std::vector<tag_decl_form> tags_headers = vars->getTagsTree();
+	std::stringstream ss;
 
 	for (size_t i = 0; i < tags_headers.size(); i++) {
-		this->stored_tags[tags_headers[i].tagname] = tags_headers[i].value;
-		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<size_t>(this->stored_tags[tags_headers[i].tagname]);
+		unsigned char* uc_t = nullptr;
+		ULLTOA(tags_headers[i].value, &uc_t);
+
+		ss << std::hex << vars->tag_vars_count;
+		std::string tag_name = RES_TAG_VAR_TAG + ss.str();
+		vars->newset(tag_name, uc_t, sizeof(size_t));
+
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<std::tuple<size_t, size_t>>(vars->newgetVarInfos(tag_name));
+		std::stringstream().swap(ss);
+
+		vars->tag_vars_count += 1;
+		delete[] uc_t;
 	}
 }
 void process_memory::setTagValue(std::string tagname, size_t value) {
@@ -358,9 +343,15 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			ss >> decl_form.decl_value;
 			std::stringstream().swap(ss);
 
-			vars->set(var_name, (unsigned char*)value);
+			unsigned char* uc_n = nullptr;
+			ULLTOA(value, &uc_n);
+
+			vars->newset(var_name, uc_n, sizeof(size_t));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
+
+			delete[] uc_n;
+
 			return var_name;
 		}
 		else if (prefix == "_N") { // Signed number
@@ -383,9 +374,15 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			ss >> decl_form.decl_value;
 			std::stringstream().swap(ss);
 
-			vars->set(var_name, (unsigned char*)value);
+			unsigned char* uc_n = nullptr;
+			ULLTOA(value, &uc_n);
+
+			vars->set(var_name, uc_n, sizeof(size_t));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
+
+			delete[] uc_n;
+
 			return var_name;
 		}
 		else if (prefix == "D") {
@@ -408,14 +405,10 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			ss >> decl_form.decl_value;
 			std::stringstream().swap(ss);
 
-			unsigned char *uc_d = new unsigned char[sizeof(double)];
+			unsigned char* uc_d = nullptr;
+			DTOA(value, &uc_d);
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN__)
-			memcpy_s(uc_d, sizeof(double), &value, sizeof(double));
-#else
-			memcpy(uc_d, &value, sizeof(double));
-#endif
-			vars->set(var_name, uc_d, sizeof(double));
+			vars->newset(var_name, uc_d, sizeof(double));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
@@ -442,9 +435,15 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			decl_form.decl_value = std::string(1, value);
 			std::stringstream().swap(ss);
 
-			vars->set(var_name, (unsigned char*)(size_t)value);
+			unsigned char* uc_c = new unsigned char[1];
+			uc_c[0] = value;
+
+			vars->newset(var_name, uc_c, 1);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
+
+			delete[] uc_c;
+
 			return var_name;
 		}
 		else if (prefix == "S") {
@@ -462,17 +461,20 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			decl_form.decl_value = value;
 			std::stringstream().swap(ss);
 
-			unsigned char* uc_s = new unsigned char[value.size() + 1];
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-			memcpy_s(uc_s, value.size() + 1, value.c_str(), value.size() + 1);
+			size_t str_size = value.size() + 1;
+
+			unsigned char* uc_s = new unsigned char[str_size];
+#if defined(ISWIN)
+			memcpy_s(uc_s, str_size, value.c_str(), str_size);
 #else
-			std::memcpy(uc_s, value.c_str(), value.size() + 1);
+			std::memcpy(uc_s, value.c_str(), str_size);
 #endif
-			vars->set(var_name, uc_s, value.size() + 1);
+			vars->newset(var_name, uc_s, str_size);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
 			delete[] uc_s;
+
 			return var_name;
 		}
 		else {
@@ -656,8 +658,8 @@ std::vector<std::shared_ptr<void>> convertVariables(std::vector<std::vector<std:
 	return arguments;
 }
 
-void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem) {
-	variables_decl vars = build_variables_decl_tree(filename);
+void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem, memory*& mem) {
+	variables_decl vars = build_variables_decl_tree(filename, mem);
 	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
@@ -674,8 +676,8 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
 	}
 }
-std::vector<action> build_actions_only(std::string filename, process_memory* out_mem) {
-	variables_decl vars = build_variables_decl_tree(filename);
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem) {
+	variables_decl vars = build_variables_decl_tree(filename, mem);
 	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 

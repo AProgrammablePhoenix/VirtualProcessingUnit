@@ -240,6 +240,9 @@ public:
 	size_t* getStepCounterPtr() {
 		return this->self_regs->process_step;
 	}
+	memory* getMemoryPtr() {
+		return this->self_mem;
+	}
 	bool toStop() {
 		return *this->self_regs->stopRequested;
 	}
@@ -257,7 +260,7 @@ private:
 	regs* self_regs;
 	interrupts self_ints;
 
-	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_mem);
+	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m);
 
 	void init() {
 #pragma region b_set

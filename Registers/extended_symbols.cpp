@@ -27,8 +27,7 @@ void b_toString(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
 	std::stringstream ss;
 	ss << value;
 
-	std::shared_ptr<std::string> converted = std::make_shared<std::string>(ss.str());
-	b_setSR(converted, registers, unused_m);
+	registers->sr->set(ss.str());
 }
 void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string pushed = registers->sr->get();
@@ -217,7 +216,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 */
 void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	char c = registers->cr->get();
-	b_setSR(std::make_shared<std::string>(std::string(1, c)), registers, mem);
+	registers->sr->set(std::string(1, c));
 }
 
 /* Reverse string in SR:
@@ -239,7 +238,7 @@ void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::ostringstream ss;
 	ss << std::fixed << d;
 	std::string s_value = ss.str();
-	b_setSR(std::make_shared<std::string>(s_value), registers, mem);
+	registers->sr->set(s_value);
 }
 
 /* Registers before calling:

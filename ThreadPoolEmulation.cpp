@@ -97,7 +97,7 @@ int processInput(std::string& input, engine& threading_engine, int& status) {
 			for (unsigned long long i = 0; i < scripts.size(); i++) {
 				allocateActionsEngine(memory_table[i], registers[i]);
 				allocateProcess(a_engines[i]);
-				build_process(scripts[i], processes[i], &threading_engine, processes_mem[i]);
+				build_process(scripts[i], processes[i], &threading_engine, processes_mem[i], memory_table[i]);
 			}
 
 			return 2;

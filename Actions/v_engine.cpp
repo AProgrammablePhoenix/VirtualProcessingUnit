@@ -63,6 +63,9 @@ bool process::isTerminated() {
 	return this->terminated;
 }
 
+memory* process::getMemoryPtr() {
+	return this->engine.getMemoryPtr();
+}
 void process::destroy() {
 	this->engine.destroy();
 }

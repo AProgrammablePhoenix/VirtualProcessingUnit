@@ -33,5 +33,5 @@ private:
 	std::map<std::string, std::shared_ptr<void>> data_ptrs;
 };
 
-void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem);
-std::vector<action> build_actions_only(std::string filename, process_memory* out_mem);
+void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem, memory*& mem);
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem);

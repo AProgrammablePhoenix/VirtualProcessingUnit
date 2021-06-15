@@ -3,6 +3,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #if defined(__linux__)
@@ -10,131 +11,131 @@
 #include <stdio.h>
 #endif
 
+#include "../utility.h"
 #include "../Compiler/action_parser.h"
 #include "runner.h"
-
-size_t byteArrayToUlong(byte* _array) {
-	size_t ret = 0;
-
-	for (long long i = 7, j = 0; i >= 0; i--, j++) {
-		ret |= ((size_t)_array[j] << (i * 8));
-	}
-
-	return ret;
-}
-
-double byteArrayToDouble(byte* _array) {
-	double ret = 0;
-
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	memcpy_s(&ret, sizeof(double), _array, sizeof(double));
-#else
-	memcpy(&ret, _array, sizeof(double));
-#endif
-
-	return ret;
-}
 
 void executeByteArray(std::vector<unsigned char>* byteArray) {
 	std::vector<action>* actions = new std::vector<action>;
 
+	regs* registers = new regs;
+	memory* mem = new memory(registers);
+
 	for (size_t i = 0; i < byteArray->size(); i++) {
 		if (zero_args_opcodes.find((*byteArray)[i]) != zero_args_opcodes.end()) {
 
-			unsigned char _op = (*byteArray)[i];
-			unsigned char _arg = 0;
+			byte _op = (*byteArray)[i];
 			i++;
 
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
-			action _action(real_op, std::make_shared<unsigned char>(_arg));
+			action _action(real_op, nullptr);
 			actions->push_back(_action);
 
 			continue;
 		}
 		else if (uint64_args_opcodes.find((*byteArray)[i]) != uint64_args_opcodes.end()) {
-			unsigned char _op = (*byteArray)[i];
+			byte _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			unsigned char* b_value = new unsigned char[8];
-			for (size_t j = 0; j < 8; i++, j++) {
+			byte* b_value = new byte[sizeof(size_t)];
+			for (size_t j = 0; j < sizeof(size_t); i++, j++) {
 				b_value[j] = (*byteArray)[i];
 			}
 			i--;
 
-			size_t value = byteArrayToUlong(b_value);
+			size_t addr = mem->_ROZGST();
+			size_t len = sizeof(size_t);
+			mem->_ROZVS(b_value, len);
+
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<size_t>(value));
+			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
 		}
 		else if ((*byteArray)[i] == ops[virtual_actions::setSR]) {
-			unsigned char _op = (*byteArray)[i];
+			byte _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			unsigned char* b_str_size = new unsigned char[8];
+			byte* b_str_size = new byte[8];
 			for (size_t j = 0; j < 8; i++, j++) {
 				b_str_size[j] = (*byteArray)[i];
 			}
 
-			size_t str_size = byteArrayToUlong(b_str_size);
+			size_t str_size = ATOULL(b_str_size);
 			delete[] b_str_size;
 
-			char* b_str = new char[str_size];
+			byte* b_str = new byte[str_size];
 			for (size_t j = 0; j < str_size; i++, j++) {
 				b_str[j] = (*byteArray)[i];
 			}
 			i--;
 
-			std::string str(b_str, b_str + str_size);
+			size_t addr = mem->_ROZGST();
+			size_t& len = str_size;
+			mem->_ROZVS(b_str, len);
 
-			action _action(real_op, std::make_shared<std::string>(str));
+			delete[] b_str;
+
+			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
 
 			actions->push_back(_action);
 
 			continue;
 		}
 		else if ((*byteArray)[i] == ops[virtual_actions::setCR]) {
-			unsigned char _op = (*byteArray)[i];
+			byte _op = (*byteArray)[i];
 			++i;
-			char _arg = (char)((*byteArray)[i]);
+			byte _arg = (*byteArray)[i];
 
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
-			action _action(real_op, std::make_shared<char>(_arg));
+			byte* uc_c = new byte[1];
+			uc_c[0] = _arg;
+
+			size_t addr = mem->_ROZGST();
+			size_t len = 1;
+			mem->_ROZVS(uc_c, len);
+
+			delete[] uc_c;
+
+			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
 		}
 		else if ((*byteArray)[i] == ops[virtual_actions::setDR]) {
-			unsigned char _op = (*byteArray)[i];
+			byte _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			unsigned char* b_value = new unsigned char[8];
-			for (size_t j = 0; j < 8; i++, j++) {
+			byte* b_value = new byte[sizeof(double)];
+			for (size_t j = 0; j < sizeof(double); i++, j++) {
 				b_value[j] = (*byteArray)[i];
 			}
 			i--;
 
-			double value = byteArrayToDouble(b_value);
+			size_t addr = mem->_ROZGST();
+			size_t len = sizeof(double);
+			mem->_ROZVS(b_value, len);
+
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<double>(value));
+			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
 		}
 		else if (reg_args_opcodes.find((*byteArray)[i]) != reg_args_opcodes.end()) {
-			unsigned char _op = (*byteArray)[i];
+			byte _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			unsigned char _reg = (*byteArray)[i];
+			byte _reg = (*byteArray)[i];
 			registries_def real_reg = findKeyByValue(registers_set, _reg);
 
 			action _action(real_op, std::make_shared<registries_def>(real_reg));
@@ -143,9 +144,6 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			continue;
 		}
 	}
-
-	regs* registers = new regs;
-	memory* mem = new memory(registers);
 
 	actions_engine _actions_engine = actions_engine(mem, registers);
 	process _proc = process(&_actions_engine, actions);

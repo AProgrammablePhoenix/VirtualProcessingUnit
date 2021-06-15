@@ -22,6 +22,7 @@ public:
 
 	bool isTerminated();
 
+	memory* getMemoryPtr();
 	void destroy();
 private:
 	actions_engine engine;

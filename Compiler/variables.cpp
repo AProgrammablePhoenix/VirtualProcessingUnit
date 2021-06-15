@@ -4,17 +4,21 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <tuple>
 
 #if defined(__linux__)
 #include <cstring>
 #include <stdio.h>
 #endif
 
+#include "../utility.h"
 #include "../Memory/memory_decl.h"
 #include "variables.h"
 
-variables_decl::variables_decl() {
+variables_decl::variables_decl(memory* _mem) {
+	this->mem = _mem;
 	this->vars = std::map<std::string, m_container>();
+	this->newvars = std::map<std::string, std::tuple<size_t, size_t>>();
 }
 
 void variables_decl::set(std::string var_name, unsigned char value[]) {
@@ -40,12 +44,36 @@ void variables_decl::set(std::string var_name, unsigned char value[], size_t len
 	this->vars[var_name] = var;
 }
 
+void variables_decl::newset(std::string var_name, unsigned char* value, size_t length) {
+	std::map<std::string, std::tuple<size_t, size_t>>::iterator it;
+	it = this->newvars.find(var_name);
+	if (it != this->newvars.end()) {
+		return;
+	}
+
+	size_t addr = this->mem->_ROZGST();
+	this->mem->_ROZVS(value, length);
+	this->newvars[var_name] = std::make_tuple<size_t&, size_t&>(addr, length);
+}
+
 unsigned char* variables_decl::get(std::string var_name) {
 	if (!this->vars.count(var_name)) {
-		return NULL;
+		return nullptr;
 	}
 	return this->vars[var_name].get();
 }
+void variables_decl::newget(std::string var_name, unsigned char** out) {
+	if (!this->newvars.count(var_name)) {
+		out = nullptr;
+		return;
+	}
+	size_t addr = std::get<0>(this->newvars[var_name]);
+	size_t length = std::get<1>(this->newvars[var_name]);
+
+	*out = new unsigned char[length];
+	this->mem->_ROZVG(*out, length, addr);
+}
+
 void variables_decl::deleteVar(std::string var_name) {
 	std::map<std::string, m_container>::iterator it;
 	it = this->vars.find(var_name);
@@ -114,6 +142,10 @@ std::vector<tag_decl_form> variables_decl::getTagsTree() {
 	return this->tags_vector;
 }
 
+std::tuple<size_t, size_t> variables_decl::newgetVarInfos(std::string var_name) {
+	return this->newvars[var_name];
+}
+
 code_file_decl_form processDeclCodeLine(std::string line) {
 	code_file_decl_form decl_data;
 
@@ -132,7 +164,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 			decl_data.decl_name = "<parsing-error>";
 		}
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -155,7 +188,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 			decl_data.decl_name = "<parsing-error>";
 		}
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -171,7 +205,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -185,7 +220,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -199,7 +235,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
-		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0)) {
+		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -246,8 +283,8 @@ std::vector<code_file_decl_form> parse_code_file(std::string filename, std::vect
 	return decl_lines;
 }
 
-variables_decl build_variables_decl_tree(std::string filename) {
-	variables_decl storage = variables_decl();
+variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
+	variables_decl storage = variables_decl(mem);
 	std::vector<tag_decl_form> tagsvec;
 	std::vector<code_file_decl_form> parsed = parse_code_file(filename, &tagsvec);
 
@@ -261,12 +298,12 @@ variables_decl build_variables_decl_tree(std::string filename) {
 				if (parsed[i].decl_type == "string") {
 					unsigned char* uc_s = new unsigned char[parsed[i].decl_value.size() + 1];
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#if defined(ISWIN)
 					memcpy_s(uc_s, parsed[i].decl_value.size() + 1, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #else
 					std::memcpy(uc_s, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #endif
-					storage.set(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
+					storage.newset(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_s;
@@ -279,37 +316,47 @@ variables_decl build_variables_decl_tree(std::string filename) {
 					}
 
 					char c = parsed[i].decl_value[0];
-					storage.set(parsed[i].decl_name, (unsigned char*)(size_t)c);
+
+					unsigned char* uc_c = new unsigned char[1];
+					uc_c[0] = c;
+					
+					storage.newset(parsed[i].decl_name, uc_c, 1);
 					storage.setVariablesTree(parsed[i]);
+
+					delete[] uc_c;
 				}
 				else if (parsed[i].decl_type == "unsigned number") {
-					std::stringstream ss(parsed[i].decl_value);
-					size_t n_value;
-					ss >> n_value;
-					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
+					size_t n_value = std::stoull(parsed[i].decl_value);
+					
+					unsigned char* uc_n = nullptr;
+					ULLTOA(n_value, &uc_n);
+
+					storage.newset(parsed[i].decl_name, uc_n, sizeof(size_t));
 					storage.setVariablesTree(parsed[i]);
+
+					delete[] uc_n;
 				}
 				else if (parsed[i].decl_type == "signed number") {
-					std::stringstream ss(parsed[i].decl_value);
-					long long n_value;
-					ss >> n_value;
-					storage.set(parsed[i].decl_name, (unsigned char*)n_value);
+					long long n_value = std::stoll(parsed[i].decl_value);
+
+					unsigned char* uc_n = nullptr;
+					ULLTOA((size_t)n_value, &uc_n);
+
+					storage.newset(parsed[i].decl_name, uc_n, sizeof(size_t));
 					storage.setVariablesTree(parsed[i]);
+
+					delete[] uc_n;
 				}
 				else if (parsed[i].decl_type == "double") {
 					std::stringstream ss(parsed[i].decl_value);
 					double n_value;
 					ss >> n_value;
 
-					unsigned char* uc_d = new unsigned char[sizeof(double)];
+					unsigned char* uc_d = nullptr;
 					
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-					memcpy_s(uc_d, sizeof(double), &n_value, sizeof(double));
-#else
-					std::memcpy(uc_d, &n_value, sizeof(double));
-#endif
+					DTOA(n_value, &uc_d);
 
-					storage.set(parsed[i].decl_name, uc_d, sizeof(double));
+					storage.newset(parsed[i].decl_name, uc_d, sizeof(double));
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_d;
