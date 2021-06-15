@@ -18,7 +18,7 @@ inline void DTOA(double value, unsigned char** output) {
 #if defined(ISWIN)
 	memcpy_s(*output, sizeof(double), &value, sizeof(double));
 #else
-	memcpy(*output, &value, sizeof(double));
+	std::memcpy(*output, &value, sizeof(double));
 #endif
 }
 inline size_t ATOULL(unsigned char* _array) {
@@ -36,7 +36,7 @@ inline double ATOD(unsigned char* _array) {
 #if defined(ISWIN)
 	memcpy_s(&ret, sizeof(double), _array, sizeof(double));
 #else
-	memcpy(&ret, _array, sizeof(double));
+	std::memcpy(&ret, _array, sizeof(double));
 #endif
 
 	return ret;
