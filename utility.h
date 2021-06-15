@@ -4,6 +4,11 @@
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	#define ISWIN 1
+#else
+	#if defined(__linux__)
+		#include <cstring>
+		#include <stdio.h>
+	#endif
 #endif
 
 inline void ULLTOA(size_t value, unsigned char** output) {
