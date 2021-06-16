@@ -132,6 +132,7 @@ void b_setDR(std::shared_ptr<void> a, regs* registers, memory* mem) {
 	mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
 
 	registers->dr->set(ATOD(uc_d));
+	delete[] uc_d;
 }
 
 
