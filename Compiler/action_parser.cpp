@@ -24,7 +24,7 @@ void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
 
 	for (size_t i = 0; i < headers.size(); i++) {
-		this->data_ptrs[headers[i].decl_name] = std::make_shared<std::tuple<size_t, size_t>>(var->newgetVarInfos(headers[i].decl_name));
+		this->data_ptrs[headers[i].decl_name] = std::make_shared<std::tuple<size_t, size_t>>(var->getVarInfos(headers[i].decl_name));
 	}
 }
 void process_memory::setTags(variables_decl* vars) {
@@ -37,21 +37,13 @@ void process_memory::setTags(variables_decl* vars) {
 
 		ss << std::hex << vars->tag_vars_count;
 		std::string tag_name = RES_TAG_VAR_TAG + ss.str();
-		vars->newset(tag_name, uc_t, sizeof(size_t));
+		vars->set(tag_name, uc_t, sizeof(size_t));
 
-		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<std::tuple<size_t, size_t>>(vars->newgetVarInfos(tag_name));
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(tag_name));
 		std::stringstream().swap(ss);
 
 		vars->tag_vars_count += 1;
 		delete[] uc_t;
-	}
-}
-void process_memory::setTagValue(std::string tagname, size_t value) {
-	this->stored_tags[tagname] = value;
-}
-void process_memory::set(std::string var_name, std::shared_ptr<void> data_ptr) {
-	if (!this->data_ptrs.count(var_name)) {
-		this->data_ptrs[var_name] = data_ptr;
 	}
 }
 void process_memory::setRegisters() {
@@ -74,14 +66,6 @@ void process_memory::setRegisters() {
 	this->data_ptrs["CR"] = std::make_shared<extra_registries>(extra_registries::CR);
 	this->data_ptrs["DR"] = std::make_shared<extra_registries>(extra_registries::DR);
 }
-bool process_memory::isTag(std::string tagname) {
-	if (this->stored_tags.count(tagname)) {
-		return true;
-	}
-	else {
-		return false;
-	}
-}
 
 std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
 	if (this->data_ptrs.count(var_name)) {
@@ -90,29 +74,6 @@ std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
 	else {
 		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
 		return std::make_shared<unsigned int>(0);
-	}
-}
-std::string process_memory::getVarType(std::string var_name) {
-	if (this->unsigned_numbers.count(var_name)) {
-		return "UNUM";
-	}
-	else if (this->signed_numbers.count(var_name)) {
-		return "SNUM";
-	}
-	else if (this->stored_doubles.count(var_name)) {
-		return "DOUBLE";
-	}
-	else if (this->stored_chars.count(var_name)) {
-		return "CHAR";
-	}
-	else if (this->stored_strings.count(var_name)) {
-		return "STR";
-	}
-	else if (this->stored_tags.count(var_name)) {
-		return "TAG";
-	}
-	else {
-		return "UNDEFINED";
 	}
 }
 
@@ -346,7 +307,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			unsigned char* uc_n = nullptr;
 			ULLTOA(value, &uc_n);
 
-			vars->newset(var_name, uc_n, sizeof(size_t));
+			vars->set(var_name, uc_n, sizeof(size_t));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
@@ -408,7 +369,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			unsigned char* uc_d = nullptr;
 			DTOA(value, &uc_d);
 
-			vars->newset(var_name, uc_d, sizeof(double));
+			vars->set(var_name, uc_d, sizeof(double));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
@@ -438,7 +399,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			unsigned char* uc_c = new unsigned char[1];
 			uc_c[0] = value;
 
-			vars->newset(var_name, uc_c, 1);
+			vars->set(var_name, uc_c, 1);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
@@ -469,7 +430,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 #else
 			std::memcpy(uc_s, value.c_str(), str_size);
 #endif
-			vars->newset(var_name, uc_s, str_size);
+			vars->set(var_name, uc_s, str_size);
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 

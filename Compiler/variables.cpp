@@ -17,69 +17,30 @@
 
 variables_decl::variables_decl(memory* _mem) {
 	this->mem = _mem;
-	this->vars = std::map<std::string, m_container>();
-	this->newvars = std::map<std::string, std::tuple<size_t, size_t>>();
+	this->vars = std::map<std::string, std::tuple<size_t, size_t>>();
 }
 
-void variables_decl::set(std::string var_name, unsigned char value[]) {
-	std::map<std::string, m_container>::iterator it;
-	it = this->vars.find(var_name);
-	if (it != this->vars.end()) {
-		return;
-	}
-
-	m_container var = m_container();
-	var.set(value);
-	this->vars[var_name] = var;
-}
-void variables_decl::set(std::string var_name, unsigned char value[], size_t length) {
-	std::map<std::string, m_container>::iterator it;
-	it = this->vars.find(var_name);
-	if (it != this->vars.end()) {
-		return;
-	}
-
-	m_container var = m_container();
-	var.set(value, length);
-	this->vars[var_name] = var;
-}
-
-void variables_decl::newset(std::string var_name, unsigned char* value, size_t length) {
+void variables_decl::set(std::string var_name, unsigned char* value, size_t length) {
 	std::map<std::string, std::tuple<size_t, size_t>>::iterator it;
-	it = this->newvars.find(var_name);
-	if (it != this->newvars.end()) {
+	it = this->vars.find(var_name);
+	if (it != this->vars.end()) {
 		return;
 	}
 
 	size_t addr = this->mem->_ROZGST();
 	this->mem->_ROZVS(value, length);
-	this->newvars[var_name] = std::make_tuple<size_t&, size_t&>(addr, length);
+	this->vars[var_name] = std::make_tuple<size_t&, size_t&>(addr, length);
 }
-
-unsigned char* variables_decl::get(std::string var_name) {
+void variables_decl::get(std::string var_name, unsigned char** out) {
 	if (!this->vars.count(var_name)) {
-		return nullptr;
-	}
-	return this->vars[var_name].get();
-}
-void variables_decl::newget(std::string var_name, unsigned char** out) {
-	if (!this->newvars.count(var_name)) {
 		out = nullptr;
 		return;
 	}
-	size_t addr = std::get<0>(this->newvars[var_name]);
-	size_t length = std::get<1>(this->newvars[var_name]);
+	size_t addr = std::get<0>(this->vars[var_name]);
+	size_t length = std::get<1>(this->vars[var_name]);
 
 	*out = new unsigned char[length];
 	this->mem->_ROZVG(*out, length, addr);
-}
-
-void variables_decl::deleteVar(std::string var_name) {
-	std::map<std::string, m_container>::iterator it;
-	it = this->vars.find(var_name);
-	if (it != this->vars.end()) {
-		this->vars.erase(it);
-	}
 }
 
 void variables_decl::setVariablesTree(code_file_decl_form branch) {
@@ -88,34 +49,12 @@ void variables_decl::setVariablesTree(code_file_decl_form branch) {
 		this->variables_vector.push_back(branch);
 	}
 }
-code_file_decl_form variables_decl::getVariableBranch(std::string var_name) {
-	if (this->variables_tree.count(var_name)) {
-		return this->variables_tree[var_name];
-	}
-	else {
-		code_file_decl_form err;
-		err.decl_attr = "undefined";
-		err.decl_type = "undefined";
-		err.decl_name = "<parsing-error>";
-		err.decl_value = "<parsing-error>";
-		return err;
-	}
-}
 std::vector<code_file_decl_form> variables_decl::getVariablesTree() {
 	return this->variables_vector;
 }
 
 void variables_decl::setTag(std::string tagname, size_t value) {
 	this->tags[tagname] = value;
-}
-size_t variables_decl::getTag(std::string tagname) {
-	if (this->tags.count(tagname)) {
-		return this->tags[tagname];
-	}
-	return 0;
-}
-void variables_decl::setTagsMap(std::map<std::string, size_t> map) {
-	this->tags = map;
 }
 std::map<std::string, size_t> variables_decl::getTagsMap() {
 	return this->tags;
@@ -127,23 +66,12 @@ void variables_decl::setTagsBranch(tag_decl_form branch) {
 		this->tags_vector.push_back(branch);
 	}
 }
-tag_decl_form variables_decl::getTagBranch(std::string tagname) {
-	if (this->tags_tree.count(tagname)) {
-		return this->tags_tree[tagname];
-	}
-	else {
-		tag_decl_form err;
-		err.tagname = "undefined";
-		err.value = 0;
-		return err;
-	}
-}
 std::vector<tag_decl_form> variables_decl::getTagsTree() {
 	return this->tags_vector;
 }
 
-std::tuple<size_t, size_t> variables_decl::newgetVarInfos(std::string var_name) {
-	return this->newvars[var_name];
+std::tuple<size_t, size_t> variables_decl::getVarInfos(std::string var_name) {
+	return this->vars[var_name];
 }
 
 code_file_decl_form processDeclCodeLine(std::string line) {
@@ -303,7 +231,7 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 #else
 					std::memcpy(uc_s, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #endif
-					storage.newset(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
+					storage.set(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_s;
@@ -320,7 +248,7 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 					unsigned char* uc_c = new unsigned char[1];
 					uc_c[0] = c;
 					
-					storage.newset(parsed[i].decl_name, uc_c, 1);
+					storage.set(parsed[i].decl_name, uc_c, 1);
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_c;
@@ -331,7 +259,7 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 					unsigned char* uc_n = nullptr;
 					ULLTOA(n_value, &uc_n);
 
-					storage.newset(parsed[i].decl_name, uc_n, sizeof(size_t));
+					storage.set(parsed[i].decl_name, uc_n, sizeof(size_t));
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_n;
@@ -342,7 +270,7 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 					unsigned char* uc_n = nullptr;
 					ULLTOA((size_t)n_value, &uc_n);
 
-					storage.newset(parsed[i].decl_name, uc_n, sizeof(size_t));
+					storage.set(parsed[i].decl_name, uc_n, sizeof(size_t));
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_n;
@@ -356,7 +284,7 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 					
 					DTOA(n_value, &uc_d);
 
-					storage.newset(parsed[i].decl_name, uc_d, sizeof(double));
+					storage.set(parsed[i].decl_name, uc_d, sizeof(double));
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_d;

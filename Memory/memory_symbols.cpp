@@ -156,7 +156,7 @@ void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] uc_d;
 }
 
-// New memory addressing symbols
+// Memory addressing symbols
 void nsms(std::shared_ptr<void> nsize, regs* registers, memory* mem) {
 	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(nsize);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
@@ -184,7 +184,7 @@ void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	std::memcpy(temp, &value, sizeof(size_t));
 #endif
 
-	mem->_NMS(temp, sizeof(size_t), _addr);
+	mem->_MS(temp, sizeof(size_t), _addr);
 	delete[] temp;
 
 	registers->rax->set(saved_rax);
@@ -197,7 +197,7 @@ void movgm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_NMG(temp, sizeof(size_t), _addr);
+	mem->_MG(temp, sizeof(size_t), _addr);
 	size_t value = 0;
 
 #if defined(ISWIN)
@@ -233,8 +233,8 @@ void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	std::memcpy(temp, value.c_str(), rt_size);
 	std::memcpy(t_size, &rt_size, sizeof(size_t));
 #endif
-	mem->_NMS(t_size, sizeof(size_t), _addr);
-	mem->_NMS(temp, rt_size, _addr + sizeof(size_t));
+	mem->_MS(t_size, sizeof(size_t), _addr);
+	mem->_MS(temp, rt_size, _addr + sizeof(size_t));
 	delete[] t_size;
 	delete[] temp;
 }
@@ -247,7 +247,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	size_t rt_size = 0;
 
 	unsigned char* t_size = new unsigned char[sizeof(size_t)];
-	mem->_NMG(t_size, sizeof(size_t), _addr);
+	mem->_MG(t_size, sizeof(size_t), _addr);
 #if defined(ISWIN)
 	memcpy_s(&rt_size, sizeof(size_t), t_size, sizeof(size_t));
 #else
@@ -256,7 +256,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] t_size;
 
 	unsigned char* temp = new unsigned char[rt_size];
-	mem->_NMG(temp, rt_size, _addr + sizeof(size_t));
+	mem->_MG(temp, rt_size, _addr + sizeof(size_t));
 	std::string value = std::string(reinterpret_cast<char*>(temp));
 	delete[] temp;
 
@@ -271,7 +271,7 @@ void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	unsigned char* temp = new unsigned char[1];
 	temp[0] = registers->cr->get();
-	mem->_NMS(temp, 1, _addr);
+	mem->_MS(temp, 1, _addr);
 	delete[] temp;
 }
 void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
@@ -281,7 +281,7 @@ void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	unsigned char* temp = new unsigned char[1];
-	mem->_NMG(temp, 1, _addr);
+	mem->_MG(temp, 1, _addr);
 	registers->cr->set((char)temp[0]);
 }
 
@@ -299,7 +299,7 @@ void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 #else
 	std::memcpy(temp, &value, sizeof(double));
 #endif
-	mem->_NMS(temp, sizeof(double), _addr);
+	mem->_MS(temp, sizeof(double), _addr);
 	delete[] temp;
 }
 void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
@@ -309,7 +309,7 @@ void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	unsigned char* temp = new unsigned char[sizeof(double)];
-	mem->_NMG(temp, sizeof(double), _addr);
+	mem->_MG(temp, sizeof(double), _addr);
 
 	double value = 0;
 #if defined(ISWIN)
