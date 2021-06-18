@@ -51,7 +51,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
@@ -81,7 +81,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			delete[] b_str;
 
-			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 
 			actions->push_back(_action);
 
@@ -103,7 +103,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			delete[] uc_c;
 
-			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
@@ -125,7 +125,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<std::tuple<size_t, size_t>>(std::make_tuple<size_t&, size_t&>(addr, len)));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;
@@ -136,9 +136,18 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			i++;
 
 			byte _reg = (*byteArray)[i];
-			registries_def real_reg = findKeyByValue(registers_set, _reg);
+			size_t real_reg = (size_t)(findKeyByValue(registers_set, _reg));
 
-			action _action(real_op, std::make_shared<registries_def>(real_reg));
+			byte* uc_n = nullptr;
+			ULLTOA(real_reg, &uc_n);
+
+			size_t addr = mem->_ROZGST();
+			size_t len = sizeof(size_t);
+			mem->_ROZVS(uc_n, len);
+
+			delete[] uc_n;
+
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 			actions->push_back(_action);
 
 			continue;

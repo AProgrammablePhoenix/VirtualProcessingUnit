@@ -44,7 +44,7 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		return out;
 	}
 	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
-		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
 		mem->_ROZVG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));		
@@ -56,7 +56,7 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setSR]) {
-		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		size_t str_size = std::get<1>(varinfos);		
 
 		byte* b_str_size = new byte[8];
@@ -78,7 +78,7 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setCR]) {
-		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		byte* uc_c = new byte[1];
 
 		mem->_ROZVG(uc_c, 1, std::get<0>(varinfos));
@@ -88,7 +88,7 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setDR]) {
-		std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(_action.getValuePtr());
+		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_d = new byte[sizeof(double)];
 		mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
@@ -100,7 +100,14 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		return out;
 	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
-		unsigned char reg_value = (*std::static_pointer_cast<size_t>(_action.getValuePtr())) & 0xff;
+		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+
+		byte* uc_n = new byte[sizeof(size_t)];
+		mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+
+		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
+		delete[] uc_n;
+
 		reg_value = registers_set[(registries_def)reg_value];
 
 		out.push_back(reg_value);
