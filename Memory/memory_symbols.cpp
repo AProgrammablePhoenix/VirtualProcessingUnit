@@ -21,36 +21,26 @@
 
 // Memory stack symbols
 void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* regptr = ptr_table.access(reg_id);
 	size_t value = ((reg_int<size_t>*)regptr)->get();
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-#if defined(ISWIN)
-	memcpy_s(temp, sizeof(size_t), &value, sizeof(size_t));
-#else
-	std::memcpy(temp, &value, sizeof(size_t));
-#endif
+	mp_memcpy(value, temp);
 
 	mem->push(temp, sizeof(size_t));
 	delete[] temp;
 }
 void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 
 	mem->pop(temp, sizeof(size_t));
 	size_t value = 0;
 
-#if defined(ISWIN)
-	memcpy_s(&value, sizeof(size_t), temp, sizeof(size_t));
-#else
-std:memcpy(&value, temp, sizeof(size_t));
-#endif
+	mp_memcpy(temp, value);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(value);
 
 	delete[] temp;
@@ -64,11 +54,11 @@ void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	unsigned char* ssize = new unsigned char[sizeof(size_t)];
 	unsigned char *uc_s = new unsigned char[rssize];
+	mp_memcpy(rssize, ssize);
+
 #if defined(ISWIN)
-	memcpy_s(ssize, sizeof(size_t), &rssize, sizeof(size_t));
 	memcpy_s(uc_s, rssize, value->c_str(), rssize);
 #else
-	std::memcpy(ssize, &rssize, sizeof(size_t));
 	std::memcpy(uc_s, value->c_str(), value->size() + 1);
 #endif
 
@@ -83,17 +73,11 @@ void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
 	unsigned char* value = nullptr;
 
 	mem->pop(ssize, sizeof(size_t));
-
 	size_t rssize = 0;
-#if defined(ISWIN)
-	memcpy_s(&rssize, sizeof(size_t), ssize, sizeof(size_t));
+
+	mp_memcpy(ssize, rssize);
 	value = new unsigned char[rssize];
 	mem->pop(value, rssize);
-#else
-	std::memcpy(&rssize, ssize, sizeof(size_t));
-	value = new unsigned char[rssize];
-	mem->pop(value, rssize);
-#endif
 
 	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
 	((reg_int<std::string>*)ptr_table.access(extra_registries::SR))->set(std::string((const char*)value));
@@ -145,11 +129,7 @@ void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->pop(uc_d, sizeof(double));
 
 	double d = 0;
-#if defined(ISWIN)
-	memcpy_s(&d, sizeof(double), uc_d, sizeof(double));
-#else
-	memcpy(&d, uc_d, sizeof(double));
-#endif
+	mp_memcpy(uc_d, d, sizeof(double));
 
 	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
 
@@ -167,55 +147,32 @@ void nsms(std::shared_ptr<void> nsize, regs* registers, memory* mem) {
 }
 
 void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t value = registers->rax->get();
-
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-#if defined(ISWIN)
-	memcpy_s(temp, sizeof(size_t), &value, sizeof(size_t));
-#else
-	std::memcpy(temp, &value, sizeof(size_t));
-#endif
-
+	mem->pop(temp, sizeof(size_t));
 	mem->_MS(temp, sizeof(size_t), _addr);
 	delete[] temp;
-
-	registers->rax->set(saved_rax);
 }
 void movgm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), _addr);
-	size_t value = 0;
-
-#if defined(ISWIN)
-	memcpy_s(&value, sizeof(size_t), temp, sizeof(size_t));
-#else
-	std::memcpy(&value, temp, sizeof(size_t));
-#endif
+	mem->_MG(temp, sizeof(size_t), _addr);	
+	mem->push(temp, sizeof(size_t));
 	delete[] temp;
-
-	size_t saved_rax = registers->rax->get();
-	registers->rax->set(value);
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-
-	registers->rax->set(saved_rax);
 }
 
 void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -226,12 +183,12 @@ void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 
 	unsigned char* temp = new unsigned char[rt_size];
 	unsigned char* t_size = new unsigned char[sizeof(size_t)];
+
+	mp_memcpy(rt_size, t_size, sizeof(size_t));
 #if defined(ISWIN)
 	memcpy_s(temp, rt_size, value.c_str(), rt_size);
-	memcpy_s(t_size, sizeof(size_t), &rt_size, sizeof(size_t));
 #else
 	std::memcpy(temp, value.c_str(), rt_size);
-	std::memcpy(t_size, &rt_size, sizeof(size_t));
 #endif
 	mem->_MS(t_size, sizeof(size_t), _addr);
 	mem->_MS(temp, rt_size, _addr + sizeof(size_t));
@@ -239,7 +196,7 @@ void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] temp;
 }
 void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -248,11 +205,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 
 	unsigned char* t_size = new unsigned char[sizeof(size_t)];
 	mem->_MG(t_size, sizeof(size_t), _addr);
-#if defined(ISWIN)
-	memcpy_s(&rt_size, sizeof(size_t), t_size, sizeof(size_t));
-#else
-	std::memcpy(&rt_size, t_size, sizeof(size_t));
-#endif
+	mp_memcpy(t_size, rt_size);
 	delete[] t_size;
 
 	unsigned char* temp = new unsigned char[rt_size];
@@ -264,7 +217,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 }
 
 void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -275,7 +228,7 @@ void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] temp;
 }
 void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -286,7 +239,7 @@ void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 }
 
 void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -303,7 +256,7 @@ void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] temp;
 }
 void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
-	registries_def _reg = *std::static_pointer_cast<registries_def>(reg_addr);
+	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
 
@@ -333,15 +286,16 @@ void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	popMemSR(unused_p, registers, mem);
 	std::string array_type = registers->sr->get();
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t array_size = registers->rax->get();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t array_size = 0;
+
+	mp_memcpy(temp, array_size);
+	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) == "UNDEFINED_ARRAY") {
 		mem->_arrays.makeArray(array_name, array_type, array_size);
 	}
-
-	registers->sr->set(array_name);
 }
 
 /* Stack structure before calling:
@@ -355,15 +309,16 @@ void m_setAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	registers->sr->set(saved_sr);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t index = registers->rax->get();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t index = 0;
+
+	mp_memcpy(temp, index);
+	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
 		mem->_arrays.setArray(array_name, index);
 	}
-
-	registers->rax->set(saved_rax);
 }
 void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
@@ -374,21 +329,22 @@ void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	// this method.
 	registers->sr->set(saved_sr);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t index = registers->rax->get();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t index = 0;
+
+	mp_memcpy(temp, index);
+	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
 		mem->_arrays.getArray(array_name, index);
 	}
-
-	registers->rax->set(saved_rax);
 }
 
 /* Stack structure before calling:
 *	[...]
 *	ARRAY_NAME in SR
-*	Outputs value in RDX if success
+*	Output value in RDX if success
 */
 void m_getDynSize(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string array_name = registers->sr->get();

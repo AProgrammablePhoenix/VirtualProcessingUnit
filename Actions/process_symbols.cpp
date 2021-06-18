@@ -19,14 +19,15 @@ void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	*(registers->process_step) += count;
 }
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	size_t saved_rax = registers->rax->get();
-	size_t saved_rbx = registers->rbx->get();
-
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	popMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
-
 	size_t rax = registers->rax->get();
 	size_t rbx = registers->rbx->get();
+
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t)); // pop rax
+	mp_memcpy(temp, rax);
+
+	mem->pop(temp, sizeof(size_t)); // pop rbx
+	mp_memcpy(temp, rbx);
 
 	if (rax == rbx) {
 		*(registers->cmp_out) = 0;
@@ -42,11 +43,11 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		*(registers->cmp_out) = 0xFE;
 	}
 
-	pushMem(std::make_shared<registries_def>(registries_def::RBX), registers, mem);
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+	mem->push(temp, sizeof(size_t)); // push rbx
+	mp_memcpy(rax, temp);
+	mem->push(temp, sizeof(size_t)); // push rax
 
-	registers->rax->set(saved_rax);
-	registers->rbx->set(saved_rbx);
+	delete[] temp;
 }
 void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
@@ -129,12 +130,10 @@ void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 
 // Get Current working Adress [GCA] (adress of the current action) Put it on stack memory
 void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	size_t saved_rax = registers->rax->get();
-
-	registers->rax->set(*(registers->process_step));
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-
-	registers->rax->set(saved_rax);
+	size_t c_addr = *(registers->process_step);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mp_memcpy(c_addr, temp);
+	mem->push(temp, sizeof(size_t));
 }
 
 // Exit program

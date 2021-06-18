@@ -4,6 +4,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 #include <tuple>
 
 #if defined(__linux__)
@@ -14,6 +15,27 @@
 #include "../utility.h"
 #include "../Memory/memory_decl.h"
 #include "variables.h"
+
+std::unordered_set<std::string> regs_names = {
+	"AX",
+	"BX",
+	"CX",
+	"DX",
+
+	"EAX",
+	"EBX",
+	"ECX",
+	"EDX",
+
+	"RAX",
+	"RBX",
+	"RCX",
+	"RDX",
+
+	"SR",
+	"CR",
+	"DR"
+};
 
 variables_decl::variables_decl(memory* _mem) {
 	this->mem = _mem;
@@ -93,7 +115,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		}
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
-				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -117,7 +139,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		}
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
-				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -134,7 +156,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
-				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -149,7 +171,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
-				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -164,7 +186,7 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 		ss >> decl_data.decl_name >> std::ws >> decl_data.decl_value;
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
-				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0)) {
+				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
 			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
 			std::cout << "Variable not compiled" << std::endl;
 			decl_data.decl_name = "<parsing-error>";
@@ -195,7 +217,14 @@ std::vector<code_file_decl_form> parse_code_file(std::string filename, std::vect
 				tag_decl_form tag;
 				tag.tagname = line.substr(8);
 				tag.value = 0;
-				tagsvec->push_back(tag);
+
+				if (regs_names.find(tag.tagname) != regs_names.end()) {
+					std::cout << "Denied tag name (starts with restricted name): " << tag.tagname << std::endl;
+					std::cout << "tag not compiled" << std::endl;
+				}
+				else {
+					tagsvec->push_back(tag);
+				}
 			}
 			else if (!line.rfind("decl ", 0)) {
 				decl_lines.push_back(processDeclCodeLine(line));

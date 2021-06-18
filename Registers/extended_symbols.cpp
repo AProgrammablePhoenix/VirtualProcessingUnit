@@ -5,6 +5,12 @@
 #include <sstream>
 #include <string>
 
+#if defined(__linux__)
+	#include <cstring>
+	#include <stdio.h>
+#endif
+
+#include "../utility.h"
 #include "../Compiler/variables.h"
 #include "../Memory/memory_symbols.h"
 #include "registers_symbols.h"
@@ -18,9 +24,8 @@ void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	pushMemSR(unused_p, registers, mem);
 	registers->sr->set(saved_sr);
 }
-void b_toString(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_toString(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
 
@@ -48,11 +53,14 @@ void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused
 }
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
-	size_t saved_rax = registers->rax->get();
 
-	registers->rax->set(sr.size());
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	registers->rax->set(saved_rax);
+	size_t value = sr.size();
+	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
+
+	mp_memcpy(value, uc_n);
+
+	mem->push(uc_n, sizeof(size_t));
+	delete[] uc_n;
 }
 
 void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
@@ -68,12 +76,14 @@ void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m
 }
 
 void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
-	registries_def recv_id = *std::static_pointer_cast<registries_def>(receiver);
+	registries_def recv_id = ATTOREGID(receiver, mem);
 
-	size_t savedRAX = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t value = registers->rax->get();
-	registers->rax->set(savedRAX);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t value = 0;
+
+	mp_memcpy(temp, value);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 
@@ -103,30 +113,39 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 *	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
 void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	size_t savedRAX = registers->rax->get();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	size_t value = 0;
+	size_t recast_type = 0;
 
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t value = registers->rax->get();
+	mem->pop(temp, sizeof(size_t));
+	mp_memcpy(temp, value);
 
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t recast_type = registers->rax->get();
+	mem->pop(temp, sizeof(size_t));
+	mp_memcpy(temp, recast_type);
+	delete[] temp;
 
 	if (recast_type == 0) {
 		long long n_value = (long long)value;
-		registers->rax->set(n_value);
-		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-		registers->rax->set(savedRAX);
+		temp = new unsigned char[sizeof(long long)];
+
+		mp_memcpy(n_value, temp, sizeof(long long));
+		mem->push(temp, sizeof(long long));
+		delete[] temp;
 	}
 	else if (recast_type == 1) {
 		size_t n_value = (size_t)((long long)value);
-		registers->rax->set(n_value);
-		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-		registers->rax->set(savedRAX);
+		temp = new unsigned char[sizeof(size_t)];
+
+		mp_memcpy(n_value, temp);
+		mem->push(temp, sizeof(size_t));
+		delete[] temp;
 	}
 	else if (recast_type == 2) {
-		registers->rax->set(value);
-		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-		registers->rax->set(savedRAX);
+		temp = new unsigned char[sizeof(size_t)];
+
+		mp_memcpy(value, temp);
+		mem->push(temp, sizeof(size_t));
+		delete[] temp;
 	}
 	else if (recast_type == 3) {
 		long long n_value = (long long)value;
@@ -138,9 +157,7 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		std::string saved_sr = registers->sr->get();
 		registers->sr->set(output);
 		pushMemSR(unused_p, registers, mem);
-
 		registers->sr->set(saved_sr);
-		registers->rax->set(savedRAX);
 	}
 }
 
@@ -156,36 +173,43 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
-	size_t saved_rax = registers->rax->get();
 
 	popMemSR(unused_p, registers, mem);
 	std::string value = registers->sr->get();
 
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t cast_type = registers->rax->get();
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t cast_type = 0;
+
+	mp_memcpy(temp, cast_type);
+	delete[] temp;
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
 		size_t n_value = 0;
 		ss >> n_value;
-		registers->rax->set(n_value);
-		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-		registers->rax->set(saved_rax);
+
+		temp = new unsigned char[sizeof(size_t)];		
+		mp_memcpy(n_value, temp);
+		mem->push(temp, sizeof(size_t));
 		registers->sr->set(saved_sr);
+		delete[] temp;
 	}
 	else if (cast_type == 1) {
 		std::stringstream ss(value);
 		long long n_value = 0;
 		ss >> n_value;
-		registers->rax->set(n_value);
-		pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-		registers->rax->set(saved_rax);
+
+		temp = new unsigned char[sizeof(long long)];
+		mp_memcpy(n_value, temp, sizeof(long long));
+		mem->push(temp, sizeof(long long));
+		delete[] temp;
+
 		registers->sr->set(saved_sr);
 	}
 	else if (cast_type == 2) {
 		char saved_cr = registers->cr->get();
 		if (value.size() < 1) {
-			registers->rax->set(saved_rax);
 			registers->sr->set(saved_sr);
 			return;
 		}
@@ -193,7 +217,6 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		char c = value[0];
 		registers->cr->set(c);
 		pushMemCR(NULL, registers, mem);
-		registers->rax->set(saved_rax);
 		registers->sr->set(saved_sr);
 		registers->cr->set(saved_cr);
 	}
@@ -201,9 +224,10 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		double saved_dr = registers->dr->get(), d_value = 0;
 		std::stringstream ss(value);
 		ss >> d_value;
+
 		registers->dr->set(d_value);
 		pushMemDR(nullptr, registers, mem);
-		registers->rax->set(saved_rax);
+
 		registers->sr->set(saved_sr);
 		registers->dr->set(saved_dr);
 	}
@@ -251,11 +275,11 @@ void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double d = registers->dr->get();
 	size_t n = (size_t)std::llround(d);
 
-	size_t saved_rax = registers->rax->get();
-	registers->rax->set(n);
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mp_memcpy(n, temp);
+	mem->push(temp, sizeof(size_t));
 
-	registers->rax->set(saved_rax);
+	delete[] temp;
 }
 
 // Same as DRToULL but it converts value in DR to long long
@@ -263,9 +287,7 @@ void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double d = registers->dr->get();
 	long long n = std::llround(d);
 
-	size_t saved_rax = registers->rax->get();
-	registers->rax->set((size_t)n);
-	pushMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(long long)];
+	mp_memcpy(n, temp, sizeof(long long));
+	delete[] temp;
 }

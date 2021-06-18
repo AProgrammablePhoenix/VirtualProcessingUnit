@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 
+#include "../utility.h"
 #include "regs_decl.h"
 #include "registers_symbols.h"
 
@@ -18,36 +19,32 @@ void c_b_mov16DX(std::shared_ptr<void> reg_ptr, regs* registers) {
 	registers->dx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 
-void b_mov16AX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
 	c_b_mov16AX(value, registers);
 }
-void b_mov16BX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
 	c_b_mov16BX(value, registers);
 }
-void b_mov16CX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
 	c_b_mov16CX(value, registers);
 }
-void b_mov16DX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
@@ -68,36 +65,32 @@ void c_b_mov32EDX(std::shared_ptr<void> reg_ptr, regs* registers) {
 	registers->edx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
 }
 
-void b_mov32EAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
 	c_b_mov32EAX(value, registers);
 }
-void b_mov32EBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
 	c_b_mov32EBX(value, registers);
 }
-void b_mov32ECX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
 	c_b_mov32ECX(value, registers);
 }
-void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
@@ -118,36 +111,32 @@ void c_b_mov64RDX(std::shared_ptr<void> reg_ptr, regs* registers) {
 	registers->rdx->set(*std::static_pointer_cast<size_t>(reg_ptr));
 }
 
-void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RAX(value, registers);
 }
-void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RBX(value, registers);
 }
-void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 
 	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
 	c_b_mov64RCX(value, registers);
 }
-void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(reg_id);
 

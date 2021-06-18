@@ -79,7 +79,7 @@ void __struct__::get(std::string property_name) {
 				std::string saved_sr = this->registers->sr->get();
 
 				this->registers->sr->set(this->string_properties[property_name]);
-				pushMemSR(NULL, this->registers, this->mem);
+				pushMemSR(nullptr, this->registers, this->mem);
 
 				this->registers->sr->set(saved_sr);
 			}
@@ -87,25 +87,25 @@ void __struct__::get(std::string property_name) {
 				char saved_cr = this->registers->cr->get();
 
 				this->registers->cr->set(this->char_properties[property_name]);
-				pushMemCR(NULL, this->registers, this->mem);
+				pushMemCR(nullptr, this->registers, this->mem);
 
 				this->registers->cr->set(saved_cr);
 			}
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
-				size_t saved_rax = this->registers->rax->get();
+				size_t value = this->unum_properties[property_name];
+				unsigned char* temp = new unsigned char[sizeof(size_t)];
+				mp_memcpy(value, temp);
 
-				this->registers->rax->set(this->unum_properties[property_name]);
-				pushMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
-
-				this->registers->rax->set(saved_rax);
+				mem->push(temp, sizeof(size_t));
+				delete[] temp;
 			}
 			else if (this->types_table[property_name] == SNUM_PROPERTY) {
-				size_t saved_rax = this->registers->rax->get();
+				size_t value = (size_t)(this->snum_properties[property_name]);
+				unsigned char* temp = new unsigned char[sizeof(size_t)];
+				mp_memcpy(value, temp);
 
-				this->registers->rax->set((size_t)this->snum_properties[property_name]);
-				pushMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
-
-				this->registers->rax->set(saved_rax);
+				mem->push(temp, sizeof(size_t));
+				delete[] temp;
 			}
 			else {
 				double saved_dr = this->registers->dr->get();
@@ -124,7 +124,7 @@ void __struct__::set(std::string property_name) {
 			if (this->types_table[property_name] == STR_PROPERTY) {
 				std::string saved_sr = this->registers->sr->get();
 
-				popMemSR(NULL, this->registers, this->mem);
+				popMemSR(nullptr, this->registers, this->mem);
 				this->string_properties[property_name] = this->registers->sr->get();
 
 				this->registers->sr->set(saved_sr);
@@ -132,26 +132,30 @@ void __struct__::set(std::string property_name) {
 			else if (this->types_table[property_name] == CHAR_PROPERTY) {
 				char saved_cr = this->registers->cr->get();
 
-				popMemCR(NULL, this->registers, this->mem);
+				popMemCR(nullptr, this->registers, this->mem);
 				this->char_properties[property_name] = this->registers->cr->get();
 
 				this->registers->cr->set(saved_cr);
 			}
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
-				size_t saved_rax = this->registers->rax->get();
+				unsigned char* temp = new unsigned char[sizeof(size_t)];
+				mem->pop(temp, sizeof(size_t));
+				size_t value = 0;
 
-				popMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
-				this->unum_properties[property_name] = this->registers->rax->get();
+				mp_memcpy(temp, value);
+				delete[] temp;
 
-				this->registers->rax->set(saved_rax);
+				this->unum_properties[property_name] = value;
 			}
 			else if (this->types_table[property_name] == SNUM_PROPERTY) {
-				size_t saved_rax = this->registers->rax->get();
+				unsigned char* temp = new unsigned char[sizeof(size_t)];
+				mem->pop(temp, sizeof(size_t));
+				size_t value = 0;
 
-				popMem(std::make_shared<registries_def>(registries_def::RAX), this->registers, this->mem);
-				this->snum_properties[property_name] = (long long)this->registers->rax->get();
+				mp_memcpy(temp, value);
+				delete[] temp;
 
-				this->registers->rax->set(saved_rax);
+				this->snum_properties[property_name] = (long long)value;
 			}
 			else {
 				double saved_dr = this->registers->dr->get();
@@ -166,8 +170,8 @@ void __struct__::set(std::string property_name) {
 }
 
 mem_structs::mem_structs() {
-	this->registers = NULL;
-	this->mem = NULL;
+	this->registers = nullptr;
+	this->mem = nullptr;
 }
 mem_structs::mem_structs(regs* _registers, memory* _mem) {
 	this->registers = _registers;

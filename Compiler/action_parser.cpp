@@ -20,6 +20,22 @@
 #include "action_parser.h"
 #include "variables.h"
 
+inline void SETREG(registries_def reg, std::string str_reg, unsigned char*& buffer, 
+		variables_decl*& vars, std::map<std::string, std::shared_ptr<void>>& ptr_table) {
+	ULLTOA((size_t)reg, &buffer);
+	vars->set(str_reg, buffer, sizeof(size_t));
+	delete[] buffer;
+	ptr_table[str_reg] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(str_reg));
+}
+
+inline void SETXREG(extra_registries xreg, std::string str_xreg, unsigned char*& buffer,
+		variables_decl*& vars, std::map<std::string, std::shared_ptr<void>>& ptr_table) {
+	ULLTOA((size_t)xreg, &buffer);
+	vars->set(str_xreg, buffer, sizeof(size_t));
+	delete[] buffer;
+	ptr_table[str_xreg] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(str_xreg));
+}
+
 void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
 
@@ -46,25 +62,27 @@ void process_memory::setTags(variables_decl* vars) {
 		delete[] uc_t;
 	}
 }
-void process_memory::setRegisters() {
-	this->data_ptrs["AX"] = std::make_shared<registries_def>(registries_def::AX);
-	this->data_ptrs["BX"] = std::make_shared<registries_def>(registries_def::BX);
-	this->data_ptrs["CX"] = std::make_shared<registries_def>(registries_def::CX);
-	this->data_ptrs["DX"] = std::make_shared<registries_def>(registries_def::DX);
+void process_memory::setRegisters(variables_decl* vars) {
+	unsigned char* uc_r = nullptr;
 
-	this->data_ptrs["EAX"] = std::make_shared<registries_def>(registries_def::EAX);
-	this->data_ptrs["EBX"] = std::make_shared<registries_def>(registries_def::EBX);
-	this->data_ptrs["ECX"] = std::make_shared<registries_def>(registries_def::ECX);
-	this->data_ptrs["EDX"] = std::make_shared<registries_def>(registries_def::EDX);
+	SETREG(registries_def::AX, "AX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::BX, "BX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::CX, "CX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::DX, "DX", uc_r, vars, this->data_ptrs);
 
-	this->data_ptrs["RAX"] = std::make_shared<registries_def>(registries_def::RAX);
-	this->data_ptrs["RBX"] = std::make_shared<registries_def>(registries_def::RBX);
-	this->data_ptrs["RCX"] = std::make_shared<registries_def>(registries_def::RCX);
-	this->data_ptrs["RDX"] = std::make_shared<registries_def>(registries_def::RDX);
+	SETREG(registries_def::EAX, "EAX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::EBX, "EBX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::ECX, "ECX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::EDX, "EDX", uc_r, vars, this->data_ptrs);
 
-	this->data_ptrs["SR"] = std::make_shared<extra_registries>(extra_registries::SR);
-	this->data_ptrs["CR"] = std::make_shared<extra_registries>(extra_registries::CR);
-	this->data_ptrs["DR"] = std::make_shared<extra_registries>(extra_registries::DR);
+	SETREG(registries_def::RAX, "RAX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::RBX, "RBX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::RCX, "RCX", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::RDX, "RDX", uc_r, vars, this->data_ptrs);
+
+	SETXREG(extra_registries::SR, "SR", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::CR, "CR", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::DR, "DR", uc_r, vars, this->data_ptrs);
 }
 
 std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
@@ -73,7 +91,7 @@ std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
 	}
 	else {
 		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
-		return std::make_shared<unsigned int>(0);
+		return std::make_shared<size_t>(0);
 	}
 }
 
@@ -628,7 +646,7 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 	finalizeTags(makeCleanedParsed(filename), &vars);
 
 	out_mem->set(&vars);
-	out_mem->setRegisters();
+	out_mem->setRegisters(&vars);
 	out_mem->setTags(&vars);
 
 	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
@@ -646,7 +664,7 @@ std::vector<action> build_actions_only(std::string filename, process_memory* out
 	finalizeTags(makeCleanedParsed(filename), &vars);
 
 	out_mem->set(&vars);
-	out_mem->setRegisters();
+	out_mem->setRegisters(&vars);
 	out_mem->setTags(&vars);
 
 	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);

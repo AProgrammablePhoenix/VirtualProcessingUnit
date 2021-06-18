@@ -16,7 +16,7 @@ struct process_memory {
 public:
 	void set(variables_decl* var);
 	void setTags(variables_decl* vars);
-	void setRegisters();
+	void setRegisters(variables_decl* vars);
 
 	std::shared_ptr<void> getVarPtr(std::string var_name);
 private:

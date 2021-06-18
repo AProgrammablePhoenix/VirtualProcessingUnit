@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "../utility.h"
 #include "../Memory/memory_symbols.h"
 #include "regs_decl.h"
 #include "registers_symbols.h"
@@ -12,29 +13,25 @@
 *	With value in specified registers
 *	Output in specified register
 */
-void b_not(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_not(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(~(((reg_int<size_t>*)ptr_table.access(reg_id)))->get());
 }
-void b_log2(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_log2(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)log2l((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
 }
-void b_log10(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_log10(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)log10l((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
 }
-void b_log(std::shared_ptr<void> reg, regs* registers, memory* unused_m) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
-
+void b_log(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)logbl((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
@@ -59,68 +56,74 @@ void b_dlog(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 *	Output in specified register
 */
 void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t left = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t left = 0;
+	mp_memcpy(temp, left);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left & (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t left = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t left = 0;
+	mp_memcpy(temp, left);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left | (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t left = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t left = 0;
+	mp_memcpy(temp, left);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left ^ (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t left = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t left = 0;
+	mp_memcpy(temp, left);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left << (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t left = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t left = 0;
+	mp_memcpy(temp, left);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left >> (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 
 void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = *std::static_pointer_cast<registries_def>(reg);
+	registries_def reg_id = ATTOREGID(reg, mem);
 
-	size_t saved_rax = registers->rax->get();
-	popMem(std::make_shared<registries_def>(registries_def::RAX), registers, mem);
-	size_t _pow = registers->rax->get();
-	registers->rax->set(saved_rax);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->pop(temp, sizeof(size_t));
+	size_t _pow = 0;
+	mp_memcpy(temp, _pow);
+	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
@@ -136,7 +139,7 @@ void b_dpow(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	double _pow = registers->dr->get();
 
 	double res = pow(saved_dr, _pow);
-	b_setDR(std::make_shared<double>(res), registers, mem);
+	registers->dr->set(res);
 	pushMemDR(nullptr, registers, mem);
 
 	registers->dr->set(saved_dr);

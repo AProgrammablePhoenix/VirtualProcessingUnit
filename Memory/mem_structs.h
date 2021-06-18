@@ -19,8 +19,8 @@ public:
 	void get(std::string property_name);
 	void set(std::string property_name);
 private:
-	regs* registers = NULL;
-	memory* mem = NULL;
+	regs* registers = nullptr;
+	memory* mem = nullptr;
 	bool initialized = false;
 
 	std::map<std::string, std::string> string_properties;
