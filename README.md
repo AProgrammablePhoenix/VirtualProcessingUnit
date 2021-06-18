@@ -5,5 +5,5 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 Towards V1.10.1:
 - [x] Finalize new stack structure
 - [x] Add memory space manager to be able to store data structures into a specific readonly place.
-- [ ] Modify compiler to use new memory space manager
-- [ ] Delete old memory symbols
+- [x] Modify compiler to use new memory space manager
+- [x] Delete old memory symbols
