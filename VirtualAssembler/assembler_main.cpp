@@ -12,10 +12,7 @@
 #include <stdio.h>
 #endif
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
-	#define ISWIN 1
-#endif
-
+#include "../utility.h"
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
 
@@ -40,16 +37,17 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 	out.push_back(instructions_set[_action.getAction()]);
 
 	if (zero_args_opcodes.find(out[0]) != zero_args_opcodes.end()) {
-		out.push_back(0);
 		return out;
 	}
 	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
-		mem->_ROZVG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));		
+		mem->_ROZVG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));
+
+		size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
 		
-		for (byte i = 0; i < 8; i++) {
+		for (byte i = 0; i < compressed_len; i++) {
 			out.push_back(uc_n[i]);
 		}
 		delete[] uc_n;
@@ -59,10 +57,12 @@ std::vector<byte> assembleAction(action _action, memory* mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		size_t str_size = std::get<1>(varinfos);		
 
-		byte* b_str_size = new byte[8];
+		byte* b_str_size = new byte[sizeof(size_t)];
 		ulongToByteArray(str_size, &b_str_size);
 
-		for (byte i = 0; i < 8; i++) {
+		size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
+
+		for (byte i = 0; i < compressed_len; i++) {
 			out.push_back(b_str_size[i]);
 		}
 		delete[] b_str_size;

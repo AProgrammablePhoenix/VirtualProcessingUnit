@@ -25,7 +25,6 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 		if (zero_args_opcodes.find((*byteArray)[i]) != zero_args_opcodes.end()) {
 
 			byte _op = (*byteArray)[i];
-			i++;
 
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
@@ -39,19 +38,31 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			byte* b_value = new byte[sizeof(size_t)];
-			for (size_t j = 0; j < sizeof(size_t); i++, j++) {
-				b_value[j] = (*byteArray)[i];
+			byte* b_value = new byte[sizeof(size_t) + 1];
+			b_value[0] = (*byteArray)[i];
+			i++;
+
+			size_t reallen;
+
+			if ((size_t)b_value[0] < sizeof(size_t)) {
+				for (size_t j = 0; j < sizeof(size_t) - b_value[0]; j++, i++) {
+					b_value[j + 1] = (*byteArray)[i];
+				}
+				i--;
+
+				reallen = EXTDBA(b_value, sizeof(size_t) - b_value[0] + 1);
 			}
-			i--;
+			else {
+				b_value[1] = (*byteArray)[i];
+				reallen = EXTDBA(b_value, 2);
+			}
 
 			size_t addr = mem->_ROZGST();
-			size_t len = sizeof(size_t);
-			mem->_ROZVS(b_value, len);
+			mem->_ROZVS(b_value, reallen);
 
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, reallen)));
 			actions->push_back(_action);
 
 			continue;
@@ -61,9 +72,22 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 			i++;
 
-			byte* b_str_size = new byte[8];
-			for (size_t j = 0; j < 8; i++, j++) {
-				b_str_size[j] = (*byteArray)[i];
+			byte* b_str_size = new byte[sizeof(size_t) + 1];
+			b_str_size[0] = (*byteArray)[i];
+			i++;
+
+			size_t complen;
+
+			if ((size_t)b_str_size[0] < sizeof(size_t)) {
+				for (size_t j = 0; j < sizeof(size_t) - b_str_size[0]; j++, i++) {
+					b_str_size[j + 1] = (*byteArray)[i];
+				}
+
+				complen = EXTDBA(b_str_size, sizeof(size_t) - b_str_size[0] + 1);
+			}
+			else {
+				b_str_size[1] = (*byteArray)[i];
+				complen = EXTDBA(b_str_size, 2);
 			}
 
 			size_t str_size = ATOULL(b_str_size);

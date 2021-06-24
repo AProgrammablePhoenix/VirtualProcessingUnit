@@ -93,3 +93,70 @@ template<> inline void mp_memcpy<unsigned char, size_t>(unsigned char* _in, size
 	std::memcpy(_out, _in, sizeof(size_t));
 #endif
 }
+
+// Compress byte array, returns size of new array, with new array set to ba (passed by ref)
+inline size_t COMPBA(unsigned char*& ba, unsigned char length) {
+	unsigned char nZeros = 0;
+
+	for (size_t i = 0; i < length; i++) {
+		if (!ba[i])
+			nZeros++;
+	}
+	if (nZeros < length) {
+		size_t newlen = length - (size_t)nZeros + 1;
+
+		unsigned char* temp = new unsigned char[newlen];
+		temp[0] = nZeros;
+
+		std::copy(ba + nZeros, ba + length, temp + 1);
+		delete[] ba;
+		ba = temp;
+
+		return newlen;
+	}
+	else {
+		size_t newlen = 2;
+
+		unsigned char* temp = new unsigned char[newlen];
+		temp[0] = nZeros;
+		temp[1] = 0;
+
+		delete[] ba;
+		ba = temp;
+		return newlen;
+	}
+}
+// Extends compressed byte array (compressed with COMPBA), with new size returned and extended array set to cba (passed by ref)
+inline size_t EXTDBA(unsigned char*& cba, unsigned char length) {
+	unsigned char nZeros = cba[0];
+
+	if (cba[1] != 0) {
+		size_t baselen = (size_t)nZeros + length - 1;
+
+		unsigned char* temp = new unsigned char[baselen];
+		std::fill(temp, temp + baselen, 0);
+
+		for (size_t i = 0; i < nZeros && i < baselen; i++)
+			temp[i] = 0;
+		for (size_t i = 0; i + 1 < length && i < baselen; i++)
+			temp[i + nZeros] = cba[i + 1];
+
+		delete[] cba;
+		cba = temp;
+
+		return baselen;
+	}
+	else {
+		size_t baselen = (size_t)nZeros;
+
+		unsigned char* temp = new unsigned char[baselen];
+
+		for (size_t i = 0; i < nZeros; i++)
+			temp[i] = 0;
+
+		delete[] cba;
+		cba = temp;
+
+		return baselen;
+	}
+}
