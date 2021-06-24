@@ -10,7 +10,11 @@ add_library(registers STATIC
 
 add_library(memory STATIC
 			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" "Memory/mem_arrays.cpp"
-			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h" "Memory/mem_structs.cpp" "Memory/mem_structs.h" "Memory/memory_decl.cpp" "utility.h")
+			"Memory/mem_arrays.h" "Memory/dyn_vars.cpp" "Memory/dyn_vars.h" "Memory/mem_structs.cpp" "Memory/mem_structs.h"
+			"Memory/memory_decl.cpp" "utility.h")
+
+add_library(exSymbols STATIC
+			"ExtendedSymbols/files.cpp" "ExtendedSymbols/files.h")
 
 add_library(virtual_engine STATIC
 			"Actions/actions_symbols.h"  "Actions/action_decl.h" "Actions/action_decl.cpp" "Actions/v_engine.h"
@@ -21,13 +25,15 @@ add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h" "utility.h")
 
 target_link_libraries(memory registers)
-target_link_libraries(virtual_engine memory)
+target_link_libraries(exSymbols memory)
+target_link_libraries(virtual_engine exSymbols)
 target_link_libraries(compiler virtual_engine)
 
 add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp"  "utility.h")
 
 target_link_libraries(ThreadPoolEmulation registers)
 target_link_libraries(ThreadPoolEmulation memory)
+target_link_libraries(ThreadPoolEmulation exSymbols)
 target_link_libraries(ThreadPoolEmulation virtual_engine)
 target_link_libraries(ThreadPoolEmulation compiler)
 
@@ -36,6 +42,7 @@ add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/ass
 
 target_link_libraries(vas registers)
 target_link_libraries(vas memory)
+target_link_libraries(vas exSymbols)
 target_link_libraries(vas virtual_engine)
 target_link_libraries(vas compiler)
 
@@ -44,6 +51,7 @@ add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableR
 
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)
+target_link_libraries(vexe exSymbols)
 target_link_libraries(vexe virtual_engine)
 target_link_libraries(vexe compiler)
 

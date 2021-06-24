@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 
+#include "../ExtendedSymbols/files.h"
 #include "../Memory/memory_symbols.h"
 #include "../Registers/registers_symbols.h"
 #include "interrupts.h"

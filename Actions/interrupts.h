@@ -30,7 +30,9 @@ enum class int_codes {
 	_struct_declprop = 0x17,
 	_struct_select	 = 0x18,
 	_struct_get		 = 0x19,
-	_struct_set		 = 0x1A
+	_struct_set		 = 0x1A,
+	readfile	= 0x1B,
+	writefile	= 0x1C
 };
 
 extern void (*ints_db[0xFF + 1])(std::shared_ptr<void>, regs*, memory*);
