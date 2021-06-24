@@ -24,10 +24,10 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t)); // pop rax
-	mp_memcpy(temp, rax);
+	mp_memcpy(temp, &rax);
 
 	mem->pop(temp, sizeof(size_t)); // pop rbx
-	mp_memcpy(temp, rbx);
+	mp_memcpy(temp, &rbx);
 
 	if (rax == rbx) {
 		*(registers->cmp_out) = 0;
@@ -44,7 +44,7 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	}
 
 	mem->push(temp, sizeof(size_t)); // push rbx
-	mp_memcpy(rax, temp);
+	mp_memcpy(&rax, temp);
 	mem->push(temp, sizeof(size_t)); // push rax
 
 	delete[] temp;
@@ -132,7 +132,7 @@ void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t c_addr = *(registers->process_step);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(c_addr, temp);
+	mp_memcpy(&c_addr, temp);
 	mem->push(temp, sizeof(size_t));
 }
 

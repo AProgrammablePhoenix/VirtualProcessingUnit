@@ -94,7 +94,7 @@ void __struct__::get(std::string property_name) {
 			else if (this->types_table[property_name] == UNUM_PROPERTY) {
 				size_t value = this->unum_properties[property_name];
 				unsigned char* temp = new unsigned char[sizeof(size_t)];
-				mp_memcpy(value, temp);
+				mp_memcpy(&value, temp);
 
 				mem->push(temp, sizeof(size_t));
 				delete[] temp;
@@ -102,7 +102,7 @@ void __struct__::get(std::string property_name) {
 			else if (this->types_table[property_name] == SNUM_PROPERTY) {
 				size_t value = (size_t)(this->snum_properties[property_name]);
 				unsigned char* temp = new unsigned char[sizeof(size_t)];
-				mp_memcpy(value, temp);
+				mp_memcpy(&value, temp);
 
 				mem->push(temp, sizeof(size_t));
 				delete[] temp;
@@ -142,7 +142,7 @@ void __struct__::set(std::string property_name) {
 				mem->pop(temp, sizeof(size_t));
 				size_t value = 0;
 
-				mp_memcpy(temp, value);
+				mp_memcpy(temp, &value);
 				delete[] temp;
 
 				this->unum_properties[property_name] = value;
@@ -152,7 +152,7 @@ void __struct__::set(std::string property_name) {
 				mem->pop(temp, sizeof(size_t));
 				size_t value = 0;
 
-				mp_memcpy(temp, value);
+				mp_memcpy(temp, &value);
 				delete[] temp;
 
 				this->snum_properties[property_name] = (long long)value;

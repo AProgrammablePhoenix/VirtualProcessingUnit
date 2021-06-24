@@ -51,45 +51,45 @@ inline double ATOD(unsigned char* _array) {
 	return ret;
 }
 
-template<typename Tin, typename Tout> inline void mp_memcpy(Tin& _in, Tout& _out) {
+template<typename Tin, typename Tout> inline void mp_memcpy(Tin* _in, Tout* _out) {
 #if defined(ISWIN)
-	memcpy_s(&_out, sizeof(Tout), &_in, sizeof(Tin));
+	memcpy_s(_out, sizeof(Tout), _in, sizeof(Tin));
 #else
-	std::memcpy(&_out, &_in, sizeof(&_out));
+	std::memcpy(_out, _in, sizeof(&_out));
 #endif
 }
-template<typename Tin, typename Tout> inline void mp_memcpy(Tin& _in, Tout& _out, size_t count) {
+template<typename Tin, typename Tout> inline void mp_memcpy(Tin* _in, Tout* _out, size_t count) {
 #if defined(ISWIN)
-	memcpy_s(&_out, count, &_in, count);
+	memcpy_s(_out, count, _in, count);
 #else
-	std::memcpy(&_out, &_in, count);
+	std::memcpy(_out, _in, count);
 #endif
 }
-template<> inline void mp_memcpy<size_t, unsigned char*>(size_t& _in, unsigned char*& _out) {
+template<typename Tin> inline void mp_memcpy(Tin* _in, unsigned char* _out, size_t count = sizeof(Tin)) {
 #if defined(ISWIN)
-	memcpy_s(_out, sizeof(size_t), &_in, sizeof(size_t));
+	memcpy_s(_out, count, _in, count);
+#else
+	std::memcpy(_out, _in, count);
+#endif
+}
+template<typename Tout> inline void mp_memcpy(unsigned char* _in, Tout* _out, size_t count = sizeof(Tout)) {
+#if defined(ISWIN)
+	memcpy_s(_out, count, _in, count);
+#else
+	std::memcpy(_out, _in, count);
+#endif
+}
+template<> inline void mp_memcpy<size_t, unsigned char>(size_t* _in, unsigned char* _out) {
+#if defined(ISWIN)
+	memcpy_s(_out, sizeof(size_t), _in, sizeof(size_t));
 #else
 	std::memcpy(_out, _in, sizeof(size_t));
 #endif
 }
-template<> inline void mp_memcpy<unsigned char*, size_t>(unsigned char*& _in, size_t& _out) {
+template<> inline void mp_memcpy<unsigned char, size_t>(unsigned char* _in, size_t* _out) {
 #if defined(ISWIN)
-	memcpy_s(&_out, sizeof(size_t), _in, sizeof(size_t));
+	memcpy_s(_out, sizeof(size_t), _in, sizeof(size_t));
 #else
-	std::memcpy(&_out, &_in, sizeof(size_t));
-#endif
-}
-template<typename Tin> inline void mp_memcpy(Tin& _in, unsigned char* _out, size_t count = sizeof(Tin)) {
-#if defined(ISWIN)
-	memcpy_s(_out, count, &_in, count);
-#else
-	std::memcpy(_out, &_in, count);
-#endif
-}
-template<typename Tout> inline void mp_memcpy(unsigned char* _in, Tout& _out, size_t count = sizeof(Tout)) {
-#if defined(ISWIN)
-	memcpy_s(&_out, count, _in, count);
-#else
-	std::memcpy(&_out, _in, count);
+	std::memcpy(_out, _in, sizeof(size_t));
 #endif
 }

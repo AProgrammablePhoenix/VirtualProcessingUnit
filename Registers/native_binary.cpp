@@ -61,7 +61,7 @@ void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t left = 0;
-	mp_memcpy(temp, left);
+	mp_memcpy(temp, &left);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -73,7 +73,7 @@ void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t left = 0;
-	mp_memcpy(temp, left);
+	mp_memcpy(temp, &left);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -85,7 +85,7 @@ void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t left = 0;
-	mp_memcpy(temp, left);
+	mp_memcpy(temp, &left);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -97,7 +97,7 @@ void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t left = 0;
-	mp_memcpy(temp, left);
+	mp_memcpy(temp, &left);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -109,7 +109,7 @@ void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t left = 0;
-	mp_memcpy(temp, left);
+	mp_memcpy(temp, &left);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -122,7 +122,7 @@ void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
 	size_t _pow = 0;
-	mp_memcpy(temp, _pow);
+	mp_memcpy(temp, &_pow);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);

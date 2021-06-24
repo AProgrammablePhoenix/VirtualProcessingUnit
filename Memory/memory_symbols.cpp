@@ -27,7 +27,7 @@ void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	size_t value = ((reg_int<size_t>*)regptr)->get();
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(value, temp);
+	mp_memcpy(&value, temp);
 
 	mem->push(temp, sizeof(size_t));
 	delete[] temp;
@@ -40,7 +40,7 @@ void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
 	mem->pop(temp, sizeof(size_t));
 	size_t value = 0;
 
-	mp_memcpy(temp, value);
+	mp_memcpy(temp, &value);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(value);
 
 	delete[] temp;
@@ -54,7 +54,7 @@ void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	unsigned char* ssize = new unsigned char[sizeof(size_t)];
 	unsigned char *uc_s = new unsigned char[rssize];
-	mp_memcpy(rssize, ssize);
+	mp_memcpy(&rssize, ssize);
 
 #if defined(ISWIN)
 	memcpy_s(uc_s, rssize, value->c_str(), rssize);
@@ -75,7 +75,7 @@ void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
 	mem->pop(ssize, sizeof(size_t));
 	size_t rssize = 0;
 
-	mp_memcpy(ssize, rssize);
+	mp_memcpy(ssize, &rssize);
 	value = new unsigned char[rssize];
 	mem->pop(value, rssize);
 
@@ -129,7 +129,7 @@ void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->pop(uc_d, sizeof(double));
 
 	double d = 0;
-	mp_memcpy(uc_d, d, sizeof(double));
+	mp_memcpy(uc_d, &d, sizeof(double));
 
 	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
 
@@ -184,7 +184,7 @@ void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	unsigned char* temp = new unsigned char[rt_size];
 	unsigned char* t_size = new unsigned char[sizeof(size_t)];
 
-	mp_memcpy(rt_size, t_size, sizeof(size_t));
+	mp_memcpy(&rt_size, t_size, sizeof(size_t));
 #if defined(ISWIN)
 	memcpy_s(temp, rt_size, value.c_str(), rt_size);
 #else
@@ -205,7 +205,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 
 	unsigned char* t_size = new unsigned char[sizeof(size_t)];
 	mem->_MG(t_size, sizeof(size_t), _addr);
-	mp_memcpy(t_size, rt_size);
+	mp_memcpy(t_size, &rt_size);
 	delete[] t_size;
 
 	unsigned char* temp = new unsigned char[rt_size];
@@ -290,7 +290,7 @@ void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->pop(temp, sizeof(size_t));
 	size_t array_size = 0;
 
-	mp_memcpy(temp, array_size);
+	mp_memcpy(temp, &array_size);
 	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) == "UNDEFINED_ARRAY") {
@@ -313,7 +313,7 @@ void m_setAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->pop(temp, sizeof(size_t));
 	size_t index = 0;
 
-	mp_memcpy(temp, index);
+	mp_memcpy(temp, &index);
 	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
@@ -333,7 +333,7 @@ void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->pop(temp, sizeof(size_t));
 	size_t index = 0;
 
-	mp_memcpy(temp, index);
+	mp_memcpy(temp, &index);
 	delete[] temp;
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {

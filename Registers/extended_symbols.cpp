@@ -57,7 +57,7 @@ void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t value = sr.size();
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
 
-	mp_memcpy(value, uc_n);
+	mp_memcpy(&value, uc_n);
 
 	mem->push(uc_n, sizeof(size_t));
 	delete[] uc_n;
@@ -82,7 +82,7 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 	mem->pop(temp, sizeof(size_t));
 	size_t value = 0;
 
-	mp_memcpy(temp, value);
+	mp_memcpy(temp, &value);
 	delete[] temp;
 
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
@@ -118,17 +118,17 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t recast_type = 0;
 
 	mem->pop(temp, sizeof(size_t));
-	mp_memcpy(temp, value);
+	mp_memcpy(temp, &value);
 
 	mem->pop(temp, sizeof(size_t));
-	mp_memcpy(temp, recast_type);
+	mp_memcpy(temp, &recast_type);
 	delete[] temp;
 
 	if (recast_type == 0) {
 		long long n_value = (long long)value;
 		temp = new unsigned char[sizeof(long long)];
 
-		mp_memcpy(n_value, temp, sizeof(long long));
+		mp_memcpy(&n_value, temp, sizeof(long long));
 		mem->push(temp, sizeof(long long));
 		delete[] temp;
 	}
@@ -136,14 +136,14 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		size_t n_value = (size_t)((long long)value);
 		temp = new unsigned char[sizeof(size_t)];
 
-		mp_memcpy(n_value, temp);
+		mp_memcpy(&n_value, temp);
 		mem->push(temp, sizeof(size_t));
 		delete[] temp;
 	}
 	else if (recast_type == 2) {
 		temp = new unsigned char[sizeof(size_t)];
 
-		mp_memcpy(value, temp);
+		mp_memcpy(&value, temp);
 		mem->push(temp, sizeof(size_t));
 		delete[] temp;
 	}
@@ -181,7 +181,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 	mem->pop(temp, sizeof(size_t));
 	size_t cast_type = 0;
 
-	mp_memcpy(temp, cast_type);
+	mp_memcpy(temp, &cast_type);
 	delete[] temp;
 
 	if (cast_type == 0) {
@@ -190,7 +190,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		ss >> n_value;
 
 		temp = new unsigned char[sizeof(size_t)];		
-		mp_memcpy(n_value, temp);
+		mp_memcpy(&n_value, temp);
 		mem->push(temp, sizeof(size_t));
 		registers->sr->set(saved_sr);
 		delete[] temp;
@@ -201,7 +201,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		ss >> n_value;
 
 		temp = new unsigned char[sizeof(long long)];
-		mp_memcpy(n_value, temp, sizeof(long long));
+		mp_memcpy(&n_value, temp, sizeof(long long));
 		mem->push(temp, sizeof(long long));
 		delete[] temp;
 
@@ -276,7 +276,7 @@ void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t n = (size_t)std::llround(d);
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(n, temp);
+	mp_memcpy(&n, temp);
 	mem->push(temp, sizeof(size_t));
 
 	delete[] temp;
@@ -288,6 +288,8 @@ void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	long long n = std::llround(d);
 
 	unsigned char* temp = new unsigned char[sizeof(long long)];
-	mp_memcpy(n, temp, sizeof(long long));
+	mp_memcpy(&n, temp, sizeof(long long));
+	mem->push(temp, sizeof(long long));
+
 	delete[] temp;
 }
