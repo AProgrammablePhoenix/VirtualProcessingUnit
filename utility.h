@@ -11,7 +11,8 @@
 		#define ISLINUX 1
 		#include <cstring>
 		#include <stdio.h>
-	#elif defined(__unix__)
+	#endif
+	#if defined(__unix__)
 		#define ISUNIX 1
 	#endif
 #endif
