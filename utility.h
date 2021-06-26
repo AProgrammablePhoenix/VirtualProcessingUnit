@@ -8,6 +8,7 @@
 	#define ISWIN 1
 #else
 	#if defined(__linux__)
+		#define ISUNIX 1
 		#include <cstring>
 		#include <stdio.h>
 	#endif
@@ -138,7 +139,7 @@ inline size_t EXTDBA(unsigned char*& cba, unsigned char length) {
 
 		for (size_t i = 0; i < nZeros && i < baselen; i++)
 			temp[i] = 0;
-		for (size_t i = 0; i + 1 < length && i < baselen; i++)
+		for (size_t i = 0; i + 1 < length && i + nZeros < baselen; i++)
 			temp[i + nZeros] = cba[i + 1];
 
 		delete[] cba;
