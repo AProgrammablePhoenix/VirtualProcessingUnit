@@ -7,10 +7,12 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
 	#define ISWIN 1
 #else
-	#if defined(__linux__)
-		#define ISUNIX 1
+	#if defined(__linux__) 
+		#define ISLINUX 1
 		#include <cstring>
 		#include <stdio.h>
+	#elif defined(__unix__)
+		#define ISUNIX 1
 	#endif
 #endif
 

@@ -49,6 +49,8 @@ target_link_libraries(vas compiler)
 # vexe: virtual executable runner
 add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h" "utility.h")
 
+add_executable (netman "Networking/winnet.cpp" "Networking/testnet.cpp" "Networking/unixnet.cpp")
+
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)
 target_link_libraries(vexe exSymbols)
@@ -61,4 +63,6 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+	find_package(Threads REQUIRED)
+	target_link_libraries(netman PUBLIC Threads::Threads)
 endif()
