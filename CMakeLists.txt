@@ -3,6 +3,7 @@
 project ("ThreadPoolEmulation")
 project ("vas")
 project ("vexe")
+project ("testnet")
 
 add_library(registers STATIC
 			"Registers/regs_decl.h" "Registers/registers_symbols.h" "Registers/registers_symbols.cpp"
@@ -24,9 +25,14 @@ add_library(virtual_engine STATIC
 add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h" "utility.h")
 
+add_library(netlib STATIC
+			"Networking/net_hdr.h" "Networking/unixnet.cpp" "Networking/winnet.cpp" "utility.h")
+
 target_link_libraries(memory registers)
 target_link_libraries(exSymbols memory)
+target_link_libraries(netlib memory)
 target_link_libraries(virtual_engine exSymbols)
+target_link_libraries(virtual_engine netlib)
 target_link_libraries(compiler virtual_engine)
 
 add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp"  "utility.h")
@@ -47,15 +53,19 @@ target_link_libraries(vas virtual_engine)
 target_link_libraries(vas compiler)
 
 # vexe: virtual executable runner
-add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" "VirtualExecutableRunner/runner.h" "utility.h")
-
-add_executable (netman "Networking/winnet.cpp" "Networking/testnet.cpp" "Networking/unixnet.cpp")
+add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" 
+				"VirtualExecutableRunner/runner.h" "utility.h")
 
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)
 target_link_libraries(vexe exSymbols)
 target_link_libraries(vexe virtual_engine)
 target_link_libraries(vexe compiler)
+
+# testnet: serves to test Unix & Windows compliant windows networking library
+add_executable (testnet "Networking/testnet.cpp")
+
+target_link_libraries(testnet netlib)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
 
@@ -64,5 +74,5 @@ if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
 	find_package(Threads REQUIRED)
-	target_link_libraries(netman PUBLIC Threads::Threads)
+	target_link_libraries(netlib PUBLIC Threads::Threads)
 endif()

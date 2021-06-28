@@ -45,7 +45,7 @@ int main() {
 			break;
 		}
 		rhdr2->hrecv_mtx.unlock();
-		std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 
 	rhdr2->recv_mtx.lock();
