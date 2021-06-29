@@ -1,5 +1,4 @@
 #include <iostream>
-#include <fstream>
 #include <string>
 #include <vector>
 
@@ -40,6 +39,9 @@ void memory::_SMS(size_t newlen) {
 		std::copy(this->_memory, this->_memory + this->stacksize + this->rozsize + 2048, temp);
 		delete[] this->_memory;
 		this->_memory = temp;
+
+		memset(this->_memory + this->stacksize + this->rozsize + this->_memlen, 0, newlen - this->_memlen);
+
 		this->_memlen = newlen;
 		this->resized = true;
 	}
@@ -64,6 +66,9 @@ void memory::_RSROZ(size_t newlen) {
 		unsigned char* temp = new unsigned char[this->stacksize + newlen + this->_memlen];
 		std::copy(this->_memory, this->_memory + this->stacksize + this->rozsize + this->_memlen, temp);
 		delete[] this->_memory;
+
+		memset(this->_memory + this->rozoffset + this->rozsize, 0, newlen - this->rozsize);
+
 		this->_memory = temp;
 		this->rozsize = newlen;
 	}
@@ -101,4 +106,5 @@ void memory::destroy() {
 }
 void memory::init() {
 	this->_memory = new unsigned char[this->_memlen + this->rozsize + this->stacksize];
+	memset(this->_memory, 0, this->_memlen + this->rozsize + this->stacksize);
 }
