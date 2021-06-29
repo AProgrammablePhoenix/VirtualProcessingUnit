@@ -283,7 +283,13 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"lcall", virtual_actions::lcall},
 	{"ret", virtual_actions::ret},
 	{"svcall", virtual_actions::svcall},
-	{"rscall", virtual_actions::rscall}
+	{"rscall", virtual_actions::rscall},
+
+	{"nopen", virtual_actions::nopen},
+	{"nclose", virtual_actions::nclose},
+	{"nget", virtual_actions::nget},
+	{"nsend", virtual_actions::nsend},
+	{"nhrecv", virtual_actions::nhrecv}
 #pragma endregion
 };
 

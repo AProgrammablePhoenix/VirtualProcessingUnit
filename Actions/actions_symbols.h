@@ -6,207 +6,214 @@
 
 #include "../ExtendedSymbols/files.h"
 #include "../Memory/memory_symbols.h"
+#include "../Networking/net_symbols.h"
 #include "../Registers/registers_symbols.h"
 #include "interrupts.h"
 #include "process_symbols.h"
 
 enum class virtual_actions {
 	// Interrupts
-	_int  = 0x000001,
+	_int  = 0x0001,
 
 	// Registers
-	getAX = 0x000100,
-	getBX = 0x000200,
-	getCX = 0x000300,
-	getDX = 0x000400,
+	getAX = 0x0002,
+	getBX = 0x0003,
+	getCX = 0x0004,
+	getDX = 0x0005,
 
-	setAX = 0x000500,
-	setBX = 0x000600,
-	setCX = 0x000700,
-	setDX = 0x000800,
+	setAX = 0x0006,
+	setBX = 0x0007,
+	setCX = 0x0008,
+	setDX = 0x0009,
 
-	getEAX = 0x000900,
-	getEBX = 0x000A00,
-	getECX = 0x000B00,
-	getEDX = 0x000C00,
+	getEAX = 0x000A,
+	getEBX = 0x000B,
+	getECX = 0x000C,
+	getEDX = 0x000D,
 
-	setEAX = 0x000D00,
-	setEBX = 0x000E00,
-	setECX = 0x000F00,
-	setEDX = 0x001000,
+	setEAX = 0x000E,
+	setEBX = 0x000F,
+	setECX = 0x0010,
+	setEDX = 0x0011,
 
-	getRAX = 0x001100,
-	getRBX = 0x001200,
-	getRCX = 0x001300,
-	getRDX = 0x001400,
+	getRAX = 0x0012,
+	getRBX = 0x0013,
+	getRCX = 0x0014,
+	getRDX = 0x0015,
 
-	setRAX = 0x001500,
-	setRBX = 0x001600,
-	setRCX = 0x001700,
-	setRDX = 0x001800,
+	setRAX = 0x0016,
+	setRBX = 0x0017,
+	setRCX = 0x0018,
+	setRDX = 0x0019,
 
-	setSR = 0x001801,
-	getSR = 0x001802,
+	setSR = 0x001A,
+	getSR = 0x001B,
 
-	setCR = 0x001803,
-	getCR = 0x001804,
+	setCR = 0x001C,
+	getCR = 0x001D,
 
-	setDR = 0x001805,
-	getDR = 0x001806,
+	setDR = 0x001E,
+	getDR = 0x001F,
 
-	movAX = 0x001900,
-	movBX = 0x001A00,
-	movCX = 0x001B00,
-	movDX = 0x001C00,
+	movAX = 0x0020,
+	movBX = 0x0021,
+	movCX = 0x0022,
+	movDX = 0x0023,
 
-	movEAX = 0x001D00,
-	movEBX = 0x001E00,
-	movECX = 0x001F00,
-	movEDX = 0x002000,
+	movEAX = 0x0024,
+	movEBX = 0x0025,
+	movECX = 0x0026,
+	movEDX = 0x0027,
 
-	movRAX = 0x002100,
-	movRBX = 0x002200,
-	movRCX = 0x002300,
-	movRDX = 0x002400,
+	movRAX = 0x0028,
+	movRBX = 0x0029,
+	movRCX = 0x002A,
+	movRDX = 0x002B,
 
-	inc = 0x002500,
-	dec = 0x002600,
+	inc = 0x002C,
+	dec = 0x002D,
 
-	incDR = 0x002501,
-	decDR = 0x002502,
+	incDR = 0x002E,
+	decDR = 0x002F,
 
-	mulAX = 0x002700,
-	mulBX = 0x002800,
-	mulCX = 0x002900,
-	mulDX = 0x002A00,
+	mulAX = 0x0030,
+	mulBX = 0x0031,
+	mulCX = 0x0032,
+	mulDX = 0x0033,
 
-	mulEAX = 0x002B00,
-	mulEBX = 0x002C00,
-	mulECX = 0x002D00,
-	mulEDX = 0x002E00,
+	mulEAX = 0x0034,
+	mulEBX = 0x0035,
+	mulECX = 0x0036,
+	mulEDX = 0x0037,
 
-	mulRAX = 0x002F00,
-	mulRBX = 0x003000,
-	mulRCX = 0x003100,
-	mulRDX = 0x003200,
+	mulRAX = 0x0038,
+	mulRBX = 0x0039,
+	mulRCX = 0x003A,
+	mulRDX = 0x003B,
 
-	divAX = 0x003300,
-	divBX = 0x003400,
-	divCX = 0x003500,
-	divDX = 0x003600,
+	divAX = 0x003C,
+	divBX = 0x003D,
+	divCX = 0x003E,
+	divDX = 0x003F,
 
-	divEAX = 0x003700,
-	divEBX = 0x003800,
-	divECX = 0x003900,
-	divEDX = 0x003A00,
+	divEAX = 0x0040,
+	divEBX = 0x0041,
+	divECX = 0x0042,
+	divEDX = 0x0043,
 
-	divRAX = 0x003B00,
-	divRBX = 0x003C00,
-	divRCX = 0x003D00,
-	divRDX = 0x003E00,
+	divRAX = 0x0044,
+	divRBX = 0x0045,
+	divRCX = 0x0046,
+	divRDX = 0x0047,
 
-	addAX = 0x002701,
-	addBX = 0x002702,
-	addCX = 0x002703,
-	addDX = 0x002704,
+	addAX = 0x0048,
+	addBX = 0x0049,
+	addCX = 0x004A,
+	addDX = 0x004B,
 
-	addEAX = 0x002705,
-	addEBX = 0x002706,
-	addECX = 0x002707,
-	addEDX = 0x002708,
+	addEAX = 0x004C,
+	addEBX = 0x004D,
+	addECX = 0x004E,
+	addEDX = 0x004F,
 
-	addRAX = 0x002709,
-	addRBX = 0x00270A,
-	addRCX = 0x00270B,
-	addRDX = 0x00270C,
+	addRAX = 0x0050,
+	addRBX = 0x0051,
+	addRCX = 0x0052,
+	addRDX = 0x0053,
 
-	subAX = 0x00270D,
-	subBX = 0x00270E,
-	subCX = 0x00270F,
-	subDX = 0x0027A0,
+	subAX = 0x0054,
+	subBX = 0x0055,
+	subCX = 0x0056,
+	subDX = 0x0057,
 
-	subEAX = 0x0027A1,
-	subEBX = 0x0027A2,
-	subECX = 0x0027A3,
-	subEDX = 0x0027A4,
+	subEAX = 0x0058,
+	subEBX = 0x0059,
+	subECX = 0x005A,
+	subEDX = 0x005B,
 
-	subRAX = 0x0027A5,
-	subRBX = 0x0027A6,
-	subRCX = 0x0027A7,
-	subRDX = 0x0027A8,
+	subRAX = 0x005C,
+	subRBX = 0x005D,
+	subRCX = 0x005E,
+	subRDX = 0x005F,
 
 	// Extended
-	toString = 0x003011,
-	castreg = 0x003A16,
+	toString = 0x0060,
+	castreg = 0x0061,
 
 	// Memory
-	push = 0x003F00,
-	pop = 0x004000,
+	push = 0x0062,
+	pop = 0x0063,
 
-	pushSR = 0x003F01,
-	popSR = 0x004001,
+	pushSR = 0x0064,
+	popSR = 0x0065,
 
-	pushCR = 0x003F02,
-	popCR = 0x004002,
+	pushCR = 0x0066,
+	popCR = 0x0067,
 
-	pushDR = 0x003F03,
-	popDR = 0x004003,
+	pushDR = 0x0068,
+	popDR = 0x0069,
 
-	nsms = 0x003F10,
+	nsms = 0x006A,
 
-	movsm = 0x003F04,
-	movgm = 0x004004,
+	movsm = 0x006B,
+	movgm = 0x006C,
 
-	movsmSR = 0x003F05,
-	movgmSR = 0x004005,
+	movsmSR = 0x006D,
+	movgmSR = 0x006E,
 
-	movsmCR = 0x003F06,
-	movgmCR = 0x004006,
+	movsmCR = 0x006F,
+	movgmCR = 0x0070,
 
-	movsmDR = 0x003F07,
-	movgmDR = 0x004007,
+	movsmDR = 0x0071,
+	movgmDR = 0x0072,
 
 	// Native binary ops [belong to Registers]
-	_not = 0x004200,
-	_and = 0x004210,
-	_or  = 0x004220,
-	_xor = 0x004230,
-	_shl = 0x004240,
-	_shr = 0x004250,
+	_not = 0x0073,
+	_and = 0x0074,
+	_or  = 0x0075,
+	_xor = 0x0076,
+	_shl = 0x0077,
+	_shr = 0x0078,
 
-	_log = 0x004260,
-	_log2 = 0x004270,
-	_log10 = 0x004280,
-	_pow = 0x004290,
+	_log = 0x0079,
+	_log2 = 0x007A,
+	_log10 = 0x007B,
+	_pow = 0x007C,
 
-	_dlog = 0x004261,
-	_dlog2 = 0x004271,
-	_dlog10 = 0x004281,
-	_dpow = 0x004291,
+	_dlog = 0x007D,
+	_dlog2 = 0x007E,
+	_dlog10 = 0x007F,
+	_dpow = 0x0080,
 
 	// Process
-	ijmp = 0x003017,
-	jmp = 0x003018,
-	cmp = 0x003019,
-	je  = 0x0030A1,
-	jne = 0x0030A2,
-	jl  = 0x0030A3,
-	jg  = 0x0030A4,
-	jle = 0x0030A5,
-	jge = 0x0030A6,
-	cmpstr = 0x0030A7,
+	ijmp = 0x0081,
+	jmp = 0x0082,
+	cmp = 0x0083,
+	je  = 0x0084,
+	jne = 0x0085,
+	jl  = 0x0086,
+	jg  = 0x0087,
+	jle = 0x0088,
+	jge = 0x0089,
+	cmpstr = 0x008A,
 
-	gca = 0x0030A8,
-	hlt = 0x0030A9,
+	gca = 0x008B,
+	hlt = 0x008C,
 
-	call = 0x0030AA,
-	lcall = 0x0030AB,
-	ret = 0x0030AC,
-	svcall = 0x0030AD,
-	rscall = 0x0030AE
+	call = 0x008D,
+	lcall = 0x008E,
+	ret = 0x008F,
+	svcall = 0x0090,
+	rscall = 0x0091,
+
+	nopen  = 0x0092,
+	nclose = 0x0093,
+	nget   = 0x0094,
+	nsend  = 0x0095,
+	nhrecv = 0x0096
 };
 
-extern void (*a_db[0x004291 + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x0096 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -457,6 +464,13 @@ private:
 		a_db[(size_t)virtual_actions::ret] = p_ret;
 		a_db[(size_t)virtual_actions::svcall] = p_svcall;
 		a_db[(size_t)virtual_actions::rscall] = p_rscall;
+#pragma endregion
+#pragma region networking
+		a_db[(size_t)virtual_actions::nopen] = net_open;
+		a_db[(size_t)virtual_actions::nclose] = net_close;
+		a_db[(size_t)virtual_actions::nget] = net_get;
+		a_db[(size_t)virtual_actions::nsend] = net_send;
+		a_db[(size_t)virtual_actions::nhrecv] = net_hrecv;
 #pragma endregion
 	}
 };
