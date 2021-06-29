@@ -26,7 +26,8 @@ add_library(compiler STATIC
 			"Compiler/variables.h" "Compiler/variables.cpp" "Compiler/action_parser.cpp" "Compiler/action_parser.h" "utility.h")
 
 add_library(netlib STATIC
-			"Networking/net_hdr.h" "Networking/unixnet.cpp" "Networking/winnet.cpp" "utility.h")
+			"Networking/net_hdr.h" "Networking/unixnet.cpp" "Networking/winnet.cpp" "utility.h" "Networking/net_symbols.cpp"
+			"Networking/net_symbols.h" "Networking/netman.cpp" "Networking/netman.h")
 
 target_link_libraries(memory registers)
 target_link_libraries(exSymbols memory)

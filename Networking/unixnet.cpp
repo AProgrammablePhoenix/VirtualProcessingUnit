@@ -70,25 +70,32 @@ void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
 	}
 }
 void sendFct(SOCKET& hSocket, unsigned char* data, size_t count) {
+	rhdr->sent_mtx.lock();
+	rhdr->bufferSent = true;
+
 	if (send(hSocket, (const char*)data, (int)count, 0)) {
 		// Handling error code
+		rhdr->sent_mtx.unlock();
+		return;
 	}
+
+	rhdr->sent_mtx.unlock();
 }
 
 void treatRcvMsg(running_hdr*& nrh) {
 	nrh->msg_code = msg_codes::NOP;
 
 	if (*(nrh->transferBuffer) != nullptr)
-		delete[] * (nrh->transferBuffer);
+		delete[] (*nrh->transferBuffer);
 
-	*(nrh->transferBuffer) = new unsigned char[256];
+	(*nrh->transferBuffer) = new unsigned char[256];
 
 	if (receivedBytes.size() < 1 || receivedBytes.empty()) {
-		std::fill(*(nrh->transferBuffer), *(nrh->transferBuffer) + 256, 0);
+		std::fill((*nrh->transferBuffer), (*nrh->transferBuffer) + 256, 0);
 		return;
 	}
 
-	mp_memcpy<unsigned char, unsigned char>(receivedBytes[0], *(nrh->transferBuffer), 256);
+	mp_memcpy<unsigned char, unsigned char>(receivedBytes[0], (*nrh->transferBuffer), 256);
 
 	delete[] receivedBytes[0];
 	receivedBytes.erase(receivedBytes.begin());
@@ -136,7 +143,7 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 				treatRcvMsg(net_run_hdr);
 			}
 			else if (net_run_hdr->msg_code == msg_codes::sendBuffer) {
-				sendFct(hSocket, *(net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
+				sendFct(hSocket, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
 			}
 
 			net_run_hdr->msg_code = msg_codes::NOP;
