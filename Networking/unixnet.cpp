@@ -69,7 +69,7 @@ void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
-void sendFct(SOCKET& hSocket, running_hdr*&, unsigned char* data, size_t count) {
+void sendFct(SOCKET& hSocket, running_hdr*& rhdr, unsigned char* data, size_t count) {
 	rhdr->sent_mtx.lock();
 	rhdr->bufferSent = true;
 
