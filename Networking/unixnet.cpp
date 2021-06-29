@@ -69,7 +69,7 @@ void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
-void sendFct(SOCKET& hSocket, unsigned char* data, size_t count) {
+void sendFct(SOCKET& hSocket, running_hdr*&, unsigned char* data, size_t count) {
 	rhdr->sent_mtx.lock();
 	rhdr->bufferSent = true;
 
@@ -143,7 +143,7 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 				treatRcvMsg(net_run_hdr);
 			}
 			else if (net_run_hdr->msg_code == msg_codes::sendBuffer) {
-				sendFct(hSocket, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
+				sendFct(hSocket, net_run_hdr, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
 			}
 
 			net_run_hdr->msg_code = msg_codes::NOP;
