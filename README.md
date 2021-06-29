@@ -5,3 +5,4 @@ simplified Assembly (really simplified) with pre-built procedures for string man
 V1.11 Changes:
 - [x] Reduced amount of binary code generated/handled by VAS/VEXE engines
 - [x] Added Unix & Windows compliant networking library (will be used soonly to make network-based VASM instructions)
+- [x] Added symbols of new networking instructions (their integration is in progress)
