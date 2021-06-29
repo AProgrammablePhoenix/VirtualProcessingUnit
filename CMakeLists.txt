@@ -31,7 +31,16 @@ add_library(netlib STATIC
 
 target_link_libraries(memory registers)
 target_link_libraries(exSymbols memory)
-target_link_libraries(netlib memory)
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")    
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
+	target_link_libraries(netlib memory)
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
+	find_package(Threads REQUIRED)
+	target_link_libraries(netlib PUBLIC Threads::Threads memory)
+endif()
+
 target_link_libraries(virtual_engine exSymbols)
 target_link_libraries(virtual_engine netlib)
 target_link_libraries(compiler virtual_engine)
@@ -69,11 +78,3 @@ add_executable (testnet "Networking/testnet.cpp")
 target_link_libraries(testnet netlib)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
-
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")    
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
-elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive")
-	find_package(Threads REQUIRED)
-	target_link_libraries(netlib PUBLIC Threads::Threads)
-endif()
