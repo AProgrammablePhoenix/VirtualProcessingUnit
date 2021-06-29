@@ -96,6 +96,7 @@ size_t memory::_ROZGST() {
 
 void memory::destroy() {
 	this->_arrays.destroy();
+	this->_netman.destroy();
 	delete[] this->_memory;
 }
 void memory::init() {

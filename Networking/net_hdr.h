@@ -24,13 +24,15 @@ struct running_hdr {
 	std::mutex recv_mtx;
 	std::mutex hrecv_mtx;
 	std::mutex ecrecv_mtx;
+	std::mutex sent_mtx;
 
 	bool stopRequested = false;
 	bool hasReceived = false;
 	bool stopReceiving = false;
+	bool bufferSent = false;
 	msg_codes msg_code = msg_codes::NOP;
 
-	unsigned char** transferBuffer = NULL;
+	unsigned char** transferBuffer = nullptr;
 	size_t trsfrBufferLen = 256;
 };
 

@@ -7,6 +7,7 @@
 #include "dyn_vars.h"
 #include "mem_arrays.h"
 #include "mem_structs.h"
+#include "../Networking/netman.h"
 
 struct memory {
 public:
@@ -36,6 +37,7 @@ public:
 	mem_arrays _arrays;
 	mem_dyn_vars _dynvars;
 	mem_structs _structs;
+	netman _netman;
 private:
 	regs* registers;
 
