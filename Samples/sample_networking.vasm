@@ -1,0 +1,91 @@
+; expected output:
+; RECEIVED: Network test passed
+
+nsms ${{N4096}}
+
+; init network stream one
+; receiver addr (localhost in this case)
+setSR ${{S"127.0.0.1"}}
+pushSR 0
+
+; receiver port
+setEAX ${{N5014}}
+push EAX
+
+; this stream port
+setEAX ${{N5013}}
+push EAX
+
+nopen ${{N0}}
+
+
+; init network stream two
+; receiver addr (localhost in this case)
+setSR ${{S"127.0.0.1"}}
+pushSR 0
+
+; receiver port
+setEAX ${{N5013}}
+push EAX
+
+; this stream port
+setEAX ${{N5014}}
+push EAX
+
+nopen ${{N1}}
+
+
+; send data from stream 1 to stream 2
+; set SR to string to send (buffer starts at address 256 + 8)
+; (note that 256 bytes after address 263 are only used as buffer and shouldn't be overwritten)
+setSR ${{S"Network test passed"}}
+setEBX ${{N256}}
+movsmSR EBX
+
+; push buffer addr
+setEBX ${{N264}}
+push EBX
+
+nsend ${{N0}}
+
+setBX ${{N1}}
+decltag hrecv_loop
+
+; loop until receive something
+nhrecv ${{N1}}
+push BX
+cmp 0
+pop BX
+pop AX
+
+setAX ${{N1}}
+je AX
+
+lcall hrecv_loop
+
+; fetch received data
+setEAX ${{N1024}}
+push EAX
+
+nget ${{N1}}
+
+; transform it to string by setting its length (8 bytes if 64 bit system (sizeof(size_t))) before the 256 bytes chunk of data
+setEAX ${{N256}}
+push EAX
+
+; 1024 - 8 = 1016
+setEAX ${{N1016}}
+movsm EAX
+
+setSR ${{S"RECEIVED: "}}
+int ${{N5}}
+
+; treat bytes chunk as string
+movgmSR EAX
+
+int ${{N6}}
+
+; these calls are recommeneded but could be avoided 
+; since memory::destroy() calls netman::destroy() which destroys those network streams.
+nclose ${{N1}}
+nclose ${{N0}}
