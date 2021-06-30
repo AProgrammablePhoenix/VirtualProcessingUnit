@@ -85,7 +85,7 @@ void sendFct(SOCKET& hSocket, running_hdr*& rhdr, unsigned char* data, size_t co
 void treatRcvMsg(running_hdr*& nrh) {
 	nrh->msg_code = msg_codes::NOP;
 
-	if (*(nrh->transferBuffer) != nullptr)
+	if ((*nrh->transferBuffer) != nullptr)
 		delete[] (*nrh->transferBuffer);
 
 	(*nrh->transferBuffer) = new unsigned char[256];

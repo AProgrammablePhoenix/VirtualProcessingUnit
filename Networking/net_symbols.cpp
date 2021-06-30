@@ -83,11 +83,15 @@ void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) 
 	if (!rhdr)
 		return;
 
+	temp = new unsigned char[256];
+
+	rhdr->transferBuffer = &temp;
 	rhdr->recv_mtx.lock();
 	rhdr->msg_code = msg_codes::treatReceivedBuffer;
 	rhdr->recv_mtx.unlock();
 
-	temp = new unsigned char[256];
+	std::this_thread::sleep_for(std::chrono::milliseconds(200));
+
 	mp_memcpy<unsigned char, unsigned char>((*rhdr->transferBuffer), temp, 256);
 
 	mem->_MS(temp, 256, outAddr);
@@ -128,8 +132,11 @@ void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 		if (rhdr->bufferSent)
 			break;
 		rhdr->sent_mtx.unlock();
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(50));
 	}
+
+	rhdr->bufferSent = false;
 	rhdr->sent_mtx.unlock();
 	delete[] temp;
 }

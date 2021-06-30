@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <memory>
+#include <thread>
 
 #include "../utility.h"
 #include "net_hdr.h"
@@ -15,7 +16,10 @@ public:
 	running_hdr* get_rhdr();
 	startup_hdr* get_shdr();
 
-	void destroy();
+	running_hdr** get_full_rhdr();
+	startup_hdr** get_full_shdr();
+
+	void destroy(std::thread* net_thread);
 private:
 	unsigned char* stream_buffer = nullptr;
 
@@ -33,4 +37,5 @@ public:
 	void destroy();
 private:
 	std::map<size_t, net_stream*> streams;
+	std::map<size_t, std::thread> threads;
 };

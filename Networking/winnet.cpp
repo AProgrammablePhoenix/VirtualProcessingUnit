@@ -67,7 +67,7 @@ void treatRcvMsg(running_hdr*& nrh) {
 	nrh->msg_code = msg_codes::NOP;
 	
 	if ((*nrh->transferBuffer) != nullptr)
-		delete[] *(nrh->transferBuffer);
+		delete[] (*nrh->transferBuffer);
 
 	(*nrh->transferBuffer) = new unsigned char[256];
 
