@@ -106,11 +106,11 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 
 	bzero((char*)&recvSockAddr, sizeof(recvSockAddr));
 	recvSockAddr.sin_family = AF_INET;
-	recvSockAddr.sin_port = startup_header->recvPort;
+	recvSockAddr.sin_port = htons(startup_header->recvPort);
 
 	bzero((char*)&thisSockAddr, sizeof(thisSockAddr));
 	thisSockAddr.sin_family = AF_INET;
-	thisSockAddr.sin_port = startup_header->thisPort;
+	thisSockAddr.sin_port = htons(startup_header->thisPort);
 	thisSockAddr.sin_addr.s_addr = inet_addr(startup_header->thisAddr.c_str());
 
 	if (isIPAddr((char*)startup_header->recvAddr.c_str())) {
