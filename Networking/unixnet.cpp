@@ -119,7 +119,8 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 		hostent* serv_recp = gethostbyname(startup_header->recvAddr.c_str());
 		if (serv_recp == NULL) {
 			std::cout << "No such external host: " << startup_header->recvAddr << std::endl;
-			close(hSocket);
+			if (close(hSocket))
+				std::cout << "Error while closing connection socket" << std::endl;
 			return;
 		}
 		else {
@@ -129,13 +130,15 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 
 	if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
 		std::cout << "Error while binding connection" << std::endl;
-		close(hSocket);
+		if (close(hSocket))
+			std::cout << "Error while closing connection socket" << std::endl;
 		return;
 	}
 
 	if (connect(hSocket, (sockaddr*)(&recvSockAddr), sizeof(recvSockAddr)) != 0) {
 		std::cout << "Error while establishing connection" << std::endl;
-		close(hSocket);
+		if (close(hSocket))
+			std::cout << "Error while closing connection socket" << std::endl;
 		return;
 	}
 	else {
@@ -169,7 +172,8 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 		net_run_hdr->ecrecv_mtx.unlock();
 
 		Trecv.detach();
-		close(hSocket);
+		if (close(hSocket))
+			std::cout << "Error while closing connection socket" << std::endl;
 	}
 }
 
