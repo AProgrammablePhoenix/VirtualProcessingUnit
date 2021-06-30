@@ -3,33 +3,32 @@
 #if defined(ISWIN)
 
 #pragma comment(lib, "ws2_32.lib")
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include "net_hdr.h"
 
 #include <functional>
 #include <iostream>
+#include <map>
 #include <mutex>
 #include <string>
 #include <thread>
 #include <vector>
+#include <winSock2.h>
+#include <ws2tcpip.h>
 #include <windows.h>
-//#include <winSock2.h>
 
 struct inet_data {
 	std::vector<unsigned char*> receivedBytes;
 	std::map<size_t, sockaddr_in*> endpoints;
 };
 
-
 inline bool isIPAddr(char* testStr) {
 	sockaddr_in temp;
 	return (inet_pton(AF_INET, testStr, &(temp.sin_addr))) > 0;
 }
 
-
-static std::vector<unsigned char*> receivedBytes;
-
-void recvThread(SOCKET& hSocket, running_hdr*& rhdr, inet_data*&) {
+void recvThread(SOCKET& hSocket, running_hdr*& rhdr, inet_data*& idata) {
 	unsigned char* buffer = nullptr;
 
 	while (true) {
@@ -66,7 +65,7 @@ void sendFct(SOCKET& hSocket, running_hdr*& rhdr, unsigned char* data, size_t co
 	rhdr->sent_mtx.lock();
 	sockaddr_in* ep_sockaddr = idata->endpoints[rhdr->selectedEP];
 
-	if (send(hSocket, (const char*)data, (int)count, 0)) {
+	if (sendto(hSocket, (const char*)data, (int)count, 0, (sockaddr*)ep_sockaddr, sizeof(*ep_sockaddr)) != (int)count) {
 		rhdr->bufferSent = true;
 		rhdr->sent_mtx.unlock();
 		return;
@@ -91,10 +90,9 @@ void treatRcvMsg(running_hdr*& nrh, inet_data*& idata) {
 
 	mp_memcpy<unsigned char, unsigned char>(idata->receivedBytes[0], (*nrh->transferBuffer), 256);
 
-	delete[] receivedBytes[0];
-	receivedBytes.erase(receivedBytes.begin());
+	delete[] idata->receivedBytes[0];
+	idata->receivedBytes.erase(idata->receivedBytes.begin());
 }
-
 void addEndpoint(running_hdr*& rhdr, ip_endpoint& ep_data, inet_data*& idata) {
 	sockaddr_in ep_sockaddr;
 
@@ -117,10 +115,9 @@ void addEndpoint(running_hdr*& rhdr, ip_endpoint& ep_data, inet_data*& idata) {
 	idata->endpoints[ep_data.id] = new sockaddr_in(ep_sockaddr);
 	delete ep_data.ipAddr;
 }
-
-void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
+void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr, inet_data*& idata) {
 	SOCKET hSocket;
-	hSocket = socket(AF_INET, SOCK_DGRAM, IPROTO_UDP);
+	hSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (hSocket == INVALID_SOCKET) {
 		std::cout << "Error while creating network socket" << std::endl;
@@ -146,7 +143,7 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 				return;
 			}
 			else {
-				memmove((char*)(&recvSockAdd.sin_addr.s_addr), (char*)(serv_recp->h_addr), serv_recp->h_length);
+				memmove((char*)(&recvSockAddr.sin_addr.s_addr), (char*)(serv_recp->h_addr), serv_recp->h_length);
 			}
 		}
 
@@ -158,15 +155,15 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 
 		else {
 			idata->endpoints[0] = new sockaddr_in(recvSockAddr);
-			std::thread Trecv(recvThread, std::ref(hSocket), std::ref(net_run_hdr));
+			std::thread Trecv(recvThread, std::ref(hSocket), std::ref(net_run_hdr), std::ref(idata));
 			while (true) {
 				net_run_hdr->recv_mtx.lock();
 
 				if (net_run_hdr->msg_code == msg_codes::treatReceivedBuffer) {
-					treatRcvMsg(net_run_hdr);
+					treatRcvMsg(net_run_hdr, idata);
 				}
 				else if (net_run_hdr->msg_code == msg_codes::sendBuffer) {
-					sendFct(hSocket, net_run_hdr, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
+					sendFct(hSocket, net_run_hdr, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen, idata);
 				} else if (net_run_hdr->msg_code == msg_codes::addEndpoint) {
 					ip_endpoint ipe;
 					unsigned char* container = (*net_run_hdr->transferBuffer);
@@ -205,23 +202,36 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	WSADATA wsadata;
 
 	if (!WSAStartup(MAKEWORD(iMinWinsockVer, 0), &wsadata)) {
+		inet_data* idata = new inet_data;
+
 		if (LOBYTE(wsadata.wVersion) >= iMinWinsockVer) {
-			winnet_poststartup(startup_header, net_run_hdr);
+			winnet_poststartup(startup_header, net_run_hdr, idata);
 		}
 		else {
 			std::cout << "Network API Version is not compatible" << std::endl;
+			delete idata;
 			return;
 		}
 
 		if (WSACleanup() != 0) {
 			std::cout << "Failed cleaning up networking interface" << std::endl;
+			delete idata;
 			return;
 		}
 
-		while (receivedBytes.size() > 1) {
-			delete[] receivedBytes[0];
-			receivedBytes.erase(receivedBytes.begin());
+		while (idata->receivedBytes.size() > 1) {
+			delete[] idata->receivedBytes[0];
+			idata->receivedBytes.erase(idata->receivedBytes.begin());
 		}
+
+		std::vector<size_t> ep_keys;
+		for (auto const& pair : idata->endpoints)
+			ep_keys.push_back(pair.first);
+
+		for (size_t key : ep_keys)
+			delete idata->endpoints[key];
+
+		delete idata;
 	}
 	else {
 		std::cout << "Failed launching networking interface startup" << std::endl;
