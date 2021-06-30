@@ -11,7 +11,8 @@
 enum class msg_codes {
 	NOP					= 0x00,
 	treatReceivedBuffer = 0x01,
-	sendBuffer			= 0x02
+	sendBuffer			= 0x02,
+	addEndpoint			= 0x03
 };
 
 struct running_hdr {
@@ -34,6 +35,7 @@ struct running_hdr {
 
 	unsigned char** transferBuffer = nullptr;
 	size_t trsfrBufferLen = 256;
+	size_t selectedEP = 0;
 };
 
 struct startup_hdr {
@@ -48,6 +50,12 @@ struct startup_hdr {
 
 	std::string recvAddr;
 	int recvPort, thisPort;
+};
+
+struct ip_endpoint {
+	std::string* ipAddr;
+	int port;
+	size_t id;
 };
 
 void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr);

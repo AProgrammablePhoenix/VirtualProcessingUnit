@@ -34,6 +34,21 @@ push EAX
 
 nopen ${{N1}}
 
+; try creating a new ip endpoint on stream 1
+setSR ${{S"127.0.0.1"}}
+pushSR 0
+setEAX ${{N5015}}
+push EAX
+setEAEX ${{N1}}
+push EAX
+ncrtep ${{N0}}
+
+; has no effect until eax is set to 1 (if eax is set to 1, process will run in a infinite loop,
+; waiting for a network packet that will never be received by localhost on port 5014,
+; indeed the packet would be sent to port 5015)
+setEAX ${{N0}}
+push EAX
+nselep ${{N0}}
 
 ; send data from stream 1 to stream 2
 ; set SR to string to send (buffer starts at address 256 + 8)

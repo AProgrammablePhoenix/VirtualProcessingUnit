@@ -14,3 +14,5 @@ void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem);
 void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem);
 void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem);
+void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem);
+void net_selep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem);

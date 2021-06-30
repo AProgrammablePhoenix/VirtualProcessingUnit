@@ -16,10 +16,11 @@ int main() {
 	unsigned char* buffer2 = new unsigned char[256];
 	running_hdr* rhdr2 = new running_hdr(&buffer2, 256);
 
-	startup_hdr* shdr1 = new startup_hdr("127.0.0.1", 5012, 5013);
-	startup_hdr* shdr2 = new startup_hdr("127.0.0.1", 5013, 5012);
+	startup_hdr* shdr1 = new startup_hdr("127.0.0.1", 5012, 5014);
+	startup_hdr* shdr2 = new startup_hdr("127.0.0.1", 5014, 5012);
 
 	std::thread submain1(netint_submain, std::ref(shdr1), std::ref(rhdr1));
+	std::this_thread::sleep_for(std::chrono::milliseconds(500));
 	std::thread submain2(netint_submain, std::ref(shdr2), std::ref(rhdr2));
 
 	std::this_thread::sleep_for(std::chrono::milliseconds(1500));
@@ -31,7 +32,25 @@ int main() {
 #else
 	sprintf((char*)buffer1, "network test");
 #endif
+
 	rhdr1->msg_code = msg_codes::sendBuffer;
+
+	rhdr1->recv_mtx.unlock();
+
+	while (true) {
+		rhdr1->sent_mtx.lock();
+		if (rhdr1->bufferSent)
+			break;
+		rhdr1->sent_mtx.unlock();
+
+		std::this_thread::sleep_for(std::chrono::milliseconds(50));
+	}
+
+	rhdr1->bufferSent = false;
+	rhdr1->sent_mtx.unlock();
+
+	rhdr1->recv_mtx.lock();
+
 	rhdr1->stop_mtx.lock();
 	rhdr1->stopRequested = true;
 	rhdr1->stop_mtx.unlock();
@@ -40,11 +59,13 @@ int main() {
 
 	while (true) {
 		rhdr2->hrecv_mtx.lock();
+
 		if (rhdr2->hasReceived) {
 			rhdr2->hrecv_mtx.unlock();
 			break;
 		}
 		rhdr2->hrecv_mtx.unlock();
+
 		std::this_thread::sleep_for(std::chrono::milliseconds(200));
 	}
 

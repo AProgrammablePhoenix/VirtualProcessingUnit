@@ -160,7 +160,12 @@ void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 		return;
 
 	rhdr->hrecv_mtx.lock();
+
 	size_t hrecvd = (size_t)rhdr->hasReceived;
+
+	if (hrecvd)
+		rhdr->hasReceived = false;
+	
 	rhdr->hrecv_mtx.unlock();
 
 	temp = new unsigned char[sizeof(size_t)];
@@ -168,4 +173,82 @@ void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 
 	mem->push(temp, sizeof(size_t));
 	delete[] temp;
+}
+
+// Create a network stream endpoint with a specified id (id used to select it)
+// Argument: stream id
+// Stack ... recvAddr(string) recvPort(unsigned number) endpoint_id
+void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
+	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+
+	size_t stream_id = ATOULL(temp);
+	delete[] temp;
+
+	size_t ep_id = popMemNum(mem);
+	size_t recvPort = popMemNum(mem);
+
+	std::string saved_sr = registers->sr->get();
+
+	popMemSR(nullptr, registers, mem);
+	std::string recvAddr = registers->sr->get();
+
+	registers->sr->set(saved_sr);
+
+	net_stream* nstream = mem->_netman.getStream(stream_id);
+	if (!nstream)
+		return;
+
+	running_hdr** rhdr = nstream->get_full_rhdr();
+	if (!rhdr)
+		return;
+
+	ip_endpoint ipe;
+	ipe.ipAddr = new std::string(recvAddr);
+	ipe.port = recvPort;
+	ipe.id = ep_id;
+
+	temp = new unsigned char[sizeof(ip_endpoint)];
+#if defined(ISWIN)
+	memcpy_s(temp, sizeof(ip_endpoint), &ipe, sizeof(ip_endpoint));
+#else
+	memcpy(temp, &ipe, sizeof(ip_endpoint));
+#endif
+
+	unsigned char** saved = (*rhdr)->transferBuffer;
+	(*rhdr)->transferBuffer = &temp;
+
+	(*rhdr)->recv_mtx.lock();
+	(*rhdr)->msg_code = msg_codes::addEndpoint;
+	(*rhdr)->recv_mtx.unlock();
+
+	std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+	delete[] temp;
+	(*rhdr)->transferBuffer = saved;
+}
+// Select stream endpoint (used to send data)
+// Argument: stream id
+// Stack: ... endpoint_id
+void net_selep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
+	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+
+	size_t stream_id = ATOULL(temp);
+	
+	mem->pop(temp, sizeof(size_t));	
+	size_t ep_id = ATOULL(temp);
+	delete[] temp;
+
+	net_stream* nstream = mem->_netman.getStream(stream_id);
+	if (!nstream)
+		return;
+
+	running_hdr** rhdr = nstream->get_full_rhdr();
+	if (!rhdr)
+		return;
+
+	(*rhdr)->selectedEP = ep_id;
 }

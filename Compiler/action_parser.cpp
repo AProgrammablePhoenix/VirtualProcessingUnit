@@ -289,7 +289,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"nclose", virtual_actions::nclose},
 	{"nget", virtual_actions::nget},
 	{"nsend", virtual_actions::nsend},
-	{"nhrecv", virtual_actions::nhrecv}
+	{"nhrecv", virtual_actions::nhrecv},
+	{"ncrtep", virtual_actions::ncrtep},
+	{"nselep", virtual_actions::nselep}
 #pragma endregion
 };
 

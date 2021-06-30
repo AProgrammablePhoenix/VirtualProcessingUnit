@@ -210,10 +210,12 @@ enum class virtual_actions {
 	nclose = 0x0093,
 	nget   = 0x0094,
 	nsend  = 0x0095,
-	nhrecv = 0x0096
+	nhrecv = 0x0096,
+	ncrtep = 0x0097,
+	nselep = 0x0098
 };
 
-extern void (*a_db[0x0096 + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x0098 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -471,6 +473,8 @@ private:
 		a_db[(size_t)virtual_actions::nget] = net_get;
 		a_db[(size_t)virtual_actions::nsend] = net_send;
 		a_db[(size_t)virtual_actions::nhrecv] = net_hrecv;
+		a_db[(size_t)virtual_actions::ncrtep] = net_crtep;
+		a_db[(size_t)virtual_actions::nselep] = net_selep;
 #pragma endregion
 	}
 };

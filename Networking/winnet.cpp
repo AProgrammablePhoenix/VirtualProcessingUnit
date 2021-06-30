@@ -15,9 +15,21 @@
 #include <windows.h>
 //#include <winSock2.h>
 
+struct inet_data {
+	std::vector<unsigned char*> receivedBytes;
+	std::map<size_t, sockaddr_in*> endpoints;
+};
+
+
+inline bool isIPAddr(char* testStr) {
+	sockaddr_in temp;
+	return (inet_pton(AF_INET, testStr, &(temp.sin_addr))) > 0;
+}
+
+
 static std::vector<unsigned char*> receivedBytes;
 
-void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
+void recvThread(SOCKET& hSocket, running_hdr*& rhdr, inet_data*&) {
 	unsigned char* buffer = nullptr;
 
 	while (true) {
@@ -41,7 +53,7 @@ void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
 			delete[] buffer;
 		}
 		else {
-			receivedBytes.push_back(buffer);
+			idata->receivedBytes.push_back(buffer);
 
 			rhdr->hrecv_mtx.lock();
 			rhdr->hasReceived = true;
@@ -50,20 +62,21 @@ void recvThread(SOCKET& hSocket, running_hdr*& rhdr) {
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	}
 }
-void sendFct(SOCKET& hSocket, running_hdr*& rhdr, unsigned char* data, size_t count) {
+void sendFct(SOCKET& hSocket, running_hdr*& rhdr, unsigned char* data, size_t count, inet_data*& idata) {
 	rhdr->sent_mtx.lock();
-	rhdr->bufferSent = true;
+	sockaddr_in* ep_sockaddr = idata->endpoints[rhdr->selectedEP];
 
 	if (send(hSocket, (const char*)data, (int)count, 0)) {
-		// Handling error code
+		rhdr->bufferSent = true;
 		rhdr->sent_mtx.unlock();
 		return;
 	}
 
+	rhdr->bufferSent = true;
 	rhdr->sent_mtx.unlock();
 }
 
-void treatRcvMsg(running_hdr*& nrh) {
+void treatRcvMsg(running_hdr*& nrh, inet_data*& idata) {
 	nrh->msg_code = msg_codes::NOP;
 	
 	if ((*nrh->transferBuffer) != nullptr)
@@ -71,20 +84,43 @@ void treatRcvMsg(running_hdr*& nrh) {
 
 	(*nrh->transferBuffer) = new unsigned char[256];
 
-	if (receivedBytes.size() < 1 || receivedBytes.empty()) {
+	if (idata->receivedBytes.size() < 1 || idata->receivedBytes.empty()) {
 		std::fill((*nrh->transferBuffer), (*nrh->transferBuffer) + 256, 0);
 		return;
 	}
 
-	mp_memcpy<unsigned char, unsigned char>(receivedBytes[0], (*nrh->transferBuffer), 256);
+	mp_memcpy<unsigned char, unsigned char>(idata->receivedBytes[0], (*nrh->transferBuffer), 256);
 
 	delete[] receivedBytes[0];
 	receivedBytes.erase(receivedBytes.begin());
 }
 
+void addEndpoint(running_hdr*& rhdr, ip_endpoint& ep_data, inet_data*& idata) {
+	sockaddr_in ep_sockaddr;
+
+	memset((char*)&ep_sockaddr, 0, sizeof(ep_sockaddr));
+	ep_sockaddr.sin_family = AF_INET;
+	ep_sockaddr.sin_port = htons(ep_data.port);
+
+	if (isIPAddr((char*)ep_data.ipAddr->c_str())) {
+		ep_sockaddr.sin_addr.s_addr = inet_addr(ep_data.ipAddr->c_str());
+	} else {
+		hostent* ep_recp = gethostbyname(ep_data.ipAddr->c_str());
+		if (ep_recp == NULL) {
+			std::cout << "No such external host: " << ep_data.ipAddr << std::endl;
+			return;
+		} else {
+			memmove((char*)(&ep_sockaddr.sin_addr.s_addr), (char*)(ep_recp->h_addr), ep_recp->h_length);
+		}
+	}
+
+	idata->endpoints[ep_data.id] = new sockaddr_in(ep_sockaddr);
+	delete ep_data.ipAddr;
+}
+
 void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	SOCKET hSocket;
-	hSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	hSocket = socket(AF_INET, SOCK_DGRAM, IPROTO_UDP);
 
 	if (hSocket == INVALID_SOCKET) {
 		std::cout << "Error while creating network socket" << std::endl;
@@ -95,11 +131,24 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 
 		recvSockAddr.sin_family = AF_INET;
 		recvSockAddr.sin_port = htons(startup_header->recvPort);
-		recvSockAddr.sin_addr.S_un.S_addr = inet_addr(startup_header->recvAddr.c_str());
 
 		thisSockAddr.sin_family = AF_INET;
 		thisSockAddr.sin_port = htons(startup_header->thisPort);
 		thisSockAddr.sin_addr.S_un.S_addr = inet_addr(startup_header->thisAddr.c_str());
+
+		if (isIPAddr((char*)startup_header->recvAddr.c_str())) {
+			recvSockAddr.sin_addr.s_addr = inet_addr(startup_header->recvAddr.c_str());
+		}
+		else {
+			hostent* serv_recp = gethostbyname(startup_header->recvAddr.c_str());
+			if (serv_recp == NULL) {
+				std::cout << "No such external host: " << startup_header->recvAddr << std::endl;
+				return;
+			}
+			else {
+				memmove((char*)(&recvSockAdd.sin_addr.s_addr), (char*)(serv_recp->h_addr), serv_recp->h_length);
+			}
+		}
 
 		if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
 			std::cout << "Error while binding connection" << std::endl;
@@ -107,13 +156,8 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 			return;
 		}
 
-		if (connect(hSocket, (sockaddr*)(&recvSockAddr), sizeof(recvSockAddr)) != 0) {
-			std::cout << "Error while establishing connection" << std::endl;
-			closesocket(hSocket);
-			return;
-		}
 		else {
-
+			idata->endpoints[0] = new sockaddr_in(recvSockAddr);
 			std::thread Trecv(recvThread, std::ref(hSocket), std::ref(net_run_hdr));
 			while (true) {
 				net_run_hdr->recv_mtx.lock();
@@ -123,6 +167,13 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 				}
 				else if (net_run_hdr->msg_code == msg_codes::sendBuffer) {
 					sendFct(hSocket, net_run_hdr, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen);
+				} else if (net_run_hdr->msg_code == msg_codes::addEndpoint) {
+					ip_endpoint ipe;
+					unsigned char* container = (*net_run_hdr->transferBuffer);
+
+					memcpy_s(&ipe, sizeof(ip_endpoint), container, sizeof(ip_endpoint));
+
+					addEndpoint(net_run_hdr, ipe, idata);
 				}
 
 				net_run_hdr->msg_code = msg_codes::NOP;
