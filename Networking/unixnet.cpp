@@ -120,6 +120,7 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 		hostent* serv_recp = gethostbyname(startup_header->recvAddr.c_str());
 		if (serv_recp == NULL) {
 			std::cout << "No such external host: " << startup_header->recvAddr << std::endl;
+			closesocket(hSocket);
 			return;
 		}
 		else {
@@ -129,10 +130,14 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 
 	if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
 		std::cout << "Error while binding connection" << std::endl;
+		closesocket(hSocket);
+		return;
 	}
 
 	if (connect(hSocket, (sockaddr*)(&recvSockAddr), sizeof(recvSockAddr)) != 0) {
 		std::cout << "Error while establishing connection" << std::endl;
+		closesocket(hSocket);
+		return;
 	}
 	else {
 		std::thread Trecv(recvThread, std::ref(hSocket), std::ref(net_run_hdr));
@@ -173,6 +178,7 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	SOCKET hSocket = socket(AF_INET, SOCK_STREAM, 0);
 	if (hSocket == INVALID_SOCKET) {
 		std::cout << "Error while creating network socket" << std::endl;
+		return;
 	}
 	else {
 		unixnet_poststartup(hSocket, startup_header, net_run_hdr);

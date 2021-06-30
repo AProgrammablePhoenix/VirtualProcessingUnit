@@ -88,7 +88,7 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 
 	if (hSocket == INVALID_SOCKET) {
 		std::cout << "Error while creating network socket" << std::endl;
-		// Socket not valid, handle error code
+		return;
 	}
 	else {
 		sockaddr_in thisSockAddr, recvSockAddr;
@@ -103,11 +103,14 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr)
 
 		if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
 			std::cout << "Error while binding connection" << std::endl;
+			closesocket(hSocket);
+			return;
 		}
 
 		if (connect(hSocket, (sockaddr*)(&recvSockAddr), sizeof(recvSockAddr)) != 0) {
 			std::cout << "Error while establishing connection" << std::endl;
-			// Error handling code
+			closesocket(hSocket);
+			return;
 		}
 		else {
 
@@ -156,12 +159,12 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 		}
 		else {
 			std::cout << "Network API Version is not compatible" << std::endl;
-			// required version not available
+			return;
 		}
 
 		if (WSACleanup() != 0) {
 			std::cout << "Failed cleaning up networking interface" << std::endl;
-			// Cleanup failed
+			return;
 		}
 
 		while (receivedBytes.size() > 1) {
@@ -171,7 +174,7 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	}
 	else {
 		std::cout << "Failed launching networking interface startup" << std::endl;
-		// Startup failed
+		return;
 	}
 }
 
