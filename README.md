@@ -7,3 +7,4 @@ V1.11 Changes:
 - [x] Added Unix & Windows compliant networking library (will be used soonly to make network-based VASM instructions)
 - [x] Added symbols of new networking instructions
 - [x] Integrated new networking instructions into Compiler instructions set
+- [x] Switched from TCP protocol to UDP and added support for multiple ip endpoints
