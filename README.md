@@ -8,3 +8,4 @@ V1.11 Changes:
 - [x] Added symbols of new networking instructions
 - [x] Integrated new networking instructions into Compiler instructions set
 - [x] Switched from TCP protocol to UDP and added support for multiple ip endpoints
+- [x] Integrated networking symbols into VAS/VEXE engines instructions set
