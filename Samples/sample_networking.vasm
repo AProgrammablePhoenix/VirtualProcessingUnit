@@ -39,7 +39,7 @@ setSR ${{S"127.0.0.1"}}
 pushSR 0
 setEAX ${{N5015}}
 push EAX
-setEAEX ${{N1}}
+setEAX ${{N1}}
 push EAX
 ncrtep ${{N0}}
 

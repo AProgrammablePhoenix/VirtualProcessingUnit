@@ -105,7 +105,10 @@ inline size_t COMPBA(unsigned char*& ba, unsigned char length) {
 	for (size_t i = 0; i < length; i++) {
 		if (!ba[i])
 			nZeros++;
+		else
+			break;
 	}
+
 	if (nZeros < length) {
 		size_t newlen = length - (size_t)nZeros + 1;
 
