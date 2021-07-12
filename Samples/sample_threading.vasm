@@ -1,0 +1,26 @@
+; expected output (text between braces is not was is expected to be printed, but text that describe what should be printed):
+; Program launched
+; ["Program terminated" or "Thread called"]
+; [the one that hasn't been called above]
+
+[ldthread] sample_threading_thread.vasm,0
+
+call main
+hlt 0
+
+decltag main
+
+crtthread ${{N0}}
+
+setSR ${{S"Program launched"}}
+int ${{N6}}
+
+setSR ${{S"Program terminated"}}
+int ${{N6}}
+
+; if thread is not stopped (for an unknown reason/undefined behavior), then stop it anyway
+; (rstthread would have not killed it, but instead put it in a suspended status
+; but it would have been considered as 'dead' (inactive in this case) by the execution engine, and would have been deleted)
+endthread ${{N0}}
+
+ret 0

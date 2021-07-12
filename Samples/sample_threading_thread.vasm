@@ -1,0 +1,10 @@
+call thread
+
+hlt 0
+
+decltag thread
+
+setSR ${{S"Thread called"}}
+int ${{N6}}
+
+ret 0
