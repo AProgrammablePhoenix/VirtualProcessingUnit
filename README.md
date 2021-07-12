@@ -2,10 +2,8 @@ This project allows you to run an engine which emulates threading behaviour. It 
 Actually, the language used to run tasks is not directly C++, it's VASM (which means Virtual ASM), which is a language that is representing
 simplified Assembly (really simplified) with pre-built procedures for string manipulations.
 
-V1.11 Changes:
-- [x] Reduced amount of binary code generated/handled by VAS/VEXE engines
-- [x] Added Unix & Windows compliant networking library (will be used soonly to make network-based VASM instructions)
-- [x] Added symbols of new networking instructions
-- [x] Integrated new networking instructions into Compiler instructions set
-- [x] Switched from TCP protocol to UDP and added support for multiple ip endpoints
-- [x] Integrated networking symbols into VAS/VEXE engines instructions set
+V1.12 Changes:
+- [x] Implemented sub-threading engine
+- [x] Implemented sub-threading symbols
+- [x] Added new sub-threading symbols into Compiler instructions set
+- [ ] Added new sub-threading symbols into VAS/VEXE engines instructions set
