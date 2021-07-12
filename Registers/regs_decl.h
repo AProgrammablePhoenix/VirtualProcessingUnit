@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -244,6 +245,7 @@ public:
 	short* jmp_sign = &_jmp_sign;
 	bool* stopRequested = &_stopRequested;
 	size_t *process_call_address = &_process_call_address;
+	std::map<size_t, int>* threadsStatuses = nullptr;
 
 	doubleReg* dr = &_dr;
 	charReg* cr = &_cr;

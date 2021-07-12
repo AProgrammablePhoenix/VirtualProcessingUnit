@@ -7,6 +7,11 @@
 #include "../Memory/memory_decl.h"
 #include "../Registers/registers_symbols.h"
 
+#define THREAD_DEAD -1
+#define THREAD_STOPPED 0
+#define THREAD_ALIVE 1
+#define THREAD_SIGTERM 2
+
 void p_inverseJmpSign(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void p_jmp(std::shared_ptr<void> unsued_p, regs* registers, memory* unused_m);
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
@@ -28,3 +33,7 @@ void p_ret(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 
 void p_svcall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+
+void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem);
+void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem);
+void p_endthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem);

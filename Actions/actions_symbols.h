@@ -212,10 +212,14 @@ enum class virtual_actions {
 	nsend  = 0x0095,
 	nhrecv = 0x0096,
 	ncrtep = 0x0097,
-	nselep = 0x0098
+	nselep = 0x0098,
+
+	pcrtthread = 0x0099,
+	prstthread = 0x009A,
+	pendthread = 0x009B
 };
 
-extern void (*a_db[0x0098 + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x009B + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -238,6 +242,10 @@ public:
 		this->self_regs = registers;
 		this->self_ints = interrupts(memory, registers);
 		this->init();
+	}
+
+	void setThreadsMap(std::map<size_t, int>*& _threadsStatuses) {
+		this->self_regs->threadsStatuses = _threadsStatuses;
 	}
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
@@ -475,6 +483,11 @@ private:
 		a_db[(size_t)virtual_actions::nhrecv] = net_hrecv;
 		a_db[(size_t)virtual_actions::ncrtep] = net_crtep;
 		a_db[(size_t)virtual_actions::nselep] = net_selep;
+#pragma endregion
+#pragma region threading
+		a_db[(size_t)virtual_actions::pcrtthread] = p_crtthread;
+		a_db[(size_t)virtual_actions::prstthread] = p_rstthread;
+		a_db[(size_t)virtual_actions::pendthread] = p_endthread;
 #pragma endregion
 	}
 };

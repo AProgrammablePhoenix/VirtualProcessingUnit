@@ -10,30 +10,35 @@ actions_engine temp_engine = actions_engine();
 
 bool process::allThreadsTerminated() {
 	if (nThreads) {
-		bool stillRunning = false;
 		for (size_t i = 0; i < this->threads.size(); i++) {
-			if (*this->threads[i]->getStepCounterPtr() < this->threadsActions[i].size() && !this->threads[i]->toStop())
-				stillRunning = true;
+			if ((*this->threadsStatuses)[this->threadIdsMap[i]] > THREAD_STOPPED)
+				return false;
 		}
-		return !stillRunning;
+		return true;
 	}
 	return true;
 }
 
 process::process() {
 	this->engine = temp_engine;
+	this->engine.setThreadsMap(this->threadsStatuses);
+
 	this->actions = std::vector<action>();
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
 }
 process::process(actions_engine* _engine) {
 	this->engine = *_engine;
+	this->engine.setThreadsMap(this->threadsStatuses);
+
 	this->actions = std::vector<action>();
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
 }
 process::process(actions_engine* _engine, std::vector<action>* _actions) {
 	this->engine = *_engine;
+	this->engine.setThreadsMap(this->threadsStatuses);
+
 	this->actions = *_actions;
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
@@ -46,15 +51,19 @@ void process::addAction(virtual_actions _action, std::shared_ptr<void> value_ptr
 	this->actions.push_back(action(_action, value_ptr));
 }
 
-void process::addThread(std::vector<action>* _actions) {
+void process::addThread(std::vector<action>* _actions, size_t threadId) {
 	this->nThreads++;
 	this->threadsActions.push_back(*_actions);
 
 	regs* tempR = new regs;
+	tempR->threadsStatuses = this->threadsStatuses;
+
 	memory* tempM = this->getMemoryPtr();
 
-	this->threadsRegisters.push_back(tempR);	
+	this->threadsRegisters.push_back(tempR);
 	this->threads.push_back(new actions_engine(tempM, tempR));
+	(*this->threadsStatuses)[threadId] = false;
+	this->threadIdsMap[this->threads.size() - 1] = threadId;
 }
 
 void process::execute() {
@@ -108,8 +117,16 @@ void process::execute1() {
 		}
 		else {
 			size_t i = engineId - 1;
-			if (this->threads[i]->toStop()) {
+			if ((*this->threadsStatuses)[this->threadIdsMap[i]] <= THREAD_STOPPED) {
+				++(this->engineId);
+				if (this->engineId - 1 == this->threads.size())
+					this->engineId = 0;
+				return;
+			}
+
+			if (this->threads[i]->toStop() || (*this->threadsStatuses)[this->threadIdsMap[i]] == THREAD_SIGTERM) {
 				*this->threads[i]->getStepCounterPtr() = this->threadsActions[i].size();
+				(*this->threadsStatuses)[this->threadIdsMap[i]] = THREAD_DEAD;
 
 				++(this->engineId);
 				if (this->engineId - 1 == this->threads.size())
@@ -150,4 +167,6 @@ void process::destroy() {
 		this->threads[i]->destroy();
 		delete this->threads[i];
 	}
+
+	delete this->threadsStatuses;
 }

@@ -179,3 +179,52 @@ void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m)
 		calling_tree.pop_back();
 	}
 }
+
+// Start (or resumes a stopped thread) a loaded thread by its id
+void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
+	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+
+	size_t thread_id = ATOULL(temp);
+	delete[] temp;
+
+	if (!registers->threadsStatuses->count(thread_id))
+		return;
+	if ((*registers->threadsStatuses)[thread_id] == THREAD_DEAD)
+		return;
+
+	(*registers->threadsStatuses)[thread_id] = THREAD_ALIVE;
+}
+// Pause a loaded and launched thread by its id
+void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
+	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+
+	size_t thread_id = ATOULL(temp);
+	delete[] temp;
+
+	if (!registers->threadsStatuses->count(thread_id))
+		return;
+	if ((*registers->threadsStatuses)[thread_id] == THREAD_DEAD)
+		return;
+
+	(*registers->threadsStatuses)[thread_id] = THREAD_STOPPED;
+}
+// Terminates a loaded and launched thread by its id
+void p_endthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
+	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+
+	size_t thread_id = ATOULL(temp);
+	delete[] temp;
+
+	if (!registers->threadsStatuses->count(thread_id))
+		return;
+	if ((*registers->threadsStatuses)[thread_id] == THREAD_STOPPED)
+		return;
+
+	(*registers->threadsStatuses)[thread_id] = THREAD_SIGTERM;
+}
