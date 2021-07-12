@@ -291,14 +291,20 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"nsend", virtual_actions::nsend},
 	{"nhrecv", virtual_actions::nhrecv},
 	{"ncrtep", virtual_actions::ncrtep},
-	{"nselep", virtual_actions::nselep}
+	{"nselep", virtual_actions::nselep},
+
+	{"crtthread", virtual_actions::pcrtthread},
+	{"rstthread", virtual_actions::prstthread},
+	{"endthread", virtual_actions::pendthread}
 #pragma endregion
 };
 
-std::unordered_set<std::string> included_headers;
+static std::unordered_set<std::string> included_headers;
 
-std::unordered_set<std::string> global_toInclude;
-std::vector<std::string> global_include_list;
+static std::unordered_set<std::string> global_toInclude;
+static std::vector<std::string> global_include_list;
+
+static std::vector<std::tuple<std::string, size_t>> threadsToBuild;
 
 std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	std::string content = argument.substr(3, argument.size() - 5);
@@ -502,11 +508,34 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 			if (!line.rfind("[include] ", 0)) {
 				std::string included = line.substr(10);
 				std::string localpath = std::filesystem::relative(filename).replace_filename(included).string();
-
+				
 				if (!included_headers.count(localpath)) {
 					toInclude.push_back(localpath);
 					global_include_list.push_back(localpath);
 				}
+				continue;
+			}
+
+			if (!line.rfind("[ldthread] ", 0)) {
+				// Has form [ldthread] <thread_file>,<thread_id>
+				std::string loadedThread = line.substr(11);
+				
+				std::istringstream split(loadedThread);
+				std::vector<std::string> tokens;
+				for (std::string token; std::getline(split, token, ','); tokens.push_back(token));
+				if (tokens.size() < 2) {
+					std::cout
+						<< "Error on thread declaration, missing thread id (should be: [ldthread] <thread_file>,<thread_id>)"
+						<< std::endl;
+					continue;
+
+				}
+				loadedThread = tokens[0];
+				size_t threadId = std::stoull(tokens[1]);
+
+				std::string localpath = std::filesystem::relative(filename).replace_filename(loadedThread).string();
+				threadsToBuild.push_back(std::make_tuple<std::string&, size_t&>(localpath, threadId));
+				continue;
 			}
 
 			std::stringstream ss(line);
@@ -661,6 +690,11 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 
 	for (size_t i = 0; i < converted_actions.size(); i++) {
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
+	}
+
+	for (size_t i = 0; i < threadsToBuild.size(); i++) {
+		std::vector<action> thread = build_actions_only(std::get<0>(threadsToBuild[i]), out_mem, mem);
+		out_proc->addThread(&thread, std::get<1>(threadsToBuild[i]));
 	}
 }
 std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem) {
