@@ -206,7 +206,7 @@ void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 
 	ip_endpoint ipe;
 	ipe.ipAddr = new std::string(recvAddr);
-	ipe.port = recvPort;
+	ipe.port = (int)recvPort;
 	ipe.id = ep_id;
 
 	temp = new unsigned char[sizeof(ip_endpoint)];
