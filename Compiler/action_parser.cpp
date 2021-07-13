@@ -304,8 +304,6 @@ static std::unordered_set<std::string> included_headers;
 static std::unordered_set<std::string> global_toInclude;
 static std::vector<std::string> global_include_list;
 
-static std::vector<std::tuple<std::string, size_t>> threadsToBuild;
-
 std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	std::string content = argument.substr(3, argument.size() - 5);
 	std::string prefix = std::string(1, content[0]);
@@ -480,7 +478,8 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 		return "NULL";
 	}
 }
-std::vector<std::vector<std::string>> parseCodeLines(std::string filename, variables_decl* vars) {
+std::vector<std::vector<std::string>> parseCodeLines(std::string filename, variables_decl* vars,
+		std::vector<std::tuple<std::string, size_t>>& threadsToBuild) {
 	std::vector<std::string> toInclude;
 
 	if (!included_headers.count(filename)) {
@@ -553,7 +552,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 
 		for (size_t i = 0; i < toInclude.size(); i++) {
 			if (!global_toInclude.count(toInclude[i])) {
-				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars);
+				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars, threadsToBuild);
 
 				for (size_t j = 0; j < loaded.size(); j++) {
 					parsed.push_back(loaded[j]);
@@ -569,6 +568,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 		return parsed;
 	}
 }
+
 std::vector<virtual_actions> convertSymbols(std::vector<std::vector<std::string>> parsed) {
 	std::vector<virtual_actions> converted;
 
@@ -675,8 +675,10 @@ std::vector<std::shared_ptr<void>> convertVariables(std::vector<std::vector<std:
 }
 
 void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem, memory*& mem) {
+	std::vector<std::tuple<std::string, size_t>> threadsToBuild;
+
 	variables_decl vars = build_variables_decl_tree(filename, mem);
-	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
 	purgeParsed(&converted_actions, &parsed);
@@ -692,14 +694,22 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
 	}
 
+	std::vector<std::tuple<std::vector<action>, size_t>> sub_threads;
 	for (size_t i = 0; i < threadsToBuild.size(); i++) {
-		std::vector<action> thread = build_actions_only(std::get<0>(threadsToBuild[i]), out_mem, mem);
-		out_proc->addThread(&thread, std::get<1>(threadsToBuild[i]));
+		std::vector<action> thread = build_actions_only(std::get<0>(threadsToBuild[i]), out_mem, mem, sub_threads);
+		out_proc->addThread(thread, std::get<1>(threadsToBuild[i]));
+	}
+	for (size_t i = 0; i < sub_threads.size(); i++) {
+		std::vector<action> sthread = std::get<0>(sub_threads[i]);
+		out_proc->addThread(sthread, std::get<1>(sub_threads[i]));
 	}
 }
-std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem) {
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem,
+		std::vector<std::tuple<std::vector<action>, size_t>>& out_threads) {
+	std::vector<std::tuple<std::string, size_t>> threadsToBuild;
+
 	variables_decl vars = build_variables_decl_tree(filename, mem);
-	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
 	purgeParsed(&converted_actions, &parsed);
@@ -716,5 +726,14 @@ std::vector<action> build_actions_only(std::string filename, process_memory* out
 		out_actions.push_back(action(converted_actions[i], converted_arguments[i]));
 	}
 
+	std::vector<std::tuple<std::vector<action>, size_t>> sub_threads;
+	for (size_t i = 0; i < threadsToBuild.size(); i++) {
+		std::vector<action> thread = build_actions_only(std::get<0>(threadsToBuild[i]), out_mem, mem, sub_threads);
+		out_threads.push_back(std::make_tuple<std::vector<action>&, size_t&>(thread, std::get<1>(threadsToBuild[i])));
+	}
+	for (size_t i = 0; i < sub_threads.size(); i++) {
+		out_threads.push_back(std::make_tuple<std::vector<action>&, size_t&>(std::get<0>(sub_threads[i]), std::get<1>(sub_threads[i])));
+	}
+		 
 	return out_actions;
 }
