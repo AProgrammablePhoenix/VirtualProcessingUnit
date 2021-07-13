@@ -16,23 +16,23 @@
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
 
-void ulongToByteArray(size_t value, byte** output) {
+void ulongToByteArray(size_t value, byte** const output) {
 	*output = new byte[8];
 
 	for (long long j = 0, i = 7; i >= 0; i--, j++) {
 		(*output)[j] = (value >> (i * 8)) & 0xff;
 	}
 }
-void doubleToByteArray(double value, byte** output) {
+void doubleToByteArray(double value, byte** const output) {
 	*output = new byte[8];
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN8__)
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN__)
 	memcpy_s(*output, sizeof(double), &value, sizeof(double));
 #else
 	memcpy(*output, &value, sizeof(double));
 #endif
 }
 
-std::vector<byte> assembleAction(action _action, memory* mem) {
+std::vector<byte> assembleAction(action _action, memory* const mem) {
 	std::vector<byte> out;
 	out.push_back(instructions_set[_action.getAction()]);
 
@@ -123,15 +123,73 @@ std::vector<byte> as(std::string filename) {
 	regs* registers = new regs();
 	memory* mem = new memory(registers);
 
-	std::vector<action> built_actions = build_actions_only(filename, p_mem, mem);
-	std::vector<byte> linked;
+	// tuple: [0] : thread's actions ; [1] : thread id
+	std::vector<std::tuple<std::vector<action>, size_t>> threads;
 
+	std::vector<action> built_actions = build_actions_only(filename, p_mem, mem, threads);
+	std::vector<byte> main_linked;
+	// tuple: [0] : thread's built actions ; [1] : thread id
+	std::vector<std::tuple<std::vector<byte>, size_t>> threads_linked;
+
+	// assemble main
 	for (size_t i = 0; i < built_actions.size(); i++) {
 		std::vector<byte> temp = assembleAction(built_actions[i], mem);
 		for (size_t j = 0; j < temp.size(); j++) {
-			linked.push_back(temp[j]);
+			main_linked.push_back(temp[j]);
 		}
 	}
+	// assemble threads
+	for (size_t t = 0; t < threads.size(); t++) {
+		std::vector<action> tolink = std::get<0>(threads[t]);
+		std::vector<byte> tlinked;
+		for (size_t i = 0; i < tolink.size(); i++) {
+			std::vector<byte> temp = assembleAction(tolink[i], mem);
+			for (size_t j = 0; j < temp.size(); j++) {
+				tlinked.push_back(temp[j]);
+			}
+		}
+		threads_linked.push_back(std::make_tuple<std::vector<byte>&, size_t&>(tlinked, std::get<1>(threads[t])));
+	}
+
+	/* link everything
+	* code block format:
+	*	0x00 => block type [0 -> main block | 1 -> thread block]
+	*   0x01 -> 0x08 (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
+	*	0x09 -> 0x10 (8 bytes) => code length
+	*	0x11 -> (0x11 + [code length]) => executable code
+	*/
+	std::vector<byte> linked;
+
+	byte* buffer = nullptr;
+
+	for (size_t i = 0; i < threads_linked.size(); i++) {
+		linked.push_back((byte)0x01);
+
+		ULLTOA(std::get<1>(threads_linked[i]), &buffer);
+		for (size_t j = 0; j < sizeof(size_t); j++)
+			linked.push_back(buffer[j]);
+		delete[] buffer;
+
+		std::vector<byte> prelinked = std::get<0>(threads_linked[i]);
+		ULLTOA(prelinked.size(), &buffer);
+		for (size_t j = 0; j < sizeof(size_t); j++)
+			linked.push_back(buffer[j]);
+		delete[] buffer;
+
+		for (size_t j = 0; j < prelinked.size(); j++)
+			linked.push_back(prelinked[j]);
+	}
+	linked.push_back((byte)0x00);
+	for (size_t i = 0; i < sizeof(size_t); i++)
+		linked.push_back((byte)0);
+
+	ULLTOA(main_linked.size(), &buffer);
+	for (size_t i = 0; i < sizeof(size_t); i++)
+		linked.push_back(buffer[i]);
+	delete[] buffer;
+
+	for (size_t i = 0; i < main_linked.size(); i++)
+		linked.push_back(main_linked[i]);
 
 	delete p_mem;
 	delete mem;
@@ -140,7 +198,7 @@ std::vector<byte> as(std::string filename) {
 	return linked;
 }
 
-void asFinal(std::string filename, std::vector<byte> linkedBytes) {
+void asFinal(std::string filename, const std::vector<byte> linkedBytes) {
 	byte* linkedBytesArray = new byte[linkedBytes.size()];
 	std::copy(linkedBytes.begin(), linkedBytes.end(), linkedBytesArray);
 

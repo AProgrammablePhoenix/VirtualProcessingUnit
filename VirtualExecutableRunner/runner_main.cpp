@@ -15,11 +15,8 @@
 #include "../Compiler/action_parser.h"
 #include "runner.h"
 
-void executeByteArray(std::vector<unsigned char>* byteArray) {
-	std::vector<action>* actions = new std::vector<action>;
-
-	regs* registers = new regs;
-	memory* mem = new memory(registers);
+std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memory*& mem) {
+	std::vector<action> actions;
 
 	for (size_t i = 0; i < byteArray->size(); i++) {
 		if (zero_args_opcodes.find((*byteArray)[i]) != zero_args_opcodes.end()) {
@@ -29,7 +26,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
 			action _action(real_op, nullptr);
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
@@ -63,7 +60,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			delete[] b_value;
 
 			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, reallen)));
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
@@ -107,7 +104,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
 
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
@@ -128,7 +125,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			delete[] uc_c;
 
 			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
@@ -150,7 +147,7 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			delete[] b_value;
 
 			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
@@ -172,14 +169,101 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 			delete[] uc_n;
 
 			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
-			actions->push_back(_action);
+			actions.push_back(_action);
 
 			continue;
 		}
 	}
 
+	return actions;
+}
+
+std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
+		std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads) {
+	std::vector<std::tuple<std::vector<byte>, size_t>> threads_code;
+	std::vector<byte> main_code;
+
+	size_t i = 0;
+	bool main_found = false;
+
+	// fetch non main code
+	for (i = 0; i < file_content->size(); i++) {
+		if ((*file_content)[i] == 0x00) {
+			main_found = true;
+			i++;
+			break;
+		}
+		else if ((*file_content)[i] == 0x01) {
+			byte* buffer = new byte[sizeof(size_t)];
+			++i;
+
+			for (size_t j = 0; j < sizeof(size_t); i++,j++)
+				buffer[j] = (*file_content)[i];
+
+			size_t thread_id = ATOULL(buffer);
+			for (size_t j = 0; j < sizeof(size_t); i++, j++)
+				buffer[j] = (*file_content)[i];
+
+			size_t code_length = ATOULL(buffer);
+			std::vector<byte> thread_code;
+
+			for (size_t j = 0; j < code_length; i++, j++)
+				thread_code.push_back((*file_content)[i]);
+			i--;
+			delete[] buffer;
+
+			threads_code.push_back(std::make_tuple<std::vector<byte>&, size_t&>(thread_code, thread_id));
+		}
+	}
+
+	// fetch main code
+	if (main_found) {
+		byte* buffer = new byte[sizeof(size_t)];
+		i += 8;
+		
+		for (size_t j = 0; j < sizeof(size_t); i++, j++)
+			buffer[j] = (*file_content)[i];
+
+		size_t main_len = ATOULL(buffer);
+		delete[] buffer;
+
+		for (size_t j = 0; j < main_len; i++, j++)
+			main_code.push_back((*file_content)[i]);
+	}
+
+	// Set output
+	if (!proc_threads.empty()) {
+		proc_threads.clear();
+	}
+	for (auto thread_code : threads_code)
+		proc_threads.push_back(thread_code);
+
+	return main_code;
+}
+
+void executeFile(const std::vector<byte>& main_code, const std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads) {
+	std::vector<action> main_actions;
+	std::vector<std::tuple<std::vector<action>, size_t>> threads_actions;
+
+	regs* registers = new regs;
+	memory* mem = new memory(registers);
+
+	for (size_t i = 0; i < proc_threads.size(); i++) {
+		auto thread_header = std::get<0>(proc_threads[i]);
+		size_t thread_id = std::get<1>(proc_threads[i]);
+
+		threads_actions.push_back(std::make_tuple<std::vector<action>&, size_t&>(decodeByteArray(&thread_header, mem), thread_id));
+	}
+
+	std::vector<byte> temp_main_code = main_code;
+	main_actions = decodeByteArray(&temp_main_code, mem);
+
 	actions_engine _actions_engine = actions_engine(mem, registers);
-	process _proc = process(&_actions_engine, actions);
+	process _proc = process(_actions_engine, main_actions);
+
+	for (size_t i = 0; i < threads_actions.size(); i++) {
+		_proc.addThread(std::get<0>(threads_actions[i]), std::get<1>(threads_actions[i]));
+	}
 
 	_proc.start();
 
@@ -187,28 +271,28 @@ void executeByteArray(std::vector<unsigned char>* byteArray) {
 
 	mem->destroy();
 	delete mem;
-
-	delete actions;
 }
 
-void executeFile(std::string filename) {
+void runFile(std::string filename) {
 	std::ifstream input(filename, std::ios::binary);
 	std::vector<byte>* exe_bytes = new std::vector<byte>(
 		(std::istreambuf_iterator<char>(input)),
 		(std::istreambuf_iterator<char>()));
 	
-	executeByteArray(exe_bytes);
+	std::vector<std::tuple<std::vector<byte>, size_t>> threads_code;
+	std::vector<byte> main_code = decodeFile(exe_bytes, threads_code);
+	executeFile(main_code, threads_code);
 
 	delete exe_bytes;
 }
 
 int main(int argc, char* argv[]) {
-	if (argc < 2) {
+	if (argc > 2) {
 		std::cerr << "Usage: vexe <executableFile>" << std::endl;
 		return 1;
 	}
 
-	std::string inputfile = argv[1];
+	std::string inputfile = "../../../Samples/sat.ve";
 
-	executeFile(inputfile);
+	runFile(inputfile);
 }

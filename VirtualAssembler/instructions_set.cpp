@@ -210,7 +210,11 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::nsend,   0x94},
 	{virtual_actions::nhrecv,  0x95},
 	{virtual_actions::ncrtep,  0x96},
-	{virtual_actions::nselep,  0x97}
+	{virtual_actions::nselep,  0x97},
+
+	{virtual_actions::pcrtthread, 0x98},
+	{virtual_actions::prstthread, 0x99},
+	{virtual_actions::pendthread, 0x9A}
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -292,7 +296,11 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::nsend],
 	ops[virtual_actions::nhrecv],
 	ops[virtual_actions::ncrtep],
-	ops[virtual_actions::nselep]
+	ops[virtual_actions::nselep],
+
+	ops[virtual_actions::pcrtthread],
+	ops[virtual_actions::prstthread],
+	ops[virtual_actions::pendthread]
 };
 std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::movAX],
