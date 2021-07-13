@@ -9,8 +9,8 @@
 engine::engine() {
 	this->threading = true;
 }
-engine::engine(process *proc) {
-	this->processes.push_back(*proc);
+engine::engine(const process& proc) {
+	this->processes.push_back(proc);
 	this->threading = true;
 }
 engine::engine(std::vector<process> procs) {
@@ -20,29 +20,27 @@ engine::engine(std::vector<process> procs) {
 	this->threading = true;
 }
 
-size_t engine::pushProcess(process* proc) {
-	this->processes.push_back(*proc);
+size_t engine::pushProcess(const process& proc) {
+	this->processes.push_back(proc);
 	return this->processes.size() - 1;
 }
 void engine::popProcess() {
 	this->processes.pop_back();
 }
 
-process engine::getProcessById(size_t id) {
+int engine::getProcessById(size_t id, process* out_proc) {
 	if (id >= this->processes.size()) {
-		return NULL;
+		out_proc = NULL;
+		return 1;
 	}
 	else {
-		return this->processes[id];
+		*out_proc = this->processes[id];
+		return 0;
 	}
 }
 void engine::deleteProcessById(size_t id) {
-	if (id >= this->processes.size()) {
-		return;
-	}
-	else {
+	if (id < this->processes.size()) {
 		this->processes.erase(this->processes.begin() + id);
-		return;
 	}
 }
 

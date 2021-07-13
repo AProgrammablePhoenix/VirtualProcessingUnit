@@ -10,13 +10,13 @@
 struct engine {
 public:
 	engine();
-	engine(process *proc);
+	engine(const process& proc);
 	engine(std::vector<process> procs);
 
-	size_t pushProcess(process* proc);
+	size_t pushProcess(const process& proc);
 	void popProcess();
 
-	process getProcessById(size_t id);
+	int engine::getProcessById(size_t id, process* out_proc);
 	void deleteProcessById(size_t id);
 	
 	void setThreading(bool state);

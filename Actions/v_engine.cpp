@@ -27,19 +27,19 @@ process::process() {
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
 }
-process::process(actions_engine* _engine) {
-	this->engine = *_engine;
+process::process(const actions_engine& _engine) {
+	this->engine = _engine;
 	this->engine.setThreadsMap(this->threadsStatuses);
 
 	this->actions = std::vector<action>();
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
 }
-process::process(actions_engine* _engine, std::vector<action>* _actions) {
-	this->engine = *_engine;
+process::process(const actions_engine& _engine, const std::vector<action>& _actions) {
+	this->engine = _engine;
 	this->engine.setThreadsMap(this->threadsStatuses);
 
-	this->actions = *_actions;
+	this->actions = _actions;
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
 }
@@ -51,9 +51,9 @@ void process::addAction(virtual_actions _action, std::shared_ptr<void> value_ptr
 	this->actions.push_back(action(_action, value_ptr));
 }
 
-void process::addThread(std::vector<action>* _actions, size_t threadId) {
+void process::addThread(const std::vector<action>& _actions, size_t threadId) {
 	this->nThreads++;
-	this->threadsActions.push_back(*_actions);
+	this->threadsActions.push_back(_actions);
 
 	regs* tempR = new regs;
 	tempR->threadsStatuses = this->threadsStatuses;

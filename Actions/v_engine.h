@@ -11,13 +11,13 @@
 struct process {
 public:
 	process();
-	process(actions_engine* _engine);
-	process(actions_engine* _engine, std::vector<action>* _actions);
+	process(const actions_engine& _engine);
+	process(const actions_engine& _engine, const std::vector<action>& _actions);
 
 	void addAction(action _action);
 	void addAction(virtual_actions _action, std::shared_ptr<void> value_ptr);
 
-	void addThread(std::vector<action>* _actions, size_t threadId);
+	void addThread(const std::vector<action>& _actions, size_t threadId);
 
 	void start();
 	void execute1();
