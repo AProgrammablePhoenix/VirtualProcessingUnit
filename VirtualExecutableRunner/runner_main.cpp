@@ -288,12 +288,12 @@ void runFile(std::string filename) {
 }
 
 int main(int argc, char* argv[]) {
-	if (argc > 2) {
+	if (argc < 2) {
 		std::cerr << "Usage: vexe <executableFile>" << std::endl;
 		return 1;
 	}
 
-	std::string inputfile = "../../../Samples/sat.ve";
+	std::string inputfile = argv[1];
 
 	runFile(inputfile);
 }
