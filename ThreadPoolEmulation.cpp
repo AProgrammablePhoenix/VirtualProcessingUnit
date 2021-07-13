@@ -47,7 +47,7 @@ void allocateActionsEngine(memory* mem, regs* p_regs) {
 	a_engines.push_back(engine_ptr);
 }
 
-void allocateProcess(actions_engine* engine) {
+void allocateProcess(const actions_engine& engine) {
 	process* new_proc = new process(engine);
 	if (!new_proc) {
 		std::cout << "Error while allocating new process instance memory" << std::endl;
@@ -76,7 +76,7 @@ void clearMemory(engine& threadin_engine) {
 	threadin_engine.destroy();
 }
 
-int processInput(std::string& input, engine& threading_engine, int& status) {
+int processInput(const std::string& input, engine& threading_engine, int& status) {
 	if (!input.rfind("load", 0)) {
 		if (!status) {
 			std::stringstream ss(input);
@@ -96,7 +96,7 @@ int processInput(std::string& input, engine& threading_engine, int& status) {
 		if (!status) {
 			for (unsigned long long i = 0; i < scripts.size(); i++) {
 				allocateActionsEngine(memory_table[i], registers[i]);
-				allocateProcess(a_engines[i]);
+				allocateProcess(*a_engines[i]);
 				build_process(scripts[i], processes[i], &threading_engine, processes_mem[i], memory_table[i]);
 			}
 
@@ -108,10 +108,10 @@ int processInput(std::string& input, engine& threading_engine, int& status) {
 	}
 	else if (input == "start") {
 		if (status == 1) {
-			threading_engine = engine(processes[0]);
+			threading_engine = engine(*processes[0]);
 			
 			for (unsigned long long i = 1; i < processes.size(); i++) {
-				threading_engine.pushProcess(processes[i]);
+				threading_engine.pushProcess(*processes[i]);
 			}
 
 			threading_engine.setThreading(true);
