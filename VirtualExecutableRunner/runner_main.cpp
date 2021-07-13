@@ -252,7 +252,8 @@ void executeFile(const std::vector<byte>& main_code, const std::vector<std::tupl
 		auto thread_header = std::get<0>(proc_threads[i]);
 		size_t thread_id = std::get<1>(proc_threads[i]);
 
-		threads_actions.push_back(std::make_tuple<std::vector<action>&, size_t&>(decodeByteArray(&thread_header, mem), thread_id));
+		std::vector<action> thread_actions = decodeByteArray(&thread_header, mem);
+		threads_actions.push_back(std::make_tuple<std::vector<action>&, size_t&>(thread_actions, thread_id));
 	}
 
 	std::vector<byte> temp_main_code = main_code;

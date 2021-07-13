@@ -16,7 +16,7 @@ public:
 	size_t pushProcess(const process& proc);
 	void popProcess();
 
-	int engine::getProcessById(size_t id, process* out_proc);
+	int getProcessById(size_t id, process* out_proc);
 	void deleteProcessById(size_t id);
 	
 	void setThreading(bool state);
