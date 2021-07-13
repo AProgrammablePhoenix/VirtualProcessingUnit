@@ -6,4 +6,5 @@ V1.12 Changes:
 - [x] Implemented sub-threading engine
 - [x] Implemented sub-threading symbols
 - [x] Added new sub-threading symbols into Compiler instructions set
-- [ ] Added new sub-threading symbols into VAS/VEXE engines instructions set
+- [x] Added new sub-threading symbols into VAS/VEXE engines instructions set
+- [x] Replaced some pointers parameters to const ref parameters into execution engine
