@@ -2,9 +2,5 @@ This project allows you to run an engine which emulates threading behaviour. It 
 Actually, the language used to run tasks is not directly C++, it's VASM (which means Virtual ASM), which is a language that is representing
 simplified Assembly (really simplified) with pre-built procedures for some high-level operations.
 
-V1.12 Changes:
-- [x] Implemented sub-threading engine
-- [x] Implemented sub-threading symbols
-- [x] Added new sub-threading symbols into Compiler instructions set
-- [x] Added new sub-threading symbols into VAS/VEXE engines instructions set
-- [x] Replaced some pointers parameters to const ref parameters into execution engine
+As no new update is planned and the focus is set on implementing SVASM, please go [here](https://github.com/AProgrammablePhoenix/VirtualThreadingEngine/tree/main/SVASM)
+to stay up to date on the advancement of the implementation.
