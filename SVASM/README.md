@@ -19,7 +19,7 @@ by the assembler itself when it generates VEXE code.
 through 'cmp', type casts will be handled implicitely (for instance, comparing SR and EAX,
 will only compare the value of EAX with the numercial value of the first character of SR).
 
-(Of course, refer to [SVASM Raodmap](#svasm-roadmap) to stay informed of the language
+(Of course, refer to [SVASM Roadmap](#svasm-roadmap) to stay informed of the language
 implementation status, note that the latter is subject to changes)
 
 ### SVASM Roadmap
