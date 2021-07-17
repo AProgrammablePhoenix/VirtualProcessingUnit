@@ -57,7 +57,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		size_t str_size = std::get<1>(varinfos);		
 
-		byte* b_str_size = new byte[sizeof(size_t)];
+		byte* b_str_size = nullptr;
 		ulongToByteArray(str_size, &b_str_size);
 
 		size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
@@ -70,7 +70,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		byte* b_str = new byte[str_size];
 		mem->_ROZVG(b_str, str_size, std::get<0>(varinfos));
 
-		for (byte i = 0; i < str_size; i++) {
+		for (size_t i = 0; i < str_size; i++) {
 			out.push_back(b_str[i]);
 		}
 
@@ -93,7 +93,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		byte* uc_d = new byte[sizeof(double)];
 		mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
 		
-		for (byte i = 0; i < 8; i++) {
+		for (byte i = 0; i < sizeof(double); i++) {
 			out.push_back(uc_d[i]);
 		}
 		delete[] uc_d;
@@ -156,7 +156,7 @@ std::vector<byte> as(std::string filename) {
 	*	0x00 => block type [0 -> main block | 1 -> thread block]
 	*   0x01 -> 0x08 (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
 	*	0x09 -> 0x10 (8 bytes) => code length
-	*	0x11 -> (0x11 + [code length]) => executable code
+	*	0x11 -> (0x11 + [code length - 1]) => executable code
 	*/
 	std::vector<byte> linked;
 
@@ -206,6 +206,7 @@ void asFinal(std::string filename, const std::vector<byte> linkedBytes) {
 	file.write((const char*)linkedBytesArray, linkedBytes.size());
 
 	file.close();
+	delete[] linkedBytesArray;
 }
 
 int main(int argc, char* argv[]) {
