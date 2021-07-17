@@ -23,7 +23,7 @@ will only compare the value of EAX with the numercial value of the first charact
 implementation status, note that the latter is subject to changes)
 
 ### SVASM Roadmap
-* [ ] Implement mov instruction support
+* [x] Implement mov instruction support
 * [ ] Implement maths related instructions
 * [ ] Implement memory related instructions
 * [ ] Implement auto-saving management for calls

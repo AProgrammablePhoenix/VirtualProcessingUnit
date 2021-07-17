@@ -1,4 +1,5 @@
 ﻿cmake_minimum_required (VERSION 3.8)
+include(${CMAKE_CURRENT_SOURCE_DIR}/SVASM/CMakeLists.txt)
 
 project ("ThreadPoolEmulation")
 project ("vas")
@@ -76,5 +77,10 @@ target_link_libraries(vexe compiler)
 add_executable (testnet "Networking/testnet.cpp")
 
 target_link_libraries(testnet netlib)
+
+# svas target librairies
+target_link_libraries(svas registers)
+target_link_libraries(svas memory)
+target_link_libraries(svas virtual_engine)
 
 target_compile_features(compiler PUBLIC cxx_std_17)
