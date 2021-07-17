@@ -1,0 +1,8 @@
+mov sr, "Hello, World"
+mov ax, 1024
+mov dr, 1.4142
+mov rax, rbx
+mov rbx, rax
+xor rax, rax
+inc rax
+int 0x6
