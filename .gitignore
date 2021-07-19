@@ -2,3 +2,4 @@ engine.vasm
 out/
 .vs/
 build/
+Samples/*.ve
