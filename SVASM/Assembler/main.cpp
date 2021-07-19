@@ -46,25 +46,33 @@ int main(int argc, char* argv[]) {
 	test_exit(exit_code);
 
 	std::vector<byte> linked;
+	linked.reserve(0x11 + out_bytes.size());
 
 	// setup main header
-	linked.push_back(0);
+	linked.emplace_back(0);
 	for (byte i = 0; i < 8; i++)
-		linked.push_back(0);
+		linked.emplace_back(0);
 	byte* temp = nullptr;
 
 	ULLTOA(out_bytes.size(), &temp);
 	for (byte i = 0; i < sizeof(size_t); i++)
-		linked.push_back(temp[i]);
+		linked.emplace_back(temp[i]);
 	delete[] temp;
 
 	for (byte b : out_bytes)
-		linked.push_back(b);
+		linked.emplace_back(b);
 
 	byte* linkedBytes = new byte[linked.size()];
-	std::copy(linked.begin(), linked.end(), linkedBytes);	
+	std::copy(linked.begin(), linked.end(), linkedBytes);
 
 	std::ofstream output(outputFile, std::ios::out | std::ios::binary);
+
+	if (!output) {
+		std::cerr << "Error while opening output file for writing" << std::endl;
+		std::cerr << "SVAS returned with code: 2" << std::endl;
+		std::exit(2);
+
+	}
 	output.write((const char*)linkedBytes, linked.size());
 	output.close();
 

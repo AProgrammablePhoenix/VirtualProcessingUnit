@@ -44,6 +44,8 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 	bool found = false;
 	std::string temp = "";
 
+	temp.reserve(SAFE_INST_CAP);
+
 	out_parsed.arguments.clear();
 
 	for (const char c : line) {
@@ -77,7 +79,7 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 				continue;
 			}
 
-			out_parsed.arguments.push_back(temp);
+			out_parsed.arguments.emplace_back(temp);
 			temp = "";
 
 			if (i + 1 >= line.size())
@@ -91,7 +93,7 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 		temp.push_back(line[i]);
 	}
 	if (!temp.empty())
-		out_parsed.arguments.push_back(temp);
+		out_parsed.arguments.emplace_back(temp);
 
 	return OK;
 }
@@ -106,12 +108,14 @@ int main_parse(const std::string& filename, std::vector<codeline>& out_parsed) {
 	if (fetch_lines(file_content, lines))
 		return EMPTY_FILE;
 	
+	out_parsed.reserve(lines.size());
+
 	for (size_t i = 0; i < lines.size(); i++) {
 		codeline parsed;
 		if (parse_line(lines[i], parsed))
 			return EXTRACOMMA;
 
-		out_parsed.push_back(parsed);
+		out_parsed.emplace_back(parsed);
 	}
 
 	return OK;

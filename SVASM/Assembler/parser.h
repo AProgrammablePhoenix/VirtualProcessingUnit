@@ -4,6 +4,9 @@
 #include <string>
 #include <vector>
 
+constexpr size_t SAFE_INST_CAP = 5;
+constexpr size_t SAFE_ARGS_CAP = 2;
+
 constexpr int OK = 0;
 constexpr int FILE_ERROR = -1; // input file is probable doesn't exist
 constexpr int EMPTY_FILE = -2; // input file is empty
@@ -14,6 +17,11 @@ constexpr int WRONGNARGS = -6; // Wrong number of arguments associated with spec
 constexpr int ARGV_ERROR = -7; // Argument value is not correct/valid/allowed for specific instruction
 
 struct codeline {
+	codeline() {
+		this->instruction.reserve(SAFE_INST_CAP);
+		this->arguments.reserve(SAFE_ARGS_CAP);
+	}
+
 	std::string instruction = "";
 	std::vector<std::string> arguments;
 };

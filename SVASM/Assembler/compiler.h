@@ -30,15 +30,22 @@ enum class tokenTypes {
 };
 struct token {
 	token(const std::string& _e, const tokenTypes& _t) {
+		this->element.reserve(SAFE_ARGS_CAP);
+
 		this->element = _e;
 		this->type = _t;
 	}
-	token() { };
+	token() { this->element.reserve(SAFE_ARGS_CAP); }
 
 	std::string element = "";
 	tokenTypes type = tokenTypes::error_type;
 };
 struct tokenized {
+	tokenized() {
+		this->instruction.reserve(SAFE_INST_CAP);
+		this->arguments.reserve(SAFE_ARGS_CAP);
+	}
+
 	std::string instruction = "";
 	std::vector<token> arguments;
 };

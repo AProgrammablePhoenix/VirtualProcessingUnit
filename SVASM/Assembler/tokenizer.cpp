@@ -125,19 +125,21 @@ int tokenizeCodeline(const codeline& parsed, tokenized& out_tokenized) {
 			targ.type = tokenTypes::unsigned_n;
 		}
 
-		out_tokenized.arguments.push_back(targ);
+		out_tokenized.arguments.emplace_back(targ);
 	}
 	out_tokenized.instruction = parsed.instruction;
 
 	return OK;
 }
 int tokenizer(const std::vector<codeline>& parsed, std::vector<tokenized>& out_tokenized) {
+	out_tokenized.reserve(parsed.size());
+	
 	for (const codeline cl : parsed) {
 		tokenized temp;
 		if (tokenizeCodeline(cl, temp))
 			return ERROR_TYPE;
 
-		out_tokenized.push_back(temp);
+		out_tokenized.emplace_back(temp);
 	}
 
 	return OK;

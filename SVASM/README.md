@@ -22,9 +22,15 @@ will only compare the value of EAX with the numercial value of the first charact
 (Of course, refer to [SVASM Roadmap](#svasm-roadmap) to stay informed of the language
 implementation status, note that the latter is subject to changes)
 
+### Few recommandations you should follow
++ First, you should avoid allocating memory on first 128 bytes of memory, because those 128 bytes might be used by compiler, and thus maybe
+overwritten at runtime, then it might cause damage to your program, you might allocate data on this area of memory if you only know what you are
+doing.
+
 ### SVASM Roadmap
 * [x] Implement mov instruction support
-* [ ] Implement maths related instructions
+* [x] Implement maths related instructions
 * [ ] Implement memory related instructions
 * [ ] Implement auto-saving management for calls
 * [ ] Implement new comparisons system
+* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'set rbx, 3 ; mul rax, rbx')
