@@ -181,6 +181,25 @@ int preprocMov(const std::vector<token>& args, std::vector<action>& out_actions)
 
 	return OK;
 }
+int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 1)
+		return WRONGNARGS;
+
+	if (args[0].type != tokenTypes::reg)
+		return ARGV_ERROR;
+
+	if (args[0].element == "sr")
+		return OK;
+	else if (args[0].element == "dr")
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+	else if (args[0].element == "cr")
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
+	else
+		pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
+
+	return OK;
+}
+
 int preprocInc(const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 1)
 		return WRONGNARGS;
@@ -618,6 +637,94 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 	return OK;
 }
 
+int preprocStack(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 1)
+		return WRONGNARGS;
+
+	if (args[0].type != tokenTypes::reg)
+		return ARGV_ERROR;
+
+	if (inst == "push") {
+		if (args[0].element == "sr")
+			pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+		else if (args[0].element == "cr")
+			pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, "");
+		else if (args[0].element == "dr")
+			pushAction(out_actions, virtual_actions::pushDR, tokenTypes::reg, "");
+		else
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+	}
+	else if (inst == "pop") {
+		if (args[0].element == "sr")
+			pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, "");
+		else if (args[0].element == "cr")
+			pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
+		else if (args[0].element == "dr")
+			pushAction(out_actions, virtual_actions::popDR, tokenTypes::reg, "");
+		else
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+	}
+
+	return OK;
+}
+int preprocHeap(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (inst == "mload") {
+		if (args.size() != 2)
+			return WRONGNARGS;
+		/* MLOAD:
+		*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
+		*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
+		*	else returns ARGV_ERROR
+		*/
+		if (args[0].type == tokenTypes::stored_addr_reg && args[1].type == tokenTypes::reg) {
+			if (args[1].element == "sr") {
+				pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else if (args[1].element == "cr") {
+				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else if (args[1].element == "dr") {
+				pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+		}
+		else if (args[0].type == tokenTypes::reg && args[1].type == tokenTypes::stored_addr_reg) {
+			if (args[0].element == "sr") {
+				pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else if (args[0].element == "cr") {
+				pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else if (args[0].element == "dr") {
+				pushAction(out_actions, virtual_actions::movgmDR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else {
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+			}
+		}
+		else { return ARGV_ERROR; }
+
+		return OK;
+	}
+	else if (inst == "alloc") {
+		if (args.size() != 1)
+			return WRONGNARGS;
+
+		if (args[0].type != tokenTypes::unsigned_n)
+			return ARGV_ERROR;
+
+		pushAction(out_actions, virtual_actions::nsms, tokenTypes::unsigned_n, args[0].element);
+
+		return OK;
+	}
+
+	return OK;
+}
+
 int preprocInst(const tokenized& tokens, std::vector<action>& out_actions) {
 	const std::string& inst = tokens.instruction;
 
@@ -635,11 +742,17 @@ int preprocInst(const tokenized& tokens, std::vector<action>& out_actions) {
 		return preprocLgclMath(inst, tokens.arguments, out_actions);
 	else if (inst == "log" || inst == "log2" || inst == "log10" || inst == "pow")
 		return preprocAdvMath(inst, tokens.arguments, out_actions);
+	else if (inst == "push" || inst == "pop")
+		return preprocStack(inst, tokens.arguments, out_actions);
+	else if (inst == "mload" || inst == "alloc")
+		return preprocHeap(inst, tokens.arguments, out_actions);
+	else if (inst == "str")
+		return preprocStr(tokens.arguments, out_actions);
 
 	return OK;
 }
 int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& out_actions) {
-	out_actions.reserve(tokens.size());
+	out_actions.reserve(tokens.size()); // Contains at least, as many elements as there are in "std::vector<tokenized> tokens"
 	
 	for (const tokenized token : tokens) {
 		int ret = preprocInst(token, out_actions);

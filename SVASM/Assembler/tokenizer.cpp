@@ -25,7 +25,7 @@ static const std::unordered_set<std::string> registers = {
 };
 
 // checks whether s represent a number or not, ignore out_type if returns false
-bool isNum(const std::string& s, tokenTypes& out_type) {
+static bool isNum(const std::string& s, tokenTypes& out_type) {
 	if (s.empty())
 		return false;
 
@@ -85,7 +85,7 @@ bool isNum(const std::string& s, tokenTypes& out_type) {
 	}
 }
 // check whether s represents a string literal or not
-bool isStr(const std::string& s) {
+static bool isStr(const std::string& s) {
 	if (s.empty() || s.size() < 2)
 		return false;
 
@@ -93,6 +93,30 @@ bool isStr(const std::string& s) {
 		return false;
 
 	return true;
+}
+// check whether s represents a memory address or not
+static bool isAddr(const std::string& s) {
+	// s size has to be >= 3, because an unsigned number (the address) has to be at least present between the braces
+	if (s.empty() || s.size() < 3)
+		return false;
+
+	if (s[0] != '[' || s.back() != ']')
+		return false;
+
+	return true;
+}
+// check whether s represents a memory address stores in a register or not
+static bool isRegAddr(const std::string& s) {
+	if (!isAddr(s))
+		return false;
+
+	std::string potential_reg = s.substr(1, s.size() - 2);
+	if (registers.find(potential_reg) != registers.end()) {
+		if (potential_reg != "sr" && potential_reg != "cr" && potential_reg != "dr")
+			return true;
+	}
+
+	return false;
 }
 
 int tokenizeArgument(const std::string& arg, token& out_tokenized) {
@@ -108,6 +132,10 @@ int tokenizeArgument(const std::string& arg, token& out_tokenized) {
 		}
 		else if (isStr(arg)) {
 			out_tokenized = token(arg, tokenTypes::str);
+			return OK;
+		}
+		else if (isRegAddr(arg)) {
+			out_tokenized = token(arg, tokenTypes::stored_addr_reg);
 			return OK;
 		}
 

@@ -30,7 +30,8 @@ doing.
 ### SVASM Roadmap
 * [x] Implement mov instruction support
 * [x] Implement maths related instructions
-* [ ] Implement memory related instructions
-* [ ] Implement auto-saving management for calls
+* [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
+* [ ] Implement auto-saving management for calls -> In Progress
 * [ ] Implement new comparisons system
-* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'set rbx, 3 ; mul rax, rbx')
+* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx')
+* [ ] Implement labels (equivalent of VASM tags, but declared as '<labelname>:' instead of 'decltag <tagname>')

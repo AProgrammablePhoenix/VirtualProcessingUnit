@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -27,6 +28,7 @@ enum class tokenTypes {
 	double_n = 3,
 	str = 4,
 	reg = 5,
+	stored_addr_reg = 6
 };
 struct token {
 	token(const std::string& _e, const tokenTypes& _t) {
