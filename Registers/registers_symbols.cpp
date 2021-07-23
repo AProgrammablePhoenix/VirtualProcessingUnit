@@ -2,6 +2,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <unordered_map>
 
 #include "../utility.h"
 #include "../Memory/memory_decl.h"
@@ -10,129 +11,52 @@
 #include "registers_symbols.h"
 
 void b_set16AX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->ax->set((unsigned short)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned short>(a, registers, mem, registries_def::AX);
 }
 void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->bx->set((unsigned short)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned short>(a, registers, mem, registries_def::BX);
 }
 void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->cx->set((unsigned short)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned short>(a, registers, mem, registries_def::CX);
 }
 void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->dx->set((unsigned short)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned short>(a, registers, mem, registries_def::DX);
 }
 
 void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->eax->set((unsigned int)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned int>(a, registers, mem, registries_def::EAX);
 }
 void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->ebx->set((unsigned int)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned int>(a, registers, mem, registries_def::EBX);
 }
 void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->ecx->set((unsigned int)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned int>(a, registers, mem, registries_def::ECX);
 }
 void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->edx->set((unsigned int)ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<unsigned int>(a, registers, mem, registries_def::EDX);
 }
 
 void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->rax->set(ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<size_t>(a, registers, mem, registries_def::RAX);
 }
 void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->rbx->set(ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<size_t>(a, registers, mem, registries_def::RBX);
 }
 void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->rcx->set(ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<size_t>(a, registers, mem, registries_def::RCX);
 }
 void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	registers->rdx->set(ATOULL(uc_n));
-	delete[] uc_n;
+	b_set_num<size_t>(a, registers, mem, registries_def::RDX);
 }
 
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	size_t str_size = std::get<1>(varinfos);
-
-	unsigned char* uc_s = new unsigned char[str_size];
-	mem->_ROZVG(uc_s, str_size, std::get<0>(varinfos));
-
-	registers->sr->set(std::string((const char*)uc_s));
-	delete[] uc_s;
+	b_set_str(a, registers, mem);
 }
 void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_c = new unsigned char[1];
-	mem->_ROZVG(uc_c, 1, std::get<0>(varinfos));
-
-	registers->cr->set((char)uc_c[0]);
-	delete[] uc_c;
+	b_set_chr(a, registers, mem);
 }
 void b_setDR(std::shared_ptr<void> a, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(a);
-	unsigned char* uc_d = new unsigned char[sizeof(double)];
-	mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
-
-	registers->dr->set(ATOD(uc_d));
-	delete[] uc_d;
+	b_set_dbl(a, registers, mem);
 }
 
 
