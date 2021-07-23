@@ -1,3 +1,52 @@
+mov sr, "Testing heap memory allocation..."
+int 0x6
+int 0x7
+
+alloc 0x4000
+
+mov rax, 0x1000
+mov rbx, 0x2
+mload [rbx], rax
+mov rax, 15000
+mload rax, [rbx]
+str rax
+int 0x6
+
+mov sr, "Hello World!"
+mov rax, 0xA
+mload [rax], sr
+mov sr, "Test failed!"
+mload sr, [rax]
+int 0x6
+
+mov cr, "P"
+mov rax, 0
+mload [rax], cr
+mov cr, "F"
+mload cr, [rax]
+str cr
+int 0x6
+
+mov dr, 3.14
+mov rax, 0x1F
+mload [rax], dr
+mov dr, -1.0
+mload dr, [rax]
+str dr
+int 0x6
+
+mov cr, "_"
+mov rax, 0x17
+mload [rax], cr
+mov rax, 0xA
+mload sr, [rax]
+int 0x6
+
+mov sr, "Testing heap memory allocation [DONE]"
+int 0x6
+int 0x7
+
+
 mov sr, "Hello, World"
 mov ax, 1024
 mov dr, 1.4142
