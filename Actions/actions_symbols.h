@@ -186,7 +186,6 @@ enum class virtual_actions {
 	_dpow = 0x0080,
 
 	// Process
-	ijmp = 0x0081,
 	jmp = 0x0082,
 	cmp = 0x0083,
 	je  = 0x0084,
@@ -455,7 +454,6 @@ private:
 		a_db[(size_t)virtual_actions::movgmDR] = movgmDR;
 #pragma endregion
 #pragma region process
-		a_db[(size_t)virtual_actions::ijmp] = p_inverseJmpSign;
 		a_db[(size_t)virtual_actions::jmp] = p_jmp;
 		a_db[(size_t)virtual_actions::cmp] = p_cmp;
 		a_db[(size_t)virtual_actions::je] = p_je;

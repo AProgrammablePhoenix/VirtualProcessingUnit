@@ -11,12 +11,8 @@
 
 std::vector<size_t> calling_tree;
 
-void p_inverseJmpSign(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	*(registers->jmp_sign) *= -1;
-}
 void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-	*(registers->process_step) += count;
+	*(registers->process_step) += registers->rax->get();
 }
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t rax = registers->rax->get();
@@ -43,10 +39,6 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		*(registers->cmp_out) = 0xFE;
 	}
 
-	mem->push(temp, sizeof(size_t)); // push rbx
-	mp_memcpy(&rax, temp);
-	mem->push(temp, sizeof(size_t)); // push rax
-
 	delete[] temp;
 }
 void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
@@ -72,58 +64,48 @@ void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		*(registers->cmp_out) = 0xFE;
 	}
 
-	pushMemSR(unused_p, registers, mem);
-	registers->sr->set(s1);
-	pushMemSR(unused_p, registers, mem);
-
 	registers->sr->set(saved_sr);
 }
 
 // Jump if equal
 void p_je(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if not equal
 void p_jne(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) != 0) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if less
 void p_jl(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 1) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if greater
 void p_jg(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 2) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if less or equal
 void p_jle(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 1) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 //Jump if greater or equal
 void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 2) {
-		long long count = (size_t)registers->ax->get() * *(registers->jmp_sign);
-		*(registers->process_step) += count;
+		*(registers->process_step) += registers->rax->get();
 		*(registers->cmp_out) = 0xFF;
 	}
 }

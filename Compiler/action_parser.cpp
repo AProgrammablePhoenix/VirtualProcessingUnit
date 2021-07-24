@@ -265,7 +265,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"dlog10", virtual_actions::_dlog10},
 	{"dpow", virtual_actions::_dpow},
 
-	{"ijmp", virtual_actions::ijmp},
 	{"jmp", virtual_actions::jmp},
 	{"cmp", virtual_actions::cmp},
 	{"je", virtual_actions::je},

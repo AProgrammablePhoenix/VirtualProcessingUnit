@@ -240,9 +240,8 @@ public:
 		*rcx = &_rcx,
 		*rdx = &_rdx;
 
-	size_t* process_step = &_process_step;
+	size_t* process_step = &_program_counter;
 	unsigned char* cmp_out = &_cmp_out;
-	short* jmp_sign = &_jmp_sign;
 	bool* stopRequested = &_stopRequested;
 	size_t *process_call_address = &_process_call_address;
 	std::map<size_t, int>* threadsStatuses = nullptr;
@@ -286,9 +285,8 @@ private:
 		_rcx = extendedEEXReg(&_ecx, &rcx_h),
 		_rdx = extendedEEXReg(&_edx, &rdx_h);
 
-	size_t _process_step = 0;
+	size_t _program_counter = 0;
 	unsigned char _cmp_out = 0xFF;
-	short _jmp_sign = 1;
 	bool _stopRequested = false;
 	size_t _process_call_address = 0;
 
