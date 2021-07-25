@@ -17,8 +17,7 @@ namespace {
 			uc_n = new unsigned char[sizeof(size_t)];
 			mem->_ROZVG(uc_n, sizeof(size_t), vaddr);
 
-			size_t _value = 0;
-			mp_memcpy(uc_n, &_value);
+			size_t _value = ATOULL(uc_n);
 			delete[] uc_n;
 
 			return _value;
