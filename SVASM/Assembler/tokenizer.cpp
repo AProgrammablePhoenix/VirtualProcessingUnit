@@ -119,7 +119,8 @@ static bool isRegAddr(const std::string& s) {
 	return false;
 }
 
-int tokenizeArgument(const std::string& arg, token& out_tokenized) {
+
+int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized) {
 	if (registers.find(arg) != registers.end()) {
 		out_tokenized = token(arg, tokenTypes::reg);
 		return OK;
@@ -138,14 +139,25 @@ int tokenizeArgument(const std::string& arg, token& out_tokenized) {
 			out_tokenized = token(arg, tokenTypes::stored_addr_reg);
 			return OK;
 		}
+		else {
+			if (labels.find(arg) != labels.end()) {
+				out_tokenized = token(arg, tokenTypes::label);
+				return OK;
+			}
+		}
 
 		return ERROR_TYPE;
 	}
 }
-int tokenizeCodeline(const codeline& parsed, tokenized& out_tokenized) {
+int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeline& parsed, tokenized& out_tokenized) {
+	if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
+		out_tokenized.instruction = "[labeldef]";
+		out_tokenized.arguments.emplace_back(parsed.instruction.substr(0, parsed.instruction.size() -1), tokenTypes::label);
+		return OK;
+	}
 	for (const std::string arg : parsed.arguments) {
 		token targ;
-		if (tokenizeArgument(arg, targ))
+		if (tokenizeArgument(labels, arg, targ))
 			return ERROR_TYPE;
 
 		if (targ.type == tokenTypes::hex_n) {
@@ -159,12 +171,14 @@ int tokenizeCodeline(const codeline& parsed, tokenized& out_tokenized) {
 
 	return OK;
 }
-int tokenizer(const std::vector<codeline>& parsed, std::vector<tokenized>& out_tokenized) {
+int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<codeline>& parsed,
+		std::vector<tokenized>& out_tokenized) {
 	out_tokenized.reserve(parsed.size());
 	
-	for (const codeline cl : parsed) {
+	for (size_t i = 0; i < parsed.size(); i++) {
 		tokenized temp;
-		if (tokenizeCodeline(cl, temp))
+
+		if (tokenizeCodeline(labels, parsed[i], temp))
 			return ERROR_TYPE;
 
 		out_tokenized.emplace_back(temp);

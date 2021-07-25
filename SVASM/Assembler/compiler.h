@@ -28,7 +28,9 @@ enum class tokenTypes {
 	double_n = 3,
 	str = 4,
 	reg = 5,
-	stored_addr_reg = 6
+	stored_addr_reg = 6,
+	stored_addr_raw = 7,
+	label = 8
 };
 struct token {
 	token(const std::string& _e, const tokenTypes& _t) {
@@ -53,7 +55,8 @@ struct tokenized {
 };
 
 // defined in tokenizer.cpp
-extern int tokenizer(const std::vector<codeline>& parsed, std::vector<tokenized>& out_tokenized);
+extern int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<codeline>& parsed, 
+	std::vector<tokenized>& out_tokenized);
 
 int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& out_actions);
 int compileAll(const std::vector<action>& raw_actions, std::vector<byte>& out_bytes);

@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <unordered_set>
 
 constexpr size_t SAFE_INST_CAP = 5;
 constexpr size_t SAFE_ARGS_CAP = 2;
@@ -26,4 +27,4 @@ struct codeline {
 	std::vector<std::string> arguments;
 };
 
-int main_parse(const std::string& filename, std::vector<codeline>& out_parsed);
+int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, std::unordered_set<std::string>& labels);

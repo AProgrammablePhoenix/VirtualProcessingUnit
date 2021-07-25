@@ -4,6 +4,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 
 #if defined(__linux__)
 #include <cstring>
@@ -35,6 +36,9 @@ int fetch_lines(const std::string& content, std::vector<std::string>& lines) {
 	}
 
 	while (std::getline(ss, line)) {
+		if (line.empty() || line.size() < 1)
+			continue;
+
 		lines.push_back(line);
 	}
 
@@ -53,6 +57,10 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 			out_parsed.instruction = temp;
 			found = true;
 			break;
+		}
+		else if (c == ':' && !found) {
+			out_parsed.instruction = temp + c;
+			return OK;
 		}
 
 		temp.push_back(c);
@@ -98,7 +106,7 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 	return OK;
 }
 
-int main_parse(const std::string& filename, std::vector<codeline>& out_parsed) {
+int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, std::unordered_set<std::string>& labels) {
 	std::string file_content;
 
 	if (fetch_file(filename, file_content))
@@ -109,11 +117,16 @@ int main_parse(const std::string& filename, std::vector<codeline>& out_parsed) {
 		return EMPTY_FILE;
 	
 	out_parsed.reserve(lines.size());
+	labels.reserve(lines.size() / 2);
 
 	for (size_t i = 0; i < lines.size(); i++) {
 		codeline parsed;
 		if (parse_line(lines[i], parsed))
 			return EXTRACOMMA;
+
+		if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
+			labels.insert(parsed.instruction.substr(0, parsed.instruction.size() - 1));
+		}
 
 		out_parsed.emplace_back(parsed);
 	}

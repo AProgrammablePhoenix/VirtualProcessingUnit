@@ -145,15 +145,28 @@ static const std::unordered_map<std::string, virtual_actions> fetch_sub_input = 
 	{"rdx", virtual_actions::subRDX}
 };
 
-inline void pushAction(std::vector<action>& out_actions, const virtual_actions& vaction, 
-		const tokenTypes& var_type, const std::string& var_raw) {
-	out_actions.emplace_back(
-		action(vaction,
-			std::make_shared<std::tuple<tokenTypes, std::string>>(
-				std::make_tuple<const tokenTypes&, const std::string&>(var_type, var_raw)
+namespace {
+	inline void pushAction(std::vector<action>& out_actions, const virtual_actions& vaction,
+			const tokenTypes& var_type, const std::string& var_raw) {
+		out_actions.emplace_back(
+			action(vaction,
+				std::make_shared<std::tuple<tokenTypes, std::string>>(
+					std::make_tuple<const tokenTypes&, const std::string&>(var_type, var_raw)
+				)
 			)
-		)
-	);
+		);
+	}
+	inline void preprocJmpCmpCalls(std::vector<action>& out_actions, const virtual_actions& vaction,
+			const token& arg) {
+		if (arg.type != tokenTypes::label) {
+			pushAction(out_actions, vaction, arg.type, arg.element);
+		}
+		else {
+			pushAction(out_actions, vaction, tokenTypes::unsigned_n, "1");
+			pushAction(out_actions, virtual_actions::jmp, tokenTypes::unsigned_n, "1");
+			pushAction(out_actions, virtual_actions::lcall, tokenTypes::label, arg.element);
+		}
+	}
 }
 
 int preprocInt(const std::vector<token>& args, std::vector<action>& out_actions) {
@@ -725,10 +738,80 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 	return OK;
 }
 
-int preprocInst(const tokenized& tokens, std::vector<action>& out_actions) {
+int preprocCalls(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 1) {
+		if (args.size() == 0) {
+			if (inst == "ret")
+				pushAction(out_actions, virtual_actions::ret, tokenTypes::reg, "");
+			else
+				return WRONGNARGS;
+
+			return OK;
+		}
+		else { return WRONGNARGS;  }
+	}
+
+	if (args[0].type != tokenTypes::label && args[0].type != tokenTypes::unsigned_n && args[0].type != tokenTypes::signed_n)
+		return ARGV_ERROR;
+
+	if (inst == "call") {
+		if (args[0].type == tokenTypes::label) {
+			pushAction(out_actions, virtual_actions::svcall, tokenTypes::reg, "");
+			pushAction(out_actions, virtual_actions::call, tokenTypes::label, args[0].element);
+			pushAction(out_actions, virtual_actions::rscall, tokenTypes::reg, "");
+		}
+		else if (args[0].type == tokenTypes::unsigned_n) {
+			pushAction(out_actions, virtual_actions::svcall, tokenTypes::reg, "");
+			pushAction(out_actions, virtual_actions::call, tokenTypes::unsigned_n, args[0].element);
+			pushAction(out_actions, virtual_actions::rscall, tokenTypes::reg, "");
+		}
+		else { return ARGV_ERROR; }
+	}
+	else if (inst == "jmp") {
+		if (args[0].type == tokenTypes::label)
+			pushAction(out_actions, virtual_actions::lcall, tokenTypes::label, args[0].element);
+		else {
+			pushAction(out_actions, virtual_actions::jmp, args[0].type, args[0].element);
+		}
+	}
+
+	return OK;
+}
+int preprocCmpCalls(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 1)
+		return WRONGNARGS;
+
+	if (args[0].type != tokenTypes::label && args[0].type != tokenTypes::unsigned_n && args[0].type != tokenTypes::signed_n)
+		return ARGV_ERROR;
+
+	if (inst == "je") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::je, args[0]);
+	}
+	else if (inst == "jne") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::jne, args[0]);
+	}
+	else if (inst == "jl") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::jl, args[0]);
+	}
+	else if (inst == "jle") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::jle, args[0]);
+	}
+	else if (inst == "jg") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::jg, args[0]);
+	}
+	else if (inst == "jge") {
+		preprocJmpCmpCalls(out_actions, virtual_actions::jge, args[0]);
+	}
+
+	return OK;
+}
+
+int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>& preprocLabels, std::vector<action>& out_actions) {
 	const std::string& inst = tokens.instruction;
 
-	if (inst == "int")
+	if (inst == "[labeldef]")
+		{ preprocLabels[tokens.arguments[0].element] = out_actions.size() - 1; return OK; }
+	else if (inst == "int")
 		return preprocInt(tokens.arguments, out_actions);
 	else if (inst == "mov")
 		return preprocMov(tokens.arguments, out_actions);
@@ -748,16 +831,29 @@ int preprocInst(const tokenized& tokens, std::vector<action>& out_actions) {
 		return preprocHeap(inst, tokens.arguments, out_actions);
 	else if (inst == "str")
 		return preprocStr(tokens.arguments, out_actions);
+	else if (inst == "call" || inst == "jmp" || inst == "ret")
+		return preprocCalls(inst, tokens.arguments, out_actions);
+	else if (inst == "je" || inst == "jge" || inst == "jl" || inst == "jle" || inst == "jg" || inst == "jge")
+		return preprocCmpCalls(inst, tokens.arguments, out_actions);
 
 	return OK;
 }
 int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& out_actions) {
 	out_actions.reserve(tokens.size()); // Contains at least, as many elements as there are in "std::vector<tokenized> tokens"
+	std::unordered_map<std::string, size_t> preprocLabels;
 	
 	for (const tokenized token : tokens) {
-		int ret = preprocInst(token, out_actions);
+		int ret = preprocInst(token, preprocLabels, out_actions);
 		if (ret)
 			return ret;
+	}
+	for (action& _a : out_actions) {
+		auto tpl = std::static_pointer_cast<std::tuple<tokenTypes, std::string>>(_a.getValuePtr());
+		auto[vtype, vval] = *tpl;
+		if (vtype == tokenTypes::label) {
+			vval = std::to_string(preprocLabels[vval]);
+			*tpl = std::make_tuple<const tokenTypes&, const std::string&>(tokenTypes::unsigned_n, vval);
+		}
 	}
 
 	return OK;

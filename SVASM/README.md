@@ -14,7 +14,7 @@ but on top of that, "movgm" and "movsm" instructions will be merged into one sin
 instruction: mload (stands for memoryload)
 + Calls to labels won't need to be saved by 'svcall' and restored by 'rscall' if you want
 to make calls and subcalls and so on... Now those instructions will be handled automatically
-by the assembler itself when it generates VEXE code.
+by the assembler itself when generating VEXE code.
 + Say goodbye to 'cmpstr', since comparisons between registers will only be made
 through 'cmp', type casts will be handled implicitely (for instance, comparing SR and EAX,
 will only compare the value of EAX with the numercial value of the first character of SR).
@@ -31,7 +31,9 @@ doing.
 * [x] Implement mov instruction support
 * [x] Implement maths related instructions
 * [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
-* [ ] Implement auto-saving management for calls -> In Progress
-* [ ] Implement new comparisons system
+* [x] Implement auto-saving management for calls
+* [ ] Implement new comparisons system -> In progress
 * [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx')
-* [ ] Implement labels (equivalent of VASM tags, but declared as '<labelname>:' instead of 'decltag <tagname>')
+* [x] Implement labels (equivalent of VASM tags, but declared as '<labelname>:' instead of 'decltag <tagname>')
+* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax')
+* [ ] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)

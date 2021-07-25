@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #if defined(__linux__)
 #include <cstring>
@@ -30,11 +31,12 @@ int main(int argc, char* argv[]) {
 	std::string outputFile = argv[2];
 
 	std::vector<codeline> parsed;
-	exit_code |= main_parse(inputFile, parsed);
+	std::unordered_set<std::string> labels;
+	exit_code |= main_parse(inputFile, parsed, labels);
 	test_exit(exit_code);
 
 	std::vector<tokenized> tokens;
-	exit_code |= tokenizer(parsed, tokens);
+	exit_code |= tokenizer(labels, parsed, tokens);
 	test_exit(exit_code);
 
 	std::vector<action> preprocessed;
