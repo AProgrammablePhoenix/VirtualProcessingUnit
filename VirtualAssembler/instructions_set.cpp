@@ -246,14 +246,8 @@ std::unordered_set<byte> zero_args_opcodes = {
 	ops[virtual_actions::pushDR],
 	ops[virtual_actions::popDR],
 
-	ops[virtual_actions::jmp],
+
 	ops[virtual_actions::cmp],
-	ops[virtual_actions::je],
-	ops[virtual_actions::jne],
-	ops[virtual_actions::jl],
-	ops[virtual_actions::jg],
-	ops[virtual_actions::jle],
-	ops[virtual_actions::jge],
 	ops[virtual_actions::cmpstr],
 
 	ops[virtual_actions::gca],
@@ -282,6 +276,15 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::setRBX],
 	ops[virtual_actions::setRCX],
 	ops[virtual_actions::setRDX],
+
+	ops[virtual_actions::jmp],
+	ops[virtual_actions::je],
+	ops[virtual_actions::jne],
+	ops[virtual_actions::jl],
+	ops[virtual_actions::jg],
+	ops[virtual_actions::jle],
+	ops[virtual_actions::jge],
+
 
 	ops[virtual_actions::call],
 	ops[virtual_actions::lcall],
