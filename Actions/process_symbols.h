@@ -16,12 +16,12 @@ void p_jmp(std::shared_ptr<void> unsued_p, regs* registers, memory* unused_m);
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
-void p_je(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_jne(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_jl(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_jg(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_jle(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void p_je(std::shared_ptr<void> args_p, regs* registers, memory* mem);
+void p_jne(std::shared_ptr<void> args_p, regs* registers, memory* mem);
+void p_jl(std::shared_ptr<void> args_p, regs* registers, memory* mem);
+void p_jg(std::shared_ptr<void> args_p, regs* registers, memory* mem);
+void p_jle(std::shared_ptr<void> args_p, regs* registers, memory* mem);
+void p_jge(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 
 void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m);

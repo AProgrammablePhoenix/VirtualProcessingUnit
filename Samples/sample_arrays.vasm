@@ -173,14 +173,11 @@ setRBX n_loops
 push RBX
 
 cmp 0
-pop RBX
-pop RAX
 
 dec RAX
 
 movRCX RAX
-setRAX two
-jl 0
+jl two
 
 movRAX RCX
 lcall looping
@@ -213,14 +210,11 @@ push RAX
 push RBX
 
 cmp 0
-pop RBX
-pop RAX
 
 dec RAX
 
 movRCX RAX
-setRAX two
-je 0
+je two
 
 movRAX RCX
 lcall fetch_looping

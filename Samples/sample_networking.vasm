@@ -70,11 +70,8 @@ decltag hrecv_loop
 nhrecv ${{N1}}
 push BX
 cmp 0
-pop BX
-pop AX
 
-setAX ${{N1}}
-je AX
+je ${{N1}}
 
 lcall hrecv_loop
 

@@ -35,13 +35,10 @@ inc RAX
 push RDX
 push RAX
 cmp 0
-pop RAX
-pop RDX
 
 ; if RAX >= RDX: then return the function
 push RAX
-setAX ${{N2}}
-jge 0
+jge ${{N2}}
 pop RAX
 lcall strtoca_loop
 
@@ -85,12 +82,9 @@ inc RAX
 push RDX
 push RAX
 cmp 0
-pop RAX
-pop RDX
 
 push RAX
-setAX ${{N2}}
-jge 0
+jge ${{N2}}
 pop RAX
 
 lcall catostr_loop

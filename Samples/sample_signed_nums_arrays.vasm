@@ -129,13 +129,11 @@ inc RAX
 push RAX
 push RBX
 cmp 0
-pop RBX
-pop RAX
+
 dec RAX
 
 movRCX RAX
-setRAX two
-je 0
+je two
 
 movRAX RCX
 lcall fetch_array1
@@ -177,13 +175,11 @@ inc RAX
 push RAX
 push RBX
 cmp 0
-pop RBX
-pop RAX
+
 dec RAX
 
 movRCX RAX
-setRAX two
-je 0
+je two
 
 movRAX RCX
 lcall fetch_array2

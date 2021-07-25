@@ -9,6 +9,28 @@
 #include "../Registers/registers_symbols.h"
 #include "process_symbols.h"
 
+namespace {
+	inline size_t ARGTOULL(const std::shared_ptr<void>& args, memory* const mem) {
+		unsigned char* uc_n = nullptr;
+		try {
+			const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args);
+			uc_n = new unsigned char[sizeof(size_t)];
+			mem->_ROZVG(uc_n, sizeof(size_t), vaddr);
+
+			size_t _value = 0;
+			mp_memcpy(uc_n, &_value);
+			delete[] uc_n;
+
+			return _value;
+		}
+		catch (...) {
+			if (uc_n)
+				delete[] uc_n;
+			return 0;
+		}
+	}
+}
+
 std::vector<size_t> calling_tree;
 
 void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
@@ -68,44 +90,56 @@ void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 }
 
 // Jump if equal
-void p_je(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_je(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) == 0) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if not equal
-void p_jne(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_jne(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) != 0) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if less
-void p_jl(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_jl(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) == 1) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if greater
-void p_jg(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_jg(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) == 2) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 // Jump if less or equal
-void p_jle(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_jle(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 1) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
 //Jump if greater or equal
-void p_jge(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+void p_jge(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	size_t move = ARGTOULL(args_p, mem);
+
 	if (*(registers->cmp_out) == 0 || *(registers->cmp_out) == 2) {
-		*(registers->process_step) += registers->rax->get();
+		*(registers->process_step) += move;
 		*(registers->cmp_out) = 0xFF;
 	}
 }
