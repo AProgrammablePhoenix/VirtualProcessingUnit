@@ -34,6 +34,6 @@ doing.
 * [x] Implement auto-saving management for calls
 * [ ] Implement new comparisons system -> In progress
 * [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx')
-* [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>`:' instead of 'decltag `<tagname>`')
+* [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>:`' instead of '`decltag <tagname>`')
 * [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax')
 * [ ] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)
