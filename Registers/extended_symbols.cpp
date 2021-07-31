@@ -210,7 +210,10 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 	else if (cast_type == 2) {
 		char saved_cr = registers->cr->get();
 		if (value.size() < 1) {
+			registers->cr->set('\0');
+			pushMemCR(NULL, registers, mem);
 			registers->sr->set(saved_sr);
+			registers->cr->set(saved_cr);
 			return;
 		}
 
