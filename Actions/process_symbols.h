@@ -12,7 +12,7 @@
 #define THREAD_ALIVE 1
 #define THREAD_SIGTERM 2
 
-void p_jmp(std::shared_ptr<void> unsued_p, regs* registers, memory* unused_m);
+void p_jmp(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 

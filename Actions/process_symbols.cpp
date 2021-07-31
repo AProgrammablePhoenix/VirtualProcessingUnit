@@ -32,27 +32,26 @@ namespace {
 
 std::vector<size_t> calling_tree;
 
-void p_jmp(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	*(registers->process_step) += registers->rax->get();
+void p_jmp(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	*(registers->process_step) += ARGTOULL(args_p, mem);
 }
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	size_t rax = registers->rax->get();
-	size_t rbx = registers->rbx->get();
+	size_t c1, c2;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t)); // pop rax
-	mp_memcpy(temp, &rax);
+	mp_memcpy(temp, &c1);
 
 	mem->pop(temp, sizeof(size_t)); // pop rbx
-	mp_memcpy(temp, &rbx);
+	mp_memcpy(temp, &c2);
 
-	if (rax == rbx) {
+	if (c1 == c2) {
 		*(registers->cmp_out) = 0;
 	}
-	else if (rax < rbx) {
+	else if (c1 < c2) {
 		*(registers->cmp_out) = 1;
 	}
-	else if (rax > rbx) {
+	else if (c1 > c2) {
 		*(registers->cmp_out) = 2;
 	}
 	else {
