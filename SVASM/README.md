@@ -32,8 +32,11 @@ doing.
 * [x] Implement maths related instructions
 * [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
 * [x] Implement auto-saving management for calls
-* [ ] Implement new comparisons system -> In progress
+* [x] Implement new comparisons system
 * [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx')
 * [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>:`' instead of '`decltag <tagname>`')
 * [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax')
-* [ ] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)
+* [ ] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance) -> In Progress
+* [ ] Implement auto assigning values for comparisons
+* [ ] Implement RSP and RBP registers in both VASM and SVASM, updating memory behavior (espcially stack) => unifying stack and user memory -> Planned
+* [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) -> Planned
