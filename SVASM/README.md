@@ -17,7 +17,7 @@ to make calls and subcalls and so on... Now those instructions will be handled a
 by the assembler itself when generating VEXE code.
 + Say goodbye to 'cmpstr', since comparisons between registers will only be made
 through 'cmp', type casts will be handled implicitely (for instance, comparing SR and EAX,
-will only compare the value of EAX with the numercial value of the first character of SR).
+will compare the value of SR with the string representation of EAX).
 
 (Of course, refer to [SVASM Roadmap](#svasm-roadmap) to stay informed of the language
 implementation status, note that the latter is subject to changes)

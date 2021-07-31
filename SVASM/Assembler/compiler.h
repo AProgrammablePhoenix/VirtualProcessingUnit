@@ -55,7 +55,7 @@ struct tokenized {
 };
 
 // defined in tokenizer.cpp
-extern int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<codeline>& parsed, 
+extern int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<codeline>& parsed,
 	std::vector<tokenized>& out_tokenized);
 
 int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& out_actions);

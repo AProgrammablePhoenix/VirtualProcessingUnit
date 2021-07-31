@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
+#include <stack>
 
 #include "../../Actions/action_decl.h"
 #include "../../Actions/actions_symbols.h"
@@ -166,6 +167,44 @@ namespace {
 			pushAction(out_actions, virtual_actions::jmp, tokenTypes::unsigned_n, "1");
 			pushAction(out_actions, virtual_actions::lcall, tokenTypes::label, arg.element);
 		}
+	}
+	inline void CRToNum(std::vector<action>& out_actions, const bool& useRAX) {
+		if (useRAX) {
+			// Set first 8 bytes of memory to 0
+			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+			// Set value of CR (1 byte) into 7th of memory
+			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "7");
+			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
+			// Fetch first 8 bytes of memory and leave them on stack
+			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
+		}
+		else { // Use rbx instead
+			// Set first 8 bytes of memory to 0
+			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rbx");
+			// Set value of CR (1 byte) into 7th of memory
+			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "7");
+			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rbx");
+			// Fetch first 8 bytes of memory and leave them on stack
+			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rbx");
+		}
+	}
+	inline void getFirstCharSR(std::vector<action>& out_actions) {
+		// Get first char of SR
+		pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+		// Prepare recast arguments
+		pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+		pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+		// Invoke recast inerrupt
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+		// Pop first char of SR from stack
+		pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
+		CRToNum(out_actions, true);
 	}
 }
 
@@ -805,12 +844,297 @@ int preprocCmpCalls(const std::string& inst, const std::vector<token>& args, std
 
 	return OK;
 }
+int preprocComps(const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 2)
+		return WRONGNARGS;
+
+	if (args[0].type != tokenTypes::reg || args[1].type == tokenTypes::stored_addr_reg || args[1].type == tokenTypes::stored_addr_raw)
+		return ARGV_ERROR;
+
+	if (num_registers.find(args[0].element) != num_registers.end()) {
+		if (args[1].element == "sr" || args[1].type == tokenTypes::str) {
+			if (args[1].type == tokenTypes::reg) { // TODO: change to compare SR with string repr of register
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save SR
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element); // Cast value of GP register
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore SR
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else if (args[1].element == "cr") {
+			if (args[0].element == "rax") {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx"); // Save rbx
+
+				CRToNum(out_actions, false);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				// Do comparison
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx"); // Restore rbx
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+				
+				CRToNum(out_actions, true);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+
+				// Do comparison
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+		}
+		else if (args[1].element == "dr" || args[1].type == tokenTypes::double_n) {
+			if (args[1].element == "dr") {
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else {
+			if (args[1].type != tokenTypes::reg) { // args[1] is a signed/unsigned number
+				if (args[0].element == "rax") {
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+				}
+				else {
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+				}
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+			}
+		}
+	}
+	else if (args[0].element == "sr") {
+		if (args[1].element == "cr" || args[1].type == tokenTypes::str) {
+			if (args[1].type == tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
+
+				CRToNum(out_actions, true);
+				getFirstCharSR(out_actions);
+
+				// Do comparison
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else if (args[1].element == "dr" || args[1].type == tokenTypes::double_n) {
+			if (args[1].element == "dr") {
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else {
+			// Will need to treat output as if it was the inverse of the comparison result in case
+			// you planned to use jl/jg/jle/jge only, since the strings are not pushed into the right order
+			// it has been done like so to avoid potentially damaging memory after 128 first byte of memory (because SR could hold
+			// a string which length is greater than 120 byte - with 8 bytes used to store string length)
+
+			if (args[1].type != tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save SR
+
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, "rax"); // Cast value of GP register
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore SR
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+			else {
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save SR
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[1].element); // Cast value of GP register
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore SR
+			}
+		}
+	}
+	else if (args[0].element == "cr") {
+		if (args[1].element == "sr" || args[1].type == tokenTypes::str) {
+			if (args[1].type == tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
+
+				// Get first char of SR
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+				// Prepare recast arguments
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				// Invoke recast inerrupt
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+				// Pop first char of SR from stack
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
+				// Set first 8 bytes of memory to 0
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+				// Set value of CR into 7th byte of memory
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "7");
+				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
+
+				// Fetch first 8 bytes of memory and leave them on stack
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
+
+				CRToNum(out_actions, true);
+
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else if (args[1].element == "dr" || args[1].type == tokenTypes::double_n) {
+			return ARGV_ERROR; // No real meaning of doing that comparison
+		}
+		else {
+			if (args[1].type != tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+
+				pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				CRToNum(out_actions, true);
+
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				CRToNum(out_actions, true);
+
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+		}
+	}
+	else if (args[0].element == "dr") {
+		if (args[1].element == "sr" || args[1].type == tokenTypes::str) {
+			if (args[1].type == tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
+			}
+			else {
+				// Not yet implemented
+			}
+		}
+		else if (args[1].element == "cr") {
+			return ARGV_ERROR; // No real meaning of doing that comparison
+		}
+		else if (args[1].type == tokenTypes::double_n) {
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+			pushAction(out_actions, virtual_actions::pushDR, tokenTypes::reg, ""); // Save DR
+
+			pushAction(out_actions, virtual_actions::setDR, tokenTypes::double_n, args[1].element);
+			// Set first 8 bytes of memory to 0
+			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+			// Set value of DR (8 bytes) into first 8 bytes of memory
+			pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, "rax");
+
+			pushAction(out_actions, virtual_actions::popDR, tokenTypes::reg, ""); // Restore DR
+			// Fetch first 8 bytes of memory and leave them on stack
+			// movgm to push on stack (movgmDR would have set the value into DR)
+			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
+
+			pushAction(out_actions, virtual_actions::pushDR, tokenTypes::reg, "");
+			pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+		}
+		else {
+			if (args[1].type == tokenTypes::reg) {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Restore rax
+			}
+		}
+	}
+
+	return OK;
+}
 
 int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>& preprocLabels, std::vector<action>& out_actions) {
 	const std::string& inst = tokens.instruction;
 
-	if (inst == "[labeldef]")
-		{ preprocLabels[tokens.arguments[0].element] = out_actions.size() - 1; return OK; }
+	if (inst == "[labeldef]") {
+		preprocLabels[tokens.arguments[0].element] = out_actions.size() - 1;
+		return OK;
+	}
 	else if (inst == "int")
 		return preprocInt(tokens.arguments, out_actions);
 	else if (inst == "mov")
@@ -835,6 +1159,8 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 		return preprocCalls(inst, tokens.arguments, out_actions);
 	else if (inst == "je" || inst == "jge" || inst == "jl" || inst == "jle" || inst == "jg" || inst == "jge")
 		return preprocCmpCalls(inst, tokens.arguments, out_actions);
+	else if (inst == "cmp")
+		return preprocComps(tokens.arguments, out_actions);
 
 	return OK;
 }
