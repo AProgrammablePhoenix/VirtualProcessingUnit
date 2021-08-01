@@ -33,10 +33,11 @@ doing.
 * [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
 * [x] Implement auto-saving management for calls
 * [x] Implement new comparisons system
-* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx')
+* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx') -> Planned
 * [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>:`' instead of '`decltag <tagname>`')
-* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax')
-* [ ] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance) -> In Progress
+* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax') -> Planned
+* [x] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)
 * [ ] Implement auto assigning values for comparisons
-* [ ] Implement RSP and RBP registers in both VASM and SVASM, updating memory behavior (espcially stack) => unifying stack and user memory -> Planned
-* [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) -> Planned
+* [ ] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory -> In Progress
+* [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) -> In Progress
+* [ ] Replace current DR register with RDx registers where x varies from integers 0 to 3 (4 floating point storing registers), which will be extended later (ERDx & RRDx) -> Planned

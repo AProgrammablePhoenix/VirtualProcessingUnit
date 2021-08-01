@@ -152,9 +152,15 @@ int tokenizeArgument(const std::unordered_set<std::string> labels, const std::st
 int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeline& parsed, tokenized& out_tokenized) {
 	if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
 		out_tokenized.instruction = "[labeldef]";
-		out_tokenized.arguments.emplace_back(parsed.instruction.substr(0, parsed.instruction.size() -1), tokenTypes::label);
+		out_tokenized.arguments.emplace_back(parsed.instruction.substr(0, parsed.instruction.size() - 1), tokenTypes::label);
 		return OK;
 	}
+	else if ((parsed.instruction == "#safe" || parsed.instruction == "#unsafe") && parsed.arguments.size() == 0) {
+		out_tokenized.instruction = "[safety_control]";
+		out_tokenized.arguments.emplace_back(parsed.instruction.substr(1, parsed.instruction.size() - 1), tokenTypes::safety_directive);
+		return OK;
+	}
+
 	for (const std::string arg : parsed.arguments) {
 		token targ;
 		if (tokenizeArgument(labels, arg, targ))

@@ -30,7 +30,8 @@ enum class tokenTypes {
 	reg = 5,
 	stored_addr_reg = 6,
 	stored_addr_raw = 7,
-	label = 8
+	label = 8,
+	safety_directive = 9
 };
 struct token {
 	token(const std::string& _e, const tokenTypes& _t) {
