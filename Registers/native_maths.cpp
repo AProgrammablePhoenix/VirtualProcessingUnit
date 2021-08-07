@@ -13,10 +13,10 @@
 	#define NATIVE_INCDEC(opsign) \
 		registries_def reg_id = ATTOREGID(reg, mem); \
 		registries_ptr_table ptr_table = registries_ptr_table(registers); \
-		((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() ##opsign 1)
+		((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() opsign 1)
 
 	#define FP_INCDEC(reg, opsign) \
-		registers->reg->set(registers->reg->get() ##opsign 1)
+		registers->reg->set(registers->reg->get() opsign 1)
 
 	#define NATIVE_OP(opreg, opsign, opsize) \
 		registries_def reg_id = ATTOREGID(reg, mem); \
