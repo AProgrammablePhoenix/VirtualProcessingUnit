@@ -43,4 +43,4 @@ you're using RBP or RSP as pointer when calling mload
 * [ ] Implement auto assigning values for comparisons
 * [x] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory
 * [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) [ROZ becoming SDZ (Static Data Zone)]  -> In Progress
-* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers floating point storing numbers), which will be extended later (EFPRx & RFPRx) -> Planned
+* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers storing floating point numbers), which will be extended later (EFPRx & RFPRx) -> Planned
