@@ -19,6 +19,8 @@
 
 typedef std::tuple<size_t, size_t> arg_tuple;
 
+#define CUSTOM_STD_ARGS(A, B, C) std::shared_ptr<void> A, regs* B, memory* C
+
 inline void ULLTOA(size_t value, unsigned char** output) {
 	*output = new unsigned char[sizeof(size_t)];
 
