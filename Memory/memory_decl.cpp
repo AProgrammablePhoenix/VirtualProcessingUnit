@@ -55,7 +55,7 @@ size_t memory::getMemLen() {
 void memory::push(unsigned char* data, size_t count = 8) {
 	if (isvalidpush(*this->registers->rbp, *this->registers->rsp, *this->registers->rsend, *this->registers->rsbgn, count)) {
 		for (size_t addr = *this->registers->rsp, iaddr = 0; addr >= *this->registers->rsp - count && iaddr < count; addr--, iaddr++) {
-			this->_memory[this->rozsize + addr] = data[iaddr];
+			this->_memory[this->sdzsize + addr] = data[iaddr];
 		}
 		*this->registers->rsp = *this->registers->rsp - count;
 	}
@@ -64,8 +64,8 @@ void memory::pop(unsigned char* data, size_t count = 8) {
 	if (isvalidpop(*this->registers->rbp, *this->registers->rsp, *this->registers->rsend, *this->registers->rsbgn, count)) {
 		for (size_t addr = *this->registers->rsp + 1, oaddr = count; addr <= *this->registers->rsp + count && oaddr > 0;
 				addr++, oaddr--) {
-			data[oaddr - 1] = this->_memory[this->rozsize + addr];
-			this->_memory[this->rozsize + addr] = 0;
+			data[oaddr - 1] = this->_memory[this->sdzsize + addr];
+			this->_memory[this->sdzsize + addr] = 0;
 		}
 		*this->registers->rsp = *this->registers->rsp + count;
 	}
@@ -73,12 +73,12 @@ void memory::pop(unsigned char* data, size_t count = 8) {
 
 void memory::_MRSZ(size_t newlen) {
 	if (newlen > this->_memlen) {
-		unsigned char* temp = new unsigned char[newlen + this->rozsize];
-		std::copy(this->_memory, this->_memory + this->rozsize + this->_memlen, temp);
+		unsigned char* temp = new unsigned char[newlen + this->sdzsize];
+		std::copy(this->_memory, this->_memory + this->sdzsize + this->_memlen, temp);
 		delete[] this->_memory;
 		this->_memory = temp;
 
-		memset(this->_memory + this->rozsize + this->_memlen, 0, newlen - this->_memlen);
+		memset(this->_memory + this->sdzsize + this->_memlen, 0, newlen - this->_memlen);
 
 		this->_memlen = newlen;
 	}
@@ -87,53 +87,46 @@ void memory::_MS(unsigned char* data, size_t count, size_t addr) {
 	if (addr + count - 1 > this->_memlen)
 		return;
 	for (size_t i = addr, j = 0; i < addr + count && j < count; i++, j++) {
-		this->_memory[i + this->rozsize] = data[j];
+		this->_memory[i] = data[j];
 	}
 }
 void memory::_MG(unsigned char* data, size_t count, size_t addr) {
 	if (addr + count - 1 > this->_memlen)
 		return;
 	for (size_t i = addr, j = 0; i < addr + count && j < count; i++, j++) {
-		data[j] = this->_memory[i + this->rozsize];
-	}
-}
-
-void memory::_RSROZ(size_t newlen) {
-	if (newlen > this->rozsize) {
-		unsigned char* temp = new unsigned char[newlen + this->_memlen];
-		std::copy(this->_memory, this->_memory + this->rozsize + this->_memlen, temp);
-		delete[] this->_memory;
-
-		memset(this->_memory + this->rozsize, 0, newlen - this->rozsize);
-
-		this->_memory = temp;
-		this->rozsize = newlen;
-	}
-}
-void memory::_ROZVS(unsigned char* data, size_t count) {
-	if (this->rozstacktop + count - 1 < this->rozsize) {
-		for (size_t addr = this->rozstacktop; addr < this->rozstacktop + count; addr++) {
-			this->_memory[addr] = data[addr - this->rozstacktop];
-		}
-		this->rozstacktop += count;
-	}
-	else {
-		this->_RSROZ(this->rozsize + count);
-		for (size_t addr = this->rozstacktop; addr < this->rozstacktop + count; addr++) {
-			this->_memory[addr] = data[addr - this->rozstacktop];
-		}
-		this->rozstacktop += count;
-	}
-}
-void memory::_ROZVG(unsigned char* data, size_t count, size_t addr) {
-	if (addr + count - 1 > this->rozsize)
-		return;
-	for (size_t i = addr, j = 0; i < addr + count && j < count; i++, j++) {
 		data[j] = this->_memory[i];
 	}
 }
-size_t memory::_ROZGST() {
-	return this->rozstacktop;
+
+void memory::_SDZRSZ() {
+	if (this->sdzsize + 0x1000 > this->sdzsize) { // In case there isn't enough memory
+		unsigned char* temp = new unsigned char[this->sdzsize + 0x1000 + this->_memlen];
+		std::copy(this->_memory, this->_memory + this->sdzsize + this->_memlen, temp);
+		delete[] this->_memory;
+
+		memset(this->_memory + this->sdzsize, 0, 0x1000);
+
+		this->_memory = temp;
+		this->sdzsize += 0x1000;
+	}
+}
+void memory::_SDZS(unsigned char* data, size_t count) {
+	if (this->sdztop + count - 1 < this->sdzsize) {
+		for (size_t addr = this->sdztop; addr < this->sdztop + count; addr++) {
+			this->_memory[addr] = data[addr - this->sdztop];
+		}
+		this->sdztop += count;
+	}
+	else {
+		this->_SDZRSZ();
+		for (size_t addr = this->sdztop; addr < this->sdztop + count; addr++) {
+			this->_memory[addr] = data[addr - this->sdztop];
+		}
+		this->sdztop += count;
+	}
+}
+size_t memory::_SDZTOP() {
+	return this->sdztop;
 }
 
 void memory::destroy() {
@@ -142,6 +135,6 @@ void memory::destroy() {
 	delete[] this->_memory;
 }
 void memory::init() {
-	this->_memory = new unsigned char[this->_memlen + this->rozsize];
-	memset(this->_memory, 0, this->_memlen + this->rozsize);
+	this->_memory = new unsigned char[this->_memlen + this->sdzsize];
+	memset(this->_memory, 0, this->_memlen + this->sdzsize);
 }

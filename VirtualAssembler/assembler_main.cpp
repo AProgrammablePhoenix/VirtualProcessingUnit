@@ -43,7 +43,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
-		mem->_ROZVG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));
+		mem->_MG(uc_n, std::get<1>(varinfos), std::get<0>(varinfos));
 
 		size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
 		
@@ -68,7 +68,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		delete[] b_str_size;
 
 		byte* b_str = new byte[str_size];
-		mem->_ROZVG(b_str, str_size, std::get<0>(varinfos));
+		mem->_MG(b_str, str_size, std::get<0>(varinfos));
 
 		for (size_t i = 0; i < str_size; i++) {
 			out.push_back(b_str[i]);
@@ -81,7 +81,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		byte* uc_c = new byte[1];
 
-		mem->_ROZVG(uc_c, 1, std::get<0>(varinfos));
+		mem->_MG(uc_c, 1, std::get<0>(varinfos));
 		out.push_back(uc_c[0]);
 
 		delete[] uc_c;
@@ -91,7 +91,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_d = new byte[sizeof(double)];
-		mem->_ROZVG(uc_d, sizeof(double), std::get<0>(varinfos));
+		mem->_MG(uc_d, sizeof(double), std::get<0>(varinfos));
 		
 		for (byte i = 0; i < sizeof(double); i++) {
 			out.push_back(uc_d[i]);
@@ -103,7 +103,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
-		mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+		mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
 
 		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
 		delete[] uc_n;

@@ -27,7 +27,7 @@ size_t popMemNum(memory*& mem) {
 void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -55,7 +55,7 @@ void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -68,7 +68,7 @@ void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -100,7 +100,7 @@ void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) 
 void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -146,7 +146,7 @@ void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -181,7 +181,7 @@ void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -234,7 +234,7 @@ void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 void net_selep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t stream_id = ATOULL(temp);
 	

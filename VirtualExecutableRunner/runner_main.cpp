@@ -54,8 +54,8 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 				reallen = EXTDBA(b_value, 2);
 			}
 
-			size_t addr = mem->_ROZGST();
-			mem->_ROZVS(b_value, reallen);
+			size_t addr = mem->_SDZTOP();
+			mem->_SDZS(b_value, reallen);
 
 			delete[] b_value;
 
@@ -96,9 +96,9 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			}
 			i--;
 
-			size_t addr = mem->_ROZGST();
+			size_t addr = mem->_SDZTOP();
 			size_t& len = str_size;
-			mem->_ROZVS(b_str, len);
+			mem->_SDZS(b_str, len);
 
 			delete[] b_str;
 
@@ -118,9 +118,9 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			byte* uc_c = new byte[1];
 			uc_c[0] = _arg;
 
-			size_t addr = mem->_ROZGST();
+			size_t addr = mem->_SDZTOP();
 			size_t len = 1;
-			mem->_ROZVS(uc_c, len);
+			mem->_SDZS(uc_c, len);
 
 			delete[] uc_c;
 
@@ -140,9 +140,9 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			}
 			i--;
 
-			size_t addr = mem->_ROZGST();
+			size_t addr = mem->_SDZTOP();
 			size_t len = sizeof(double);
-			mem->_ROZVS(b_value, len);
+			mem->_SDZS(b_value, len);
 
 			delete[] b_value;
 
@@ -162,9 +162,9 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			byte* uc_n = nullptr;
 			ULLTOA(real_reg, &uc_n);
 
-			size_t addr = mem->_ROZGST();
+			size_t addr = mem->_SDZTOP();
 			size_t len = sizeof(size_t);
-			mem->_ROZVS(uc_n, len);
+			mem->_SDZS(uc_n, len);
 
 			delete[] uc_n;
 

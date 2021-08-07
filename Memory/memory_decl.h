@@ -26,14 +26,12 @@ public:
 	// Memory Get
 	void _MG(unsigned char* data, size_t count, size_t addr);
 
-	// Resize ROZ
-	void _RSROZ(size_t newlen);
-	// Push readonly value on ROZ (equivalent to push, but value cannot be poped, only read at its address on stack)
-	void _ROZVS(unsigned char* data, size_t count);
-	// Get readonly value at address in ROZ (read value of data that has been pushed on ROZ stack)
-	void _ROZVG(unsigned char* data, size_t count, size_t addr);
-	// Get rozstacktop (should be used before pushing new value, to get its future address in rozstack)
-	size_t _ROZGST();
+	// Expand SDZ size by 4 KB
+	void _SDZRSZ();
+	// Push readonly value on SDZ (equivalent to push, but value cannot be poped, only read at its address on stack)
+	void _SDZS(unsigned char* data, size_t count);
+	// Get SDZ stack top (should be used before pushing new value, to get its future address in SDZ stack)
+	size_t _SDZTOP();
 
 	void destroy();
 
@@ -51,9 +49,9 @@ private:
 	unsigned char* _memory = nullptr;
 	size_t _memlen = 0x100000;
 
-	// readonly zone (roz) flags
-	size_t rozsize = 4096;					   // 4 KB of roz (expandable)
-	size_t rozstacktop = 0;
+	// static data zone (sdz) flags
+	size_t sdzsize = 4096;					   // Default size of SDZ: 4 KB (expandable)
+	size_t sdztop = 0;
 
 	void init();
 };

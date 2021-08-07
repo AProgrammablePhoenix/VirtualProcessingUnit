@@ -49,7 +49,7 @@ enum class extra_registries {
 // Arg_Tuple to reg id
 inline registries_def ATTOREGID(arg_tuple& at, memory*& mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(at));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(at));
 	registries_def reg_id = (registries_def)(ATOULL(temp));
 
 	delete[] temp;
@@ -310,7 +310,7 @@ inline void b_set_num(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	try {
 		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
 		uc_n = new unsigned char[sizeof(size_t)];
-		mem->_ROZVG(uc_n, sizeof(size_t), vaddr);
+		mem->_MG(uc_n, sizeof(size_t), vaddr);
 
 		registries_ptr_table ptr_table = registries_ptr_table(registers);
 		((reg_int<size_t>*)ptr_table.access(reg_id))->set((T)ATOULL(uc_n));
@@ -328,7 +328,7 @@ inline void b_set_str(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
 
 		uc_s = new unsigned char[vsize];
-		mem->_ROZVG(uc_s, vsize, vaddr);
+		mem->_MG(uc_s, vsize, vaddr);
 
 		registers->sr->set(std::string((const char*)uc_s));
 		delete[] uc_s;
@@ -343,7 +343,7 @@ inline void b_set_chr(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	try {
 		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
 		uc_c = new unsigned char[1];
-		mem->_ROZVG(uc_c, 1, vaddr);
+		mem->_MG(uc_c, 1, vaddr);
 
 		registers->cr->set((char)uc_c[0]);
 		delete[] uc_c;
@@ -359,7 +359,7 @@ inline void b_set_dbl(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
 
 		uc_d = new unsigned char[sizeof(double)];
-		mem->_ROZVG(uc_d, sizeof(double), vaddr);
+		mem->_MG(uc_d, sizeof(double), vaddr);
 
 		registers->dr->set(ATOD(uc_d));
 		delete[] uc_d;

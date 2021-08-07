@@ -23,12 +23,15 @@ will compare the value of SR with the string representation of EAX).
 implementation status, note that the latter is subject to changes)
 
 ### Few recommandations you should follow
-+ First, you should avoid allocating memory on first 128 bytes of memory, because those 128 bytes might be used by compiler, and thus maybe
++ Firstly, you should avoid allocating memory on first 128 bytes of memory, because those 128 bytes might be used by compiler, and thus maybe
 overwritten at runtime, then it might cause damage to your program, you might allocate data on this area of memory if you only know what you are
 doing.
-+ Last `N * <stacksize>` bytes of memory are used by your program stack (if it runs as a kernel), where N is number of running thread
++ Last `N * <stacksize>` bytes of memory are used by your program stack (if it runs as a kernel), where N is number of running threads
 (including kernel thread) and stacksize is of 32 KB nowadays (and shouldn't change in the future). you may read/change those bytes values if
 you're using RBP or RSP as pointer when calling mload
++ First `<sdzsize>` byte are reserved for static data storage, you can use them to read/write data. To get the size of SDZ, you could the
+`sdzs` instruction or implement your own procedure to determine its size. Those bytes are from now on accessible through memory addressing
+instructions, no matter if you're using VASM or SVASM.
 
 ### SVASM Roadmap
 * [x] Implement mov instruction support
@@ -44,3 +47,4 @@ you're using RBP or RSP as pointer when calling mload
 * [x] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory
 * [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) [ROZ becoming SDZ (Static Data Zone)]  -> In Progress
 * [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers storing floating point numbers), which will be extended later (EFPRx & RFPRx) -> Planned
+* [ ] Make files operations more low-level, thus more flexible and optimized

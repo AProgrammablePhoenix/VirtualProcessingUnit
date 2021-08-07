@@ -52,8 +52,8 @@ void variables_decl::set(std::string var_name, unsigned char* value, size_t leng
 		return;
 	}
 
-	size_t addr = this->mem->_ROZGST();
-	this->mem->_ROZVS(value, length);
+	size_t addr = this->mem->_SDZTOP();
+	this->mem->_SDZS(value, length);
 	this->vars[var_name] = std::make_tuple<size_t&, size_t&>(addr, length);
 }
 void variables_decl::get(std::string var_name, unsigned char** out) {
@@ -65,7 +65,7 @@ void variables_decl::get(std::string var_name, unsigned char** out) {
 	size_t length = std::get<1>(this->vars[var_name]);
 
 	*out = new unsigned char[length];
-	this->mem->_ROZVG(*out, length, addr);
+	this->mem->_MG(*out, length, addr);
 }
 
 void variables_decl::setVariablesTree(code_file_decl_form branch) {

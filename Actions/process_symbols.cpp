@@ -15,7 +15,7 @@ namespace {
 		try {
 			const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args);
 			uc_n = new unsigned char[sizeof(size_t)];
-			mem->_ROZVG(uc_n, sizeof(size_t), vaddr);
+			mem->_MG(uc_n, sizeof(size_t), vaddr);
 
 			size_t _value = ATOULL(uc_n);
 			delete[] uc_n;
@@ -159,7 +159,7 @@ void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m) {
 void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
 	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(value_ptr);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
 
 	*registers->process_call_address = *registers->process_step;
 	*registers->process_step = ATOULL(uc_n);
@@ -170,7 +170,7 @@ void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
 void p_lcall(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
 	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(value_ptr);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
 
 	*registers->process_step = ATOULL(uc_n);
 	delete[] uc_n;
@@ -198,7 +198,7 @@ void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m)
 void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;
@@ -214,7 +214,7 @@ void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* m
 void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;
@@ -230,7 +230,7 @@ void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* m
 void p_endthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
 	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;
