@@ -6,6 +6,21 @@
 #include "actions_symbols.h"
 #include "v_engine.h"
 
+#define ENGMEM this->getMemoryPtr()
+#define ENGRGS this->engine.getRegsPtr()
+
+#define SetMainStack() \
+	*ENGRGS->rbp = *ENGRGS->rsp = ENGMEM->getMemLen() - 1; \
+	*ENGRGS->rsend = ENGMEM->getMemLen() - 1 - ENGMEM->stacksize; \
+	*ENGRGS->rsbgn = *ENGRGS->rbp + 1
+
+#define THREADRGS(thread_id) this->threadsRegisters[thread_id]
+
+#define SetThreadStack(thread_id) \
+	*THREADRGS(thread_id)->rbp = *THREADRGS(thread_id)->rsp = ENGMEM->getMemLen() - 1 - this->nThreads * ENGMEM->stacksize; \
+	*THREADRGS(thread_id)->rsend = ENGMEM->getMemLen() - 1 - (thread_id + 2) * ENGMEM->stacksize; \
+	*THREADRGS(thread_id)->rsbgn = *THREADRGS(thread_id)->rbp + 1
+
 actions_engine temp_engine = actions_engine();
 
 bool process::allThreadsTerminated() {
@@ -23,6 +38,8 @@ process::process() {
 	this->engine = temp_engine;
 	this->engine.setThreadsMap(this->threadsStatuses);
 
+	SetMainStack();
+
 	this->actions = std::vector<action>();
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
@@ -30,6 +47,8 @@ process::process() {
 process::process(const actions_engine& _engine) {
 	this->engine = _engine;
 	this->engine.setThreadsMap(this->threadsStatuses);
+
+	SetMainStack();
 
 	this->actions = std::vector<action>();
 	this->step = this->engine.getStepCounterPtr();
@@ -39,9 +58,19 @@ process::process(const actions_engine& _engine, const std::vector<action>& _acti
 	this->engine = _engine;
 	this->engine.setThreadsMap(this->threadsStatuses);
 
+	SetMainStack();
+
 	this->actions = _actions;
 	this->step = this->engine.getStepCounterPtr();
 	this->terminated = false;
+}
+
+void process::updateStackRegs() {
+	SetMainStack();
+
+	for (size_t i = 0; i < this->threadsRegisters.size(); i++) {
+		SetThreadStack(i);
+	}
 }
 
 void process::addAction(action _action) {
@@ -56,6 +85,10 @@ void process::addThread(const std::vector<action>& _actions, size_t threadId) {
 	this->threadsActions.push_back(_actions);
 
 	regs* tempR = new regs;
+	*tempR->rbp = *tempR->rsp = ENGMEM->getMemLen() - 1 - this->nThreads * ENGMEM->stacksize;
+	*tempR->rsend = ENGMEM->getMemLen() - 1 - (this->nThreads + 1) * ENGMEM->stacksize;
+	*tempR->rsbgn = *tempR->rbp + 1;
+
 	tempR->threadsStatuses = this->threadsStatuses;
 
 	memory* tempM = this->getMemoryPtr();
@@ -68,6 +101,7 @@ void process::addThread(const std::vector<action>& _actions, size_t threadId) {
 
 void process::execute() {
 	if (!nThreads) {
+		ENGMEM->update(this->engine.getRegsPtr());
 		while (*(this->step) < this->actions.size() && !this->engine.toStop()) {
 			this->engine.execute(this->actions[*(this->step)].getAction(), this->actions[*(this->step)].getValuePtr());
 			(*(this->step))++;
@@ -89,7 +123,7 @@ void process::execute1() {
 			this->terminated = true;
 			return;
 		}
-
+		ENGMEM->update(this->engine.getRegsPtr());
 		if (*(this->step) < this->actions.size()) {
 			this->engine.execute(this->actions[*(this->step)].getAction(), this->actions[*(this->step)].getValuePtr());
 			(*(this->step))++;
@@ -107,6 +141,7 @@ void process::execute1() {
 			}
 
 			if (*(this->step) < this->actions.size()) {
+				ENGMEM->update(this->engine.getRegsPtr());
 				this->engine.execute(this->actions[*(this->step)].getAction(), this->actions[*(this->step)].getValuePtr());
 				(*(this->step))++;
 			}
@@ -136,6 +171,7 @@ void process::execute1() {
 
 			size_t step = *this->threads[i]->getStepCounterPtr();
 			if (step < this->threadsActions[i].size()) {
+				ENGMEM->update(this->threads[i]->getRegsPtr());
 				this->threads[i]->execute(this->threadsActions[i][step].getAction(), this->threadsActions[i][step].getValuePtr());
 				(*this->threads[i]->getStepCounterPtr())++;
 			}

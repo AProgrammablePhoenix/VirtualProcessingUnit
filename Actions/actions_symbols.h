@@ -153,72 +153,79 @@ enum class virtual_actions {
 	pushDR = 0x0068,
 	popDR = 0x0069,
 
-	nsms = 0x006A,
+	movsm = 0x006A,
+	movgm = 0x006B,
 
-	movsm = 0x006B,
-	movgm = 0x006C,
+	movsmSR = 0x006C,
+	movgmSR = 0x006D,
 
-	movsmSR = 0x006D,
-	movgmSR = 0x006E,
+	movsmCR = 0x006E,
+	movgmCR = 0x006F,
 
-	movsmCR = 0x006F,
-	movgmCR = 0x0070,
-
-	movsmDR = 0x0071,
-	movgmDR = 0x0072,
+	movsmDR = 0x0070,
+	movgmDR = 0x0071,
 
 	// Native binary ops [belong to Registers]
-	_not = 0x0073,
-	_and = 0x0074,
-	_or  = 0x0075,
-	_xor = 0x0076,
-	_shl = 0x0077,
-	_shr = 0x0078,
+	_not = 0x0072,
+	_and = 0x0073,
+	_or  = 0x0074,
+	_xor = 0x0075,
+	_shl = 0x0076,
+	_shr = 0x0077,
 
-	_log = 0x0079,
-	_log2 = 0x007A,
-	_log10 = 0x007B,
-	_pow = 0x007C,
+	_log = 0x0078,
+	_log2 = 0x0079,
+	_log10 = 0x007A,
+	_pow = 0x007B,
 
-	_dlog = 0x007D,
-	_dlog2 = 0x007E,
-	_dlog10 = 0x007F,
-	_dpow = 0x0080,
+	_dlog = 0x007C,
+	_dlog2 = 0x007D,
+	_dlog10 = 0x007E,
+	_dpow = 0x007F,
 
 	// Process
-	jmp = 0x0082,
-	cmp = 0x0083,
-	je  = 0x0084,
-	jne = 0x0085,
-	jl  = 0x0086,
-	jg  = 0x0087,
-	jle = 0x0088,
-	jge = 0x0089,
-	cmpstr = 0x008A,
+	jmp = 0x0080,
+	cmp = 0x0081,
+	je  = 0x0082,
+	jne = 0x0083,
+	jl  = 0x0084,
+	jg  = 0x0085,
+	jle = 0x0086,
+	jge = 0x0087,
+	cmpstr = 0x0088,
 
-	gca = 0x008B,
-	hlt = 0x008C,
+	gca = 0x0089,
+	hlt = 0x008A,
 
-	call = 0x008D,
-	lcall = 0x008E,
-	ret = 0x008F,
-	svcall = 0x0090,
-	rscall = 0x0091,
+	call = 0x008B,
+	lcall = 0x008C,
+	ret = 0x008D,
+	svcall = 0x008E,
+	rscall = 0x008F,
 
-	nopen  = 0x0092,
-	nclose = 0x0093,
-	nget   = 0x0094,
-	nsend  = 0x0095,
-	nhrecv = 0x0096,
-	ncrtep = 0x0097,
-	nselep = 0x0098,
+	nopen  = 0x0090,
+	nclose = 0x0091,
+	nget   = 0x0092,
+	nsend  = 0x0093,
+	nhrecv = 0x0094,
+	ncrtep = 0x0095,
+	nselep = 0x0096,
 
-	pcrtthread = 0x0099,
-	prstthread = 0x009A,
-	pendthread = 0x009B
+	pcrtthread = 0x0097,
+	prstthread = 0x0098,
+	pendthread = 0x0099,
+
+	addRBP = 0x9A,
+	addRSP = 0x9B,
+
+	subRBP = 0x9C,
+	subRSP = 0x9D,
+
+	movRBP = 0x9E,
+	movRSP = 0x9F
 };
 
-extern void (*a_db[0x009B + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x009F + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -259,6 +266,9 @@ public:
 	}
 	memory* getMemoryPtr() {
 		return this->self_mem;
+	}
+	regs* getRegsPtr() {
+		return this->self_regs;
 	}
 	bool toStop() {
 		return *this->self_regs->stopRequested;
@@ -335,6 +345,9 @@ private:
 		a_db[(size_t)virtual_actions::movRBX] = b_mov64RBX;
 		a_db[(size_t)virtual_actions::movRCX] = b_mov64RCX;
 		a_db[(size_t)virtual_actions::movRDX] = b_mov64RDX;
+
+		a_db[(size_t)virtual_actions::movRBP] = b_mov64RBP;
+		a_db[(size_t)virtual_actions::movRSP] = b_mov64RSP;
 #pragma endregion
 		a_db[(size_t)virtual_actions::inc] = b_inc;
 		a_db[(size_t)virtual_actions::dec] = b_dec;
@@ -387,6 +400,9 @@ private:
 		a_db[(size_t)virtual_actions::addRBX] = b_add64RBX;
 		a_db[(size_t)virtual_actions::addRCX] = b_add64RCX;
 		a_db[(size_t)virtual_actions::addRDX] = b_add64RDX;
+
+		a_db[(size_t)virtual_actions::addRBP] = b_add64RBP;
+		a_db[(size_t)virtual_actions::addRSP] = b_add64RSP;
 #pragma endregion
 #pragma region b_sub
 		a_db[(size_t)virtual_actions::subAX] = b_sub16AX;
@@ -403,6 +419,9 @@ private:
 		a_db[(size_t)virtual_actions::subRBX] = b_sub64RBX;
 		a_db[(size_t)virtual_actions::subRCX] = b_sub64RCX;
 		a_db[(size_t)virtual_actions::subRDX] = b_sub64RDX;
+
+		a_db[(size_t)virtual_actions::subRBP] = b_sub64RBP;
+		a_db[(size_t)virtual_actions::subRSP] = b_sub64RSP;
 #pragma endregion
 #pragma region b_extended
 		a_db[(size_t)virtual_actions::toString] = b_toString;
@@ -438,8 +457,6 @@ private:
 
 		a_db[(size_t)virtual_actions::pushDR] = pushMemDR;
 		a_db[(size_t)virtual_actions::popDR] = popMemDR;
-
-		a_db[(size_t)virtual_actions::nsms] = nsms;
 
 		a_db[(size_t)virtual_actions::movsm] = movsm;
 		a_db[(size_t)virtual_actions::movgm] = movgm;

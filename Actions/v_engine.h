@@ -14,6 +14,8 @@ public:
 	process(const actions_engine& _engine);
 	process(const actions_engine& _engine, const std::vector<action>& _actions);
 
+	void updateStackRegs();
+
 	void addAction(action _action);
 	void addAction(virtual_actions _action, std::shared_ptr<void> value_ptr);
 
