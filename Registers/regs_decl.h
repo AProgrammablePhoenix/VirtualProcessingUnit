@@ -210,6 +210,27 @@ private:
 	double value;
 };
 
+template<typename datatype>
+struct OrphanReg : public reg_int<datatype> {
+public:
+	OrphanReg() = delete;
+	OrphanReg(datatype dt) {
+		this->value = dt;
+	}
+
+	void set(datatype dt) {
+		this->value = dt;
+	}
+	datatype get() {
+		return this->value;
+	}
+
+	operator datatype& () { return this->value; }
+	operator datatype() const { return this->value; }
+private:
+	datatype value;
+};
+
 struct regs {
 public:
 	baseReg
@@ -239,6 +260,12 @@ public:
 		*rbx = &_rbx,
 		*rcx = &_rcx,
 		*rdx = &_rdx;
+
+	OrphanReg<size_t>
+		*rbp = &_rbp,
+		*rsp = &_rsp,
+		*rsbgn = &_rsbgn,
+		*rsend = &_rsend;
 
 	size_t* process_step = &_program_counter;
 	unsigned char* cmp_out = &_cmp_out;
@@ -284,6 +311,12 @@ private:
 		_rbx = extendedEEXReg(&_ebx, &rbx_h),
 		_rcx = extendedEEXReg(&_ecx, &rcx_h),
 		_rdx = extendedEEXReg(&_edx, &rdx_h);
+
+	OrphanReg<size_t>
+		_rbp = 0,
+		_rsp = 0,
+		_rsbgn = 0,
+		_rsend = 0;
 
 	size_t _program_counter = 0;
 	unsigned char _cmp_out = 0xFF;

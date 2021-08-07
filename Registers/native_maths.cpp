@@ -6,420 +6,210 @@
 #include "regs_decl.h"
 #include "registers_symbols.h"
 
-void b_inc(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() + 1);
-}
-void b_dec(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() - 1);
-}
-
-void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	registers->dr->set(registers->dr->get() + 1);
-}
-void b_decDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	registers->dr->set(registers->dr->get() - 1);
-}
-
-
-void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short ax = ((reg_int<unsigned short>*)ptr_table.access(registries_def::AX))->get();
-
-	registers->ax->set(value * ax);
-}
-void b_mul16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short bx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::BX))->get();
-
-	registers->bx->set(value * bx);
-}
-void b_mul16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short cx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::CX))->get();
-
-	registers->cx->set(value * cx);
-}
-void b_mul16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short dx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::DX))->get();
-
-	registers->dx->set(value * dx);
-}
-
-void b_mul32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int eax = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EAX))->get();
-
-	registers->eax->set(value * eax);
-}
-void b_mul32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ebx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EBX))->get();
-
-	registers->ebx->set(value * ebx);
-}
-void b_mul32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ecx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::ECX))->get();
-
-	registers->ecx->set(value * ecx);
-}
-void b_mul32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int edx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EDX))->get();
-
-	registers->edx->set(value * edx);
-}
-
-void b_mul64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
-
-	registers->rax->set(value * rax);
-}
-void b_mul64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
-
-	registers->rbx->set(value * rbx);
-}
-void b_mul64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
-
-	registers->rcx->set(value * rcx);
-}
-void b_mul64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
-
-	registers->rdx->set(value * rdx);
-}
-
-
-void b_div16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short ax = ((reg_int<unsigned short>*)ptr_table.access(registries_def::AX))->get();
-
-	registers->ax->set(ax / value);
-}
-void b_div16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short bx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::BX))->get();
-
-	registers->bx->set(bx / value);
-}
-void b_div16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short cx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::CX))->get();
-
-	registers->cx->set(cx / value);
-}
-void b_div16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short dx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::DX))->get();
-
-	registers->dx->set(dx / value);
-}
-
-void b_div32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int eax = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EAX))->get();
+#ifndef NMATHS_PREPROC
+	#define GLOBL_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
+	#define GLOBL_ARGS_D1 CUSTOM_STD_ARGS(unused_p, registers, mem)
 	
-	registers->eax->set(eax / value);
-}
-void b_div32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ebx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EBX))->get();
+	#define NATIVE_INCDEC(opsign) \
+		registries_def reg_id = ATTOREGID(reg, mem); \
+		registries_ptr_table ptr_table = registries_ptr_table(registers); \
+		((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() ##opsign 1)
 
-	registers->ebx->set(ebx / value);
-}
-void b_div32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ecx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::ECX))->get();
+	#define FP_INCDEC(reg, opsign) \
+		registers->reg->set(registers->reg->get() ##opsign 1)
 
-	registers->ecx->set(ecx / value);
-}
-void b_div32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int edx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EDX))->get();
+	#define NATIVE_OP(opreg, opsign, opsize) \
+		registries_def reg_id = ATTOREGID(reg, mem); \
+		registries_ptr_table ptr_table = registries_ptr_table(registers); \
+		opsize value = ((reg_int<opsize>*)ptr_table.access(reg_id))->get(); \
+		registers->opreg->set(registers->opreg->get() opsign value);
 
-	registers->edx->set(edx / value);
+	#define NMATH_PREPROC(...) (void)0
+#endif
+
+void b_inc(GLOBL_ARGS) {
+	NATIVE_INCDEC(+);
+}
+void b_dec(GLOBL_ARGS) {
+	NATIVE_INCDEC(-);
 }
 
-void b_div64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
-
-	registers->rax->set(rax / value);
+void b_incDR(GLOBL_ARGS_D1) {
+	FP_INCDEC(dr, +);
 }
-void b_div64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
-
-	registers->rbx->set(rbx / value);
-}
-void b_div64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
-
-	registers->rcx->set(rcx / value);
-}
-void b_div64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
-
-	registers->rdx->set(rdx / value);
+void b_decDR(GLOBL_ARGS_D1) {
+	FP_INCDEC(dr, -);
 }
 
-
-void b_add16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short ax = ((reg_int<unsigned short>*)ptr_table.access(registries_def::AX))->get();
-
-	registers->ax->set(ax + value);
+void b_mul16AX(GLOBL_ARGS) {
+	NATIVE_OP(ax, *, unsigned short);
 }
-void b_add16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short bx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::BX))->get();
-
-	registers->bx->set(bx + value);
+void b_mul16BX(GLOBL_ARGS) {
+	NATIVE_OP(bx, *, unsigned short);
 }
-void b_add16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short cx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::CX))->get();
-
-	registers->cx->set(cx + value);
+void b_mul16CX(GLOBL_ARGS) {
+	NATIVE_OP(cx, *, unsigned short);
 }
-void b_add16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short dx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::DX))->get();
-
-	registers->dx->set(dx + value);
+void b_mul16DX(GLOBL_ARGS) {
+	NATIVE_OP(dx, *, unsigned short);
 }
 
-void b_add32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int eax = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EAX))->get();
-
-	registers->eax->set(eax + value);
+void b_mul32EAX(GLOBL_ARGS) {
+	NATIVE_OP(eax, *, unsigned int);
 }
-void b_add32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ebx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EBX))->get();
-
-	registers->ebx->set(ebx + value);
+void b_mul32EBX(GLOBL_ARGS) {
+	NATIVE_OP(ebx, *, unsigned int);
 }
-void b_add32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ecx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::ECX))->get();
-
-	registers->ecx->set(ecx + value);
+void b_mul32ECX(GLOBL_ARGS) {
+	NATIVE_OP(ecx, *, unsigned int);
 }
-void b_add32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int edx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EDX))->get();
-
-	registers->edx->set(edx + value);
+void b_mul32EDX(GLOBL_ARGS) {
+	NATIVE_OP(edx, *, unsigned int);
 }
 
-void b_add64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
-
-	registers->rax->set(rax + value);
+void b_mul64RAX(GLOBL_ARGS) {
+	NATIVE_OP(rax, *, size_t);
 }
-void b_add64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
-
-	registers->rbx->set(rbx + value);
+void b_mul64RBX(GLOBL_ARGS) {
+	NATIVE_OP(rbx, *, size_t);
 }
-void b_add64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
-
-	registers->rcx->set(rcx + value);
+void b_mul64RCX(GLOBL_ARGS) {
+	NATIVE_OP(rcx, *, size_t);
 }
-void b_add64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
-
-	registers->rdx->set(rdx + value);
+void b_mul64RDX(GLOBL_ARGS) {
+	NATIVE_OP(rdx, *, size_t);
 }
 
 
-void b_sub16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short ax = ((reg_int<unsigned short>*)ptr_table.access(registries_def::AX))->get();
-
-	registers->ax->set(ax - value);
+void b_div16AX(GLOBL_ARGS) {
+	NATIVE_OP(ax, /, unsigned short);
 }
-void b_sub16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short bx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::BX))->get();
-
-	registers->bx->set(bx - value);
+void b_div16BX(GLOBL_ARGS) {
+	NATIVE_OP(bx, / , unsigned short);
 }
-void b_sub16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short cx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::CX))->get();
-
-	registers->cx->set(cx - value);
+void b_div16CX(GLOBL_ARGS) {
+	NATIVE_OP(cx, / , unsigned short);
 }
-void b_sub16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned short value = ((reg_int<unsigned short>*)ptr_table.access(reg_id))->get();
-	unsigned short dx = ((reg_int<unsigned short>*)ptr_table.access(registries_def::DX))->get();
-
-	registers->dx->set(dx - value);
+void b_div16DX(GLOBL_ARGS) {
+	NATIVE_OP(dx, / , unsigned short);
 }
 
-void b_sub32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int eax = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EAX))->get();
-
-	registers->eax->set(eax - value);
+void b_div32EAX(GLOBL_ARGS) {
+	NATIVE_OP(eax, / , unsigned int);
 }
-void b_sub32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ebx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EBX))->get();
-
-	registers->ebx->set(ebx - value);
+void b_div32EBX(GLOBL_ARGS) {
+	NATIVE_OP(ebx, / , unsigned int);
 }
-void b_sub32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int ecx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::ECX))->get();
-
-	registers->ecx->set(ecx - value);
+void b_div32ECX(GLOBL_ARGS) {
+	NATIVE_OP(ecx, / , unsigned int);
 }
-void b_sub32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned int value = ((reg_int<unsigned int>*)ptr_table.access(reg_id))->get();
-	unsigned int edx = ((reg_int<unsigned int>*)ptr_table.access(registries_def::EDX))->get();
-
-	registers->edx->set(edx - value);
+void b_div32EDX(GLOBL_ARGS) {
+	NATIVE_OP(edx, / , unsigned int);
 }
 
-void b_sub64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rax = ((reg_int<size_t>*)ptr_table.access(registries_def::RAX))->get();
-
-	registers->rax->set(rax - value);
+void b_div64RAX(GLOBL_ARGS) {
+	NATIVE_OP(rax, / , size_t);
 }
-void b_sub64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rbx = ((reg_int<size_t>*)ptr_table.access(registries_def::RBX))->get();
-
-	registers->rbx->set(rbx - value);
+void b_div64RBX(GLOBL_ARGS) {
+	NATIVE_OP(rbx, / , size_t);
 }
-void b_sub64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rcx = ((reg_int<size_t>*)ptr_table.access(registries_def::RCX))->get();
-
-	registers->rcx->set(rcx - value);
+void b_div64RCX(GLOBL_ARGS) {
+	NATIVE_OP(rcx, / , size_t);
 }
-void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
-	size_t rdx = ((reg_int<size_t>*)ptr_table.access(registries_def::RDX))->get();
+void b_div64RDX(GLOBL_ARGS) {
+	NATIVE_OP(rdx, / , size_t);
+}
 
-	registers->rdx->set(rdx - value);
+
+void b_add16AX(GLOBL_ARGS) {
+	NATIVE_OP(ax, +, unsigned short);
+}
+void b_add16BX(GLOBL_ARGS) {
+	NATIVE_OP(bx, +, unsigned short);
+}
+void b_add16CX(GLOBL_ARGS) {
+	NATIVE_OP(cx, +, unsigned short);
+}
+void b_add16DX(GLOBL_ARGS) {
+	NATIVE_OP(dx, +, unsigned short);
+}
+
+void b_add32EAX(GLOBL_ARGS) {
+	NATIVE_OP(eax, +, unsigned int);
+}
+void b_add32EBX(GLOBL_ARGS) {
+	NATIVE_OP(ebx, +, unsigned int);
+}
+void b_add32ECX(GLOBL_ARGS) {
+	NATIVE_OP(ecx, +, unsigned int);
+}
+void b_add32EDX(GLOBL_ARGS) {
+	NATIVE_OP(edx, +, unsigned int);
+}
+
+void b_add64RAX(GLOBL_ARGS) {
+	NATIVE_OP(rax, +, size_t);
+}
+void b_add64RBX(GLOBL_ARGS) {
+	NATIVE_OP(rbx, +, size_t);
+}
+void b_add64RCX(GLOBL_ARGS) {
+	NATIVE_OP(rcx, +, size_t);
+}
+void b_add64RDX(GLOBL_ARGS) {
+	NATIVE_OP(rdx, +, size_t);
+}
+
+void b_add64RBP(GLOBL_ARGS) {
+	NATIVE_OP(rbp, +, size_t);
+}
+void b_add64RSP(GLOBL_ARGS) {
+	NATIVE_OP(rsp, +, size_t);
+}
+
+
+void b_sub16AX(GLOBL_ARGS) {
+	NATIVE_OP(ax, -, unsigned short);
+}
+void b_sub16BX(GLOBL_ARGS) {
+	NATIVE_OP(bx, -, unsigned short);
+}
+void b_sub16CX(GLOBL_ARGS) {
+	NATIVE_OP(cx, -, unsigned short);
+}
+void b_sub16DX(GLOBL_ARGS) {
+	NATIVE_OP(dx, -, unsigned short);
+}
+
+void b_sub32EAX(GLOBL_ARGS) {
+	NATIVE_OP(eax, -, unsigned int);
+}
+void b_sub32EBX(GLOBL_ARGS) {
+	NATIVE_OP(ebx, -, unsigned int);
+}
+void b_sub32ECX(GLOBL_ARGS) {
+	NATIVE_OP(ecx, -, unsigned int);
+}
+void b_sub32EDX(GLOBL_ARGS) {
+	NATIVE_OP(edx, -, unsigned int);
+}
+
+void b_sub64RAX(GLOBL_ARGS) {
+	NATIVE_OP(rax, -, size_t);
+}
+void b_sub64RBX(GLOBL_ARGS) {
+	NATIVE_OP(rbx, -, size_t);
+}
+void b_sub64RCX(GLOBL_ARGS) {
+	NATIVE_OP(rcx, -, size_t);
+}
+void b_sub64RDX(GLOBL_ARGS) {
+	NATIVE_OP(rdx, -, size_t);
+}
+
+void b_sub64RBP(GLOBL_ARGS) {
+	NATIVE_OP(rbp, -, size_t);
+}
+void b_sub64RSP(GLOBL_ARGS) {
+	NATIVE_OP(rsp, -, size_t);
 }

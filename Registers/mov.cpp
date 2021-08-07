@@ -6,140 +6,113 @@
 #include "regs_decl.h"
 #include "registers_symbols.h"
 
-void c_b_mov16AX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ax->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
-}
-void c_b_mov16BX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->bx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
-}
-void c_b_mov16CX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->cx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
-}
-void c_b_mov16DX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->dx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
+#ifndef MOV_PREPROC
+	#define HIDDN_ARGS std::shared_ptr<void> reg_ptr, const regs* const registers
+	#define GLOBL_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
+
+	#define HIDDN_BODY(reg, reg_ptr, opsize) \
+		registers->reg->set(*std::static_pointer_cast<opsize>(reg_ptr))
+
+	#define GLOBL_BODY(opname, opsize) \
+		registries_def reg_id = ATTOREGID(reg, mem); \
+		registries_ptr_table ptr_table = registries_ptr_table(registers); \
+		void* ptr = ptr_table.access(reg_id); \
+		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get()); \
+		c_b_mov##opname(value, registers)
+	
+	#define MOV_PREPROC(...) (void)0
+#endif
+
+namespace {
+	void c_b_mov16AX(HIDDN_ARGS) {
+		HIDDN_BODY(ax, reg_ptr, unsigned short);
+	}
+	void c_b_mov16BX(HIDDN_ARGS) {
+		HIDDN_BODY(bx, reg_ptr, unsigned short);
+	}
+	void c_b_mov16CX(HIDDN_ARGS) {
+		HIDDN_BODY(cx, reg_ptr, unsigned short);
+	}
+	void c_b_mov16DX(HIDDN_ARGS) {
+		HIDDN_BODY(dx, reg_ptr, unsigned short);
+	}
+
+	void c_b_mov32EAX(HIDDN_ARGS) {
+		HIDDN_BODY(eax, reg_ptr, unsigned int);
+	}
+	void c_b_mov32EBX(HIDDN_ARGS) {
+		HIDDN_BODY(ebx, reg_ptr, unsigned int);
+	}
+	void c_b_mov32ECX(HIDDN_ARGS) {
+		HIDDN_BODY(ecx, reg_ptr, unsigned int);
+	}
+	void c_b_mov32EDX(HIDDN_ARGS) {
+		HIDDN_BODY(edx, reg_ptr, unsigned int);
+	}
+
+	void c_b_mov64RAX(HIDDN_ARGS) {
+		HIDDN_BODY(rax, reg_ptr, size_t);
+	}
+	void c_b_mov64RBX(HIDDN_ARGS) {
+		HIDDN_BODY(rbx, reg_ptr, size_t);
+	}
+	void c_b_mov64RCX(HIDDN_ARGS) {
+		HIDDN_BODY(rcx, reg_ptr, size_t);
+	}
+	void c_b_mov64RDX(HIDDN_ARGS) {
+		HIDDN_BODY(rdx, reg_ptr, size_t);
+	}
+
+	void c_b_mov64RBP(HIDDN_ARGS) {
+		HIDDN_BODY(rbp, reg_ptr, size_t);
+	}
+	void c_b_mov64RSP(HIDDN_ARGS) {
+		HIDDN_BODY(rsp, reg_ptr, size_t);
+	}
 }
 
-void b_mov16AX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
-	c_b_mov16AX(value, registers);
+void b_mov16AX(GLOBL_ARGS) {
+	GLOBL_BODY(16AX, unsigned short);
 }
-void b_mov16BX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
-	c_b_mov16BX(value, registers);
+void b_mov16BX(GLOBL_ARGS) {
+	GLOBL_BODY(16BX, unsigned short);
 }
-void b_mov16CX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
-	c_b_mov16CX(value, registers);
+void b_mov16CX(GLOBL_ARGS) {
+	GLOBL_BODY(16CX, unsigned short);
 }
-void b_mov16DX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned short> value = std::make_shared<unsigned short>(((reg_int<unsigned short>*)ptr)->get());
-	c_b_mov16DX(value, registers);
+void b_mov16DX(GLOBL_ARGS) {
+	GLOBL_BODY(16DX, unsigned short);
 }
 
-void c_b_mov32EAX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->eax->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
+void b_mov32EAX(GLOBL_ARGS) {
+	GLOBL_BODY(32EAX, unsigned int);
 }
-void c_b_mov32EBX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ebx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
+void b_mov32EBX(GLOBL_ARGS) {
+	GLOBL_BODY(32EBX, unsigned int);
 }
-void c_b_mov32ECX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->ecx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
+void b_mov32ECX(GLOBL_ARGS) {
+	GLOBL_BODY(32ECX, unsigned int);
 }
-void c_b_mov32EDX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->edx->set(*std::static_pointer_cast<unsigned short>(reg_ptr));
-}
-
-void b_mov32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
-	c_b_mov32EAX(value, registers);
-}
-void b_mov32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
-	c_b_mov32EBX(value, registers);
-}
-void b_mov32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
-	c_b_mov32ECX(value, registers);
-}
-void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<unsigned int> value = std::make_shared<unsigned int>(((reg_int<unsigned int>*)ptr)->get());
-	c_b_mov32EDX(value, registers);
+void b_mov32EDX(GLOBL_ARGS) {
+	GLOBL_BODY(32EDX, unsigned int);
 }
 
-void c_b_mov64RAX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rax->set(*std::static_pointer_cast<size_t>(reg_ptr));
+void b_mov64RAX(GLOBL_ARGS) {
+	GLOBL_BODY(64RAX, size_t);
 }
-void c_b_mov64RBX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rbx->set(*std::static_pointer_cast<size_t>(reg_ptr));
+void b_mov64RBX(GLOBL_ARGS) {
+	GLOBL_BODY(64RBX, size_t);
 }
-void c_b_mov64RCX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rcx->set(*std::static_pointer_cast<size_t>(reg_ptr));
+void b_mov64RCX(GLOBL_ARGS) {
+	GLOBL_BODY(64RCX, size_t);
 }
-void c_b_mov64RDX(std::shared_ptr<void> reg_ptr, regs* registers) {
-	registers->rdx->set(*std::static_pointer_cast<size_t>(reg_ptr));
+void b_mov64RDX(GLOBL_ARGS) {
+	GLOBL_BODY(64RDX, size_t);
 }
 
-void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
-	c_b_mov64RAX(value, registers);
+void b_mov64RBP(GLOBL_ARGS) {
+	GLOBL_BODY(64RBP, size_t);
 }
-void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
-	c_b_mov64RBX(value, registers);
-}
-void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
-	c_b_mov64RCX(value, registers);
-}
-void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(reg_id);
-
-	std::shared_ptr<size_t> value = std::make_shared<size_t>(((reg_int<size_t>*)ptr)->get());
-	c_b_mov64RDX(value, registers);
+void b_mov64RSP(GLOBL_ARGS) {
+	GLOBL_BODY(64RSP, size_t);
 }

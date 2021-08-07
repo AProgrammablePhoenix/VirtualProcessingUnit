@@ -34,13 +34,16 @@ enum class registries_def {
 	RAX = 0x11,
 	RBX = 0x12,
 	RCX = 0x13,
-	RDX = 0x14
+	RDX = 0x14,
+
+	RBP = 0x15,
+	RSP = 0x16
 };
 
 enum class extra_registries {
-	SR = 0x15,
-	CR = 0x16,
-	DR = 0x17,
+	SR = 0x17,
+	CR = 0x18,
+	DR = 0x19,
 };
 
 // Arg_Tuple to reg id
@@ -116,6 +119,9 @@ void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+void b_mov64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_mov64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
 // Native maths ops
@@ -170,6 +176,9 @@ void b_add64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_add64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_add64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
+void b_add64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_add64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
 void b_sub16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
@@ -184,6 +193,9 @@ void b_sub64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+void b_sub64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_sub64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
 //extended ops
@@ -246,7 +258,7 @@ public:
 
 private:
 	regs* registers;
-	void* table[0x14 + 1];
+	void* table[0x16 + 1];
 
 	void init() {
 		table[(size_t)registries_def::AX] = registers->ax;
@@ -263,6 +275,9 @@ private:
 		table[(size_t)registries_def::RBX] = registers->rbx;
 		table[(size_t)registries_def::RCX] = registers->rcx;
 		table[(size_t)registries_def::RDX] = registers->rdx;
+
+		table[(size_t)registries_def::RBP] = registers->rbp;
+		table[(size_t)registries_def::RSP] = registers->rsp;
 	}
 };
 
@@ -280,7 +295,7 @@ public:
 #pragma warning (pop)
 private:
 	regs* registers;
-	void* table[0x17 + 1];
+	void* table[0x19 + 1];
 
 	void init() {
 		table[(size_t)extra_registries::SR] = registers->sr;
