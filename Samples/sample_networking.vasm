@@ -1,7 +1,9 @@
 ; expected output:
 ; RECEIVED: Network test passed
 
-nsms ${{N4096}}
+; won't be processed since 4 KB is less than 1 MB (only shown as an example of usage)
+; in a case without limitations, will resize memory to a size of 4 KB (which is impossible since one stack requires 32 KB)
+[MRES] 4096
 
 ; init network stream one
 ; receiver addr (localhost in this case)

@@ -5,7 +5,9 @@
 ; 3.140000
 ; Hello_World!
 
-nsms ${{N16384}}
+; won't be processed since 16 KB is less than 1 MB (only shown as an example of usage)
+; in a case without limitations, will resize memory to a size of 16 KB (which is impossible since one stack requires 32 KB)
+[MRES] 16384
 
 setRAX ${{N4096}}
 push RAX
