@@ -26,6 +26,9 @@ implementation status, note that the latter is subject to changes)
 + First, you should avoid allocating memory on first 128 bytes of memory, because those 128 bytes might be used by compiler, and thus maybe
 overwritten at runtime, then it might cause damage to your program, you might allocate data on this area of memory if you only know what you are
 doing.
++ Last `N * <stacksize>` bytes of memory are used by your program stack (if it runs as a kernel), where N is number of running thread
+(including kernel thread) and stacksize is of 32 KB nowadays (and shouldn't change in the future). you may read/change those bytes values if
+you're using RBP or RSP as pointer when calling mload
 
 ### SVASM Roadmap
 * [x] Implement mov instruction support
@@ -40,4 +43,4 @@ doing.
 * [ ] Implement auto assigning values for comparisons
 * [ ] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory -> In Progress
 * [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) -> In Progress
-* [ ] Replace current DR register with RDx registers where x varies from integers 0 to 3 (4 floating point storing registers), which will be extended later (ERDx & RRDx) -> Planned
+* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers floating point storing numbers), which will be extended later (EFPRx & RFPRx) -> Planned

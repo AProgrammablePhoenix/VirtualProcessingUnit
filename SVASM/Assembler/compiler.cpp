@@ -147,6 +147,10 @@ static const std::unordered_map<std::string, virtual_actions> fetch_sub_input = 
 };
 
 static bool unsafe_flag = false;
+struct {
+	bool mem_res_req = false;
+	size_t new_mem_size = 0;
+} memory_flags;
 
 namespace {
 	inline void pushAction(std::vector<action>& out_actions, const virtual_actions& vaction,
@@ -762,60 +766,46 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 
 	return OK;
 }
-int preprocHeap(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
-	if (inst == "mload") {
-		if (args.size() != 2)
-			return WRONGNARGS;
-		/* MLOAD:
-		*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
-		*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
-		*	else returns ARGV_ERROR
-		*/
-		if (args[0].type == tokenTypes::stored_addr_reg && args[1].type == tokenTypes::reg) {
-			if (args[1].element == "sr") {
-				pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			}
-			else if (args[1].element == "cr") {
-				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			}
-			else if (args[1].element == "dr") {
-				pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			}
-			else {
-				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
-				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			}
+int preprocHeap(const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (args.size() != 2)
+		return WRONGNARGS;
+
+	/* MLOAD:
+	*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
+	*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
+	*	else returns ARGV_ERROR
+	*/
+	if (args[0].type == tokenTypes::stored_addr_reg && args[1].type == tokenTypes::reg) {
+		if (args[1].element == "sr") {
+			pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
 		}
-		else if (args[0].type == tokenTypes::reg && args[1].type == tokenTypes::stored_addr_reg) {
-			if (args[0].element == "sr") {
-				pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			}
-			else if (args[0].element == "cr") {
-				pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			}
-			else if (args[0].element == "dr") {
-				pushAction(out_actions, virtual_actions::movgmDR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			}
-			else {
-				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
-			}
+		else if (args[1].element == "cr") {
+			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
 		}
-		else { return ARGV_ERROR; }
-
-		return OK;
+		else if (args[1].element == "dr") {
+			pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+		}
+		else {
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+		}
 	}
-	else if (inst == "alloc") {
-		if (args.size() != 1)
-			return WRONGNARGS;
-
-		if (args[0].type != tokenTypes::unsigned_n)
-			return ARGV_ERROR;
-
-		pushAction(out_actions, virtual_actions::nsms, tokenTypes::unsigned_n, args[0].element);
-
-		return OK;
+	else if (args[0].type == tokenTypes::reg && args[1].type == tokenTypes::stored_addr_reg) {
+		if (args[0].element == "sr") {
+			pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+		}
+		else if (args[0].element == "cr") {
+			pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+		}
+		else if (args[0].element == "dr") {
+			pushAction(out_actions, virtual_actions::movgmDR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+		}
+		else {
+			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+		}
 	}
+	else { return ARGV_ERROR; }
 
 	return OK;
 }
@@ -1228,6 +1218,13 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 			unsafe_flag = true;
 		return OK;
 	}
+	else if (inst == "[memory_control]" && tokens.arguments[0].type == tokenTypes::memory_directive) {
+		if (!memory_flags.mem_res_req) {
+			memory_flags.new_mem_size = std::stoull(tokens.arguments[0].element);
+			memory_flags.mem_res_req = true;
+		}
+		return OK;
+	}
 	else if (inst == "int")
 		return preprocInt(tokens.arguments, out_actions);
 	else if (inst == "mov")
@@ -1244,8 +1241,8 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 		return preprocAdvMath(inst, tokens.arguments, out_actions);
 	else if (inst == "push" || inst == "pop")
 		return preprocStack(inst, tokens.arguments, out_actions);
-	else if (inst == "mload" || inst == "alloc")
-		return preprocHeap(inst, tokens.arguments, out_actions);
+	else if (inst == "mload")
+		return preprocHeap(tokens.arguments, out_actions);
 	else if (inst == "str")
 		return preprocStr(tokens.arguments, out_actions);
 	else if (inst == "call" || inst == "jmp" || inst == "ret")
@@ -1419,6 +1416,18 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 }
 int compileAll(const std::vector<action>& raw_actions, std::vector<byte>& out_bytes) {
 	out_bytes.reserve(raw_actions.size() * 2); // In average, an action needs two bytes
+
+	// Insert amount memory requested by program at the beginning of VEXE file
+	byte* req_mem_size = nullptr;
+	if (memory_flags.mem_res_req)
+		ULLTOA(memory_flags.new_mem_size, &req_mem_size);
+	else
+		ULLTOA(0x100000, &req_mem_size); // Default value
+
+	for (size_t i = 0; i < sizeof(size_t); i++)
+		out_bytes.emplace_back(req_mem_size[i]);
+	delete[] req_mem_size;
+
 
 	for (action raw_a : raw_actions) {
 		if (compileInst(raw_a, out_bytes))

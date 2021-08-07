@@ -160,6 +160,22 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 		out_tokenized.arguments.emplace_back(parsed.instruction.substr(1, parsed.instruction.size() - 1), tokenTypes::safety_directive);
 		return OK;
 	}
+	else if ((parsed.instruction == "#resmem") && parsed.arguments.size() == 1) {
+		tokenTypes arg_type;
+		size_t new_size = 0;
+
+		if (!isNum(parsed.arguments[0], arg_type))
+			return ARGV_ERROR;
+		else if (arg_type != tokenTypes::unsigned_n && arg_type != tokenTypes::hex_n)
+			return ARGV_ERROR;
+		else if (arg_type == tokenTypes::hex_n)
+			new_size = std::stoull(parsed.arguments[0], 0, 0x10);
+		else
+			new_size = std::stoull(parsed.arguments[0]);
+
+		out_tokenized.instruction = "[memory_control]";
+		out_tokenized.arguments.emplace_back(std::to_string(new_size), tokenTypes::memory_directive);
+	}
 
 	for (const std::string arg : parsed.arguments) {
 		token targ;
