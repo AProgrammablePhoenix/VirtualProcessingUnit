@@ -179,15 +179,22 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 }
 
 std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
-		std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads) {
+		std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads, size_t& req_mem) {
 	std::vector<std::tuple<std::vector<byte>, size_t>> threads_code;
 	std::vector<byte> main_code;
 
 	size_t i = 0;
+
+	byte* b_req_mem = new byte[sizeof(size_t)];
+	for (; i < sizeof(size_t); i++)
+		b_req_mem[i] = (*file_content)[i];
+	req_mem = ATOULL(b_req_mem);
+	delete[] b_req_mem;
+
 	bool main_found = false;
 
 	// fetch non main code
-	for (i = 0; i < file_content->size(); i++) {
+	for (i = sizeof(size_t); i < file_content->size(); i++) {
 		if ((*file_content)[i] == 0x00) {
 			main_found = true;
 			i++;
@@ -241,7 +248,8 @@ std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
 	return main_code;
 }
 
-void executeFile(const std::vector<byte>& main_code, const std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads) {
+void executeFile(const std::vector<byte>& main_code, const std::vector<std::tuple<std::vector<byte>, size_t>>& proc_threads,
+		const size_t& req_mem) {
 	std::vector<action> main_actions;
 	std::vector<std::tuple<std::vector<action>, size_t>> threads_actions;
 
@@ -262,10 +270,13 @@ void executeFile(const std::vector<byte>& main_code, const std::vector<std::tupl
 	actions_engine _actions_engine = actions_engine(mem, registers);
 	process _proc = process(_actions_engine, main_actions);
 
+	mem->_MRSZ(req_mem);
+
 	for (size_t i = 0; i < threads_actions.size(); i++) {
 		_proc.addThread(std::get<0>(threads_actions[i]), std::get<1>(threads_actions[i]));
 	}
 
+	_proc.updateStackRegs();
 	_proc.start();
 
 	delete registers;
@@ -281,8 +292,10 @@ void runFile(std::string filename) {
 		(std::istreambuf_iterator<char>()));
 	
 	std::vector<std::tuple<std::vector<byte>, size_t>> threads_code;
-	std::vector<byte> main_code = decodeFile(exe_bytes, threads_code);
-	executeFile(main_code, threads_code);
+	size_t req_mem = 0;
+
+	std::vector<byte> main_code = decodeFile(exe_bytes, threads_code, req_mem);
+	executeFile(main_code, threads_code, req_mem);
 
 	delete exe_bytes;
 }

@@ -153,12 +153,20 @@ std::vector<byte> as(std::string filename) {
 
 	/* link everything
 	* code block format:
-	*	0x00 => block type [0 -> main block | 1 -> thread block]
-	*   0x01 -> 0x08 (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
-	*	0x09 -> 0x10 (8 bytes) => code length
-	*	0x11 -> (0x11 + [code length - 1]) => executable code
+	*	0x00 -> 0x07 => Requested memory by the program (set to default memory size if user haven't set new memory size)
+	*	0x08 => block type [0 -> main block | 1 -> thread block]
+	*   0x09 -> 0x10 (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
+	*	0x11 -> 0x17 (8 bytes) => code length
+	*	0x18 -> (0x18 + [code length - 1]) => executable code
 	*/
 	std::vector<byte> linked;
+
+	byte* req_mem = nullptr;
+	ULLTOA(mem->getMemLen(), &req_mem);
+
+	for (size_t i = 0; i < sizeof(size_t); i++)
+		linked.push_back(req_mem[i]);
+	delete[] req_mem;
 
 	byte* buffer = nullptr;
 
