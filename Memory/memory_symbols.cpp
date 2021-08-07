@@ -136,16 +136,6 @@ void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] uc_d;
 }
 
-// Memory addressing symbols
-void nsms(std::shared_ptr<void> nsize, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(nsize);
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_ROZVG(uc_n, sizeof(size_t), std::get<0>(varinfos));
-
-	mem->_SMS(ATOULL(uc_n));
-	delete[] uc_n;
-}
-
 void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);

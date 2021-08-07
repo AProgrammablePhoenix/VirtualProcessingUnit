@@ -13,11 +13,14 @@ struct memory {
 public:
 	memory(regs* _registers);
 
+	void update(regs* _registers);
+	size_t getMemLen();
+
 	void push(unsigned char* data, size_t count);
 	void pop(unsigned char* data, size_t count);
 
-	// Set Memory Size
-	void _SMS(size_t newlen);
+	// Resize memory
+	void _MRSZ(size_t newlen);
 	// Memory Set
 	void _MS(unsigned char* data, size_t count, size_t addr);
 	// Memory Get
@@ -34,27 +37,23 @@ public:
 
 	void destroy();
 
-	mem_arrays _arrays;
-	mem_dyn_vars _dynvars;
-	mem_structs _structs;
+	mem_arrays _arrays = mem_arrays();
+	mem_dyn_vars _dynvars = mem_dyn_vars();
+	mem_structs _structs = mem_structs();
 	netman _netman;
+
+	static constexpr size_t stacksize = 0x8000; // 32 KB of stack
 private:
 	regs* registers;
-
-	// At the start of program, the memory has a size of 2048 bytes, but may/should be expanded by user by calling SMS (Set Memory Size)
-	// with unsigned __int64 as argument, describing new size of the memory
+	
+	// At the start of program, the memory has a size of 1048576 bytes (1MB), but may be expanded by user (only once) 
+	// or kernel (multiple times) if needed; with unsigned __int64 as argument, describing new size of the memory
 	unsigned char* _memory = nullptr;
-	size_t _memlen = 2048;
-
-	static constexpr size_t stacksize = 32768; // 32 Ko of stack
-	size_t stacktop = 0;
+	size_t _memlen = 0x100000;
 
 	// readonly zone (roz) flags
-	static constexpr size_t rozoffset = stacksize;
-	size_t rozsize = 4096;					   // 4 Ko of roz (expandable)
+	size_t rozsize = 4096;					   // 4 KB of roz (expandable)
 	size_t rozstacktop = 0;
-
-	bool resized = false;
 
 	void init();
 };

@@ -21,9 +21,7 @@ void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
-// New memory addressing symbols
-void nsms(std::shared_ptr<void> nsize, regs* registers, memory* mem);
-
+// Memory heap symbols
 void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
 void movgm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
 
