@@ -32,6 +32,9 @@ std::unordered_set<std::string> regs_names = {
 	"RCX",
 	"RDX",
 
+	"RBP",
+	"RSP"
+
 	"SR",
 	"CR",
 	"DR"

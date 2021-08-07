@@ -80,6 +80,9 @@ void process_memory::setRegisters(variables_decl* vars) {
 	SETREG(registries_def::RCX, "RCX", uc_r, vars, this->data_ptrs);
 	SETREG(registries_def::RDX, "RDX", uc_r, vars, this->data_ptrs);
 
+	SETREG(registries_def::RBP, "RBP", uc_r, vars, this->data_ptrs);
+	SETREG(registries_def::RSP, "RSP", uc_r, vars, this->data_ptrs);
+
 	SETXREG(extra_registries::SR, "SR", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::CR, "CR", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::DR, "DR", uc_r, vars, this->data_ptrs);
@@ -234,8 +237,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"pushDR", virtual_actions::pushDR},
 	{"popDR", virtual_actions::popDR},
 
-	{"nsms", virtual_actions::nsms},
-
 	{"movsm", virtual_actions::movsm},
 	{"movgm", virtual_actions::movgm},
 
@@ -302,6 +303,9 @@ static std::unordered_set<std::string> included_headers;
 
 static std::unordered_set<std::string> global_toInclude;
 static std::vector<std::string> global_include_list;
+
+static bool mem_resizing_req = false;
+static bool is_mem_resized = false;
 
 std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	std::string content = argument.substr(3, argument.size() - 5);
@@ -478,7 +482,7 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 	}
 }
 std::vector<std::vector<std::string>> parseCodeLines(std::string filename, variables_decl* vars,
-		std::vector<std::tuple<std::string, size_t>>& threadsToBuild) {
+		std::vector<std::tuple<std::string, size_t>>& threadsToBuild, memory* const& memptr) {
 	std::vector<std::string> toInclude;
 
 	if (!included_headers.count(filename)) {
@@ -502,8 +506,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 				parsed.push_back(std::vector<std::string>({"decltag", tagname}));
 				continue;
 			}
-
-			if (!line.rfind("[include] ", 0)) {
+			else if (!line.rfind("[include] ", 0)) {
 				std::string included = line.substr(10);
 				std::string localpath = std::filesystem::relative(filename).replace_filename(included).string();
 				
@@ -513,8 +516,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 				}
 				continue;
 			}
-
-			if (!line.rfind("[ldthread] ", 0)) {
+			else if (!line.rfind("[ldthread] ", 0)) {
 				// Has form [ldthread] <thread_file>,<thread_id>
 				std::string loadedThread = line.substr(11);
 				
@@ -535,6 +537,13 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 				threadsToBuild.push_back(std::make_tuple<std::string&, size_t&>(localpath, threadId));
 				continue;
 			}
+			else if (!line.rfind("[MRES] ", 0) && !is_mem_resized) {
+				// Has form of [MRES] <new memory size>, with new size an unsigned number
+				std::string s_new_size = line.substr(7);
+				size_t new_size = std::stoull(s_new_size);
+				memptr->_MRSZ(new_size);
+				is_mem_resized = true;
+			}
 
 			std::stringstream ss(line);
 			std::string action, argument;
@@ -551,7 +560,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 
 		for (size_t i = 0; i < toInclude.size(); i++) {
 			if (!global_toInclude.count(toInclude[i])) {
-				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars, threadsToBuild);
+				std::vector<std::vector<std::string>> loaded = parseCodeLines(toInclude[i], vars, threadsToBuild, memptr);
 
 				for (size_t j = 0; j < loaded.size(); j++) {
 					parsed.push_back(loaded[j]);
@@ -677,7 +686,7 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 	std::vector<std::tuple<std::string, size_t>> threadsToBuild;
 
 	variables_decl vars = build_variables_decl_tree(filename, mem);
-	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild, mem);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
 	purgeParsed(&converted_actions, &parsed);
@@ -702,13 +711,18 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 		std::vector<action> sthread = std::get<0>(sub_threads[i]);
 		out_proc->addThread(sthread, std::get<1>(sub_threads[i]));
 	}
+	
+	if (mem_resizing_req && !is_mem_resized) {
+		out_proc->updateStackRegs();
+		is_mem_resized = true;
+	}
 }
 std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem,
 		std::vector<std::tuple<std::vector<action>, size_t>>& out_threads) {
 	std::vector<std::tuple<std::string, size_t>> threadsToBuild;
 
 	variables_decl vars = build_variables_decl_tree(filename, mem);
-	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild);
+	std::vector<std::vector<std::string>> parsed = parseCodeLines(filename, &vars, threadsToBuild, mem);
 	std::vector<virtual_actions> converted_actions = convertSymbols(parsed);
 
 	purgeParsed(&converted_actions, &parsed);
