@@ -4,6 +4,7 @@
 ; won't be processed since 4 KB is less than 1 MB (only shown as an example of usage)
 ; in a case without limitations, will resize memory to a size of 4 KB (which is impossible since one stack requires 32 KB)
 [MRES] 4096
+sdzs RDX
 
 ; init network stream one
 ; receiver addr (localhost in this case)
@@ -54,13 +55,15 @@ nselep ${{N0}}
 
 ; send data from stream 1 to stream 2
 ; set SR to string to send (buffer starts at address 256 + 8)
-; (note that 256 bytes after address 263 are only used as buffer and shouldn't be overwritten)
+; (note that the 256 bytes after address 263 are only used as buffer and shouldn't be overwritten)
 setSR ${{S"Network test passed"}}
 setEBX ${{N256}}
+addEBX RDX
 movsmSR EBX
 
 ; push buffer addr
 setEBX ${{N264}}
+addEBX RDX
 push EBX
 
 nsend ${{N0}}
@@ -79,16 +82,19 @@ lcall hrecv_loop
 
 ; fetch received data
 setEAX ${{N1024}}
+addEAX RDX
 push EAX
 
 nget ${{N1}}
 
 ; transform it to string by setting its length (8 bytes if 64 bit system (sizeof(size_t))) before the 256 bytes chunk of data
 setEAX ${{N256}}
+addEAX RDX
 push EAX
 
 ; 1024 - 8 = 1016
 setEAX ${{N1016}}
+addEAX RDX
 movsm EAX
 
 setSR ${{S"RECEIVED: "}}

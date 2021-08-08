@@ -9,9 +9,13 @@
 ; in a case without limitations, will resize memory to a size of 16 KB (which is impossible since one stack requires 32 KB)
 [MRES] 16384
 
+; get heap offset
+sdzs RDX
+
 setRAX ${{N4096}}
 push RAX
 setAX ${{N2}}
+addAX RDX
 movsm AX
 movgm AX
 
@@ -25,6 +29,7 @@ int ${{N6}} ; expected: 4096
 
 setSR ${{S"Hello World!"}}
 setAX ${{N10}}
+addAX RDX
 movsmSR AX
 
 ; in case the program has unexpected behaviour
@@ -35,6 +40,7 @@ int ${{N6}}
 
 setCR ${{C'P'}}
 setAX ${{N0}}
+addAX RDX
 movsmCR AX
 
 ; in cas the program has unexpected behaviour
@@ -46,6 +52,7 @@ int ${{N6}}
 
 setDR ${{D3.14}}
 setAX ${{N31}}
+addAX RDX
 movsmDR AX
 
 ; in cas the program has unexpected behaviour
@@ -58,11 +65,14 @@ int ${{N6}}
 
 ; test of character replacement in stored string (addr = 10 => previous stored SR)
 setCR ${{C'_'}}
-setAX ${{N23}} ; location of character ' ' in "Hello World!" in memory
+setAX ${{N23}} ; location of character ' ' in "Hello World!" in heap memory
+; calculate real address by adding heap offset
+addAX RDX
 movsmCR AX
 
 ; reload new string in SR
 setAX ${{N10}}
+addAX RDX
 movgmSR AX
 
 ; should print "Hello_World!" now
