@@ -766,46 +766,59 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 
 	return OK;
 }
-int preprocHeap(const std::vector<token>& args, std::vector<action>& out_actions) {
-	if (args.size() != 2)
-		return WRONGNARGS;
+int preprocHeap(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	if (inst == "mload") {
+		if (args.size() != 2)
+			return WRONGNARGS;
 
-	/* MLOAD:
-	*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
-	*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
-	*	else returns ARGV_ERROR
-	*/
-	if (args[0].type == tokenTypes::stored_addr_reg && args[1].type == tokenTypes::reg) {
-		if (args[1].element == "sr") {
-			pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+		/* MLOAD:
+		*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
+		*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
+		*	else returns ARGV_ERROR
+		*/
+		if (args[0].type == tokenTypes::stored_addr_reg && args[1].type == tokenTypes::reg) {
+			if (args[1].element == "sr") {
+				pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else if (args[1].element == "cr") {
+				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else if (args[1].element == "dr") {
+				pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
+			else {
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			}
 		}
-		else if (args[1].element == "cr") {
-			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+		else if (args[0].type == tokenTypes::reg && args[1].type == tokenTypes::stored_addr_reg) {
+			if (args[0].element == "sr") {
+				pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else if (args[0].element == "cr") {
+				pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else if (args[0].element == "dr") {
+				pushAction(out_actions, virtual_actions::movgmDR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+			}
+			else {
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+			}
 		}
-		else if (args[1].element == "dr") {
-			pushAction(out_actions, virtual_actions::movsmDR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-		}
-		else {
-			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
-			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-		}
+		else { return ARGV_ERROR; }
+
+		return OK;
 	}
-	else if (args[0].type == tokenTypes::reg && args[1].type == tokenTypes::stored_addr_reg) {
-		if (args[0].element == "sr") {
-			pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-		}
-		else if (args[0].element == "cr") {
-			pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-		}
-		else if (args[0].element == "dr") {
-			pushAction(out_actions, virtual_actions::movgmDR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-		}
-		else {
-			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
-		}
+	else if (inst == "sdzs") {
+		if (args.size() != 1)
+			return WRONGNARGS;
+
+		if (args[0].type != tokenTypes::reg)
+			return ARGV_ERROR;
+
+		pushAction(out_actions, virtual_actions::sdzs, tokenTypes::reg, args[0].element);
 	}
-	else { return ARGV_ERROR; }
 
 	return OK;
 }
@@ -1241,8 +1254,8 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 		return preprocAdvMath(inst, tokens.arguments, out_actions);
 	else if (inst == "push" || inst == "pop")
 		return preprocStack(inst, tokens.arguments, out_actions);
-	else if (inst == "mload")
-		return preprocHeap(tokens.arguments, out_actions);
+	else if (inst == "mload" || inst == "sdzs")
+		return preprocHeap(inst, tokens.arguments, out_actions);
 	else if (inst == "str")
 		return preprocStr(tokens.arguments, out_actions);
 	else if (inst == "call" || inst == "jmp" || inst == "ret")
