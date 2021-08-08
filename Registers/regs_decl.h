@@ -6,6 +6,9 @@
 #include <string>
 #include <vector>
 
+#define MAXTYPECHK() \
+	static_assert(sizeof(size_t) <= 4 || sizeof(size_t) >= 8, "Your platform uses an unsupported size for type: size_t")
+
 template<typename T> struct reg_int {
 public:
 	virtual void set(T value) {
@@ -131,12 +134,19 @@ public:
 		h = high;
 	}
 
+	MAXTYPECHK();
+
 	void set(size_t value) {
 		unsigned int low;
 		unsigned int high;
 
-		low = (value >> 0ULL) & ~(~0ULL << 32ULL);
-		high = (value >> 32ULL) & ~(~0ULL << 32ULL);
+		if constexpr (sizeof(size_t) >= 8) {
+			low = (value >> 0ULL) & ~(~0ULL << 32ULL);
+			high = (value >> 32ULL) & ~(~0ULL << 32ULL);
+		} else if constexpr (sizeof(size_t) <= 4) {
+			low = value;
+			high = 0;
+		}
 
 		l->set(low);
 		*h = high;
@@ -145,9 +155,13 @@ public:
 	size_t get() {
 		size_t value;
 
-		value = *h;
-		value <<= 32;
-		value += l->get();
+		if constexpr (sizeof(size_t) >= 8) {
+			value = *h;
+			value <<= 32;
+			value += l->get();
+		} else if constexpr (sizeof(size_t) <= 4) {
+			value = l->get();
+		}
 
 		return value;
 	}
