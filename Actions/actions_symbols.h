@@ -215,17 +215,19 @@ enum class virtual_actions {
 	prstthread = 0x0098,
 	pendthread = 0x0099,
 
-	addRBP = 0x9A,
-	addRSP = 0x9B,
+	addRBP = 0x009A,
+	addRSP = 0x009B,
 
-	subRBP = 0x9C,
-	subRSP = 0x9D,
+	subRBP = 0x009C,
+	subRSP = 0x009D,
 
-	movRBP = 0x9E,
-	movRSP = 0x9F
+	movRBP = 0x009E,
+	movRSP = 0x009F,
+
+	sdzs = 0x00A0
 };
 
-extern void (*a_db[0x009F + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[0x00A0 + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -469,6 +471,8 @@ private:
 
 		a_db[(size_t)virtual_actions::movsmDR] = movsmDR;
 		a_db[(size_t)virtual_actions::movgmDR] = movgmDR;
+
+		a_db[(size_t)virtual_actions::sdzs] = sdzsMem;
 #pragma endregion
 #pragma region process
 		a_db[(size_t)virtual_actions::jmp] = p_jmp;

@@ -156,6 +156,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"movRBX", virtual_actions::movRBX},
 	{"movRCX", virtual_actions::movRCX},
 	{"movRDX", virtual_actions::movRDX},
+	{"movRBP", virtual_actions::movRBP},
+	{"movRSP", virtual_actions::movRSP},
 
 	{"inc", virtual_actions::inc},
 	{"dec", virtual_actions::dec},
@@ -206,6 +208,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"addRBX", virtual_actions::addRBX},
 	{"addRCX", virtual_actions::addRCX},
 	{"addRDX", virtual_actions::addRDX},
+	{"addRBP", virtual_actions::addRBP},
+	{"addRSP", virtual_actions::addRSP},
 
 	{"subAX", virtual_actions::subAX},
 	{"subBX", virtual_actions::subBX},
@@ -221,9 +225,13 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"subRBX", virtual_actions::subRBX},
 	{"subRCX", virtual_actions::subRCX},
 	{"subRDX", virtual_actions::subRDX},
+	{"subRBP", virtual_actions::subRBP},
+	{"subRSP", virtual_actions::subRSP},
 
 	{"toString", virtual_actions::toString},
 	{"castreg", virtual_actions::castreg},
+
+	{"sdzs", virtual_actions::sdzs},
 
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},

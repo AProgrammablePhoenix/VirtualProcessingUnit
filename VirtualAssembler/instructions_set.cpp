@@ -225,7 +225,9 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::pcrtthread, 0x9C},
 	{virtual_actions::prstthread, 0x9D},
-	{virtual_actions::pendthread, 0x9E}
+	{virtual_actions::pendthread, 0x9E},
+
+	{virtual_actions::sdzs, 0x9F}
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -326,6 +328,8 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::movRBX],
 	ops[virtual_actions::movRCX],
 	ops[virtual_actions::movRDX],
+	ops[virtual_actions::movRBP],
+	ops[virtual_actions::movRSP],
 
 	ops[virtual_actions::inc],
 	ops[virtual_actions::dec],
@@ -368,6 +372,8 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::addRBX],
 	ops[virtual_actions::addRCX],
 	ops[virtual_actions::addRDX],
+	ops[virtual_actions::addRBP],
+	ops[virtual_actions::addRSP],
 
 	ops[virtual_actions::subAX],
 	ops[virtual_actions::subBX],
@@ -381,6 +387,10 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::subRBX],
 	ops[virtual_actions::subRCX],
 	ops[virtual_actions::subRDX],
+	ops[virtual_actions::subRBP],
+	ops[virtual_actions::subRSP],
+
+	ops[virtual_actions::sdzs],
 
 	ops[virtual_actions::push],
 	ops[virtual_actions::pop],
