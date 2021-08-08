@@ -39,12 +39,13 @@ instructions, no matter if you're using VASM or SVASM.
 * [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
 * [x] Implement auto-saving management for calls
 * [x] Implement new comparisons system
-* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx') -> Planned
 * [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>:`' instead of '`decltag <tagname>`')
-* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax') -> Planned
 * [x] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)
-* [ ] Implement auto assigning values for comparisons
 * [x] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory
-* [ ] Unifying unified memory (stack + user memory) with readonly memory (ROZ) [ROZ becoming SDZ (Static Data Zone)]  -> In Progress
-* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers storing floating point numbers), which will be extended later (EFPRx & RFPRx) -> Planned
-* [ ] Make files operations more low-level, thus more flexible and optimized
+* [x] Unifying unified memory (stack + user memory) with readonly memory (ROZ) [ROZ becoming SDZ (Static Data Zone)]
+
+* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx') -> In progress
+* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax') -> Planned
+* [ ] Implement auto assigning values for comparisons
+* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers storing floating point numbers), which will be extended later (EFPRx & RFPRx) -> In progress
+* [ ] Make files operations more low-level, thus more flexible and optimized -> Planned
