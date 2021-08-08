@@ -19,8 +19,24 @@
 #include "mem_structs.h"
 #include "memory_decl.h"
 
+#ifndef MEMORY_PREPROC
+	#define GLOBL_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
+	#define GLOBL_ARGS_D1 CUSTOM_STD_ARGS(unused_p, registers, mem)
+	#define GLOBL_ARGS_D2 CUSTOM_STD_ARGS(reg_addr, registers, mem)
+
+	#define MEMORY_PREPROC(...) (void)0
+#endif
+
+void sdzsMem(GLOBL_ARGS) {
+	registries_def reg_id = ATTOREGID(reg, mem);
+	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	void* regptr = ptr_table.access(reg_id);
+
+	((reg_int<size_t>*)regptr)->set(mem->_SDZS());
+}
+
 // Memory stack symbols
-void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+void pushMem(GLOBL_ARGS) {
 	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* regptr = ptr_table.access(reg_id);
@@ -32,7 +48,7 @@ void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mem->push(temp, sizeof(size_t));
 	delete[] temp;
 }
-void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
+void popMem(GLOBL_ARGS) {
 	registries_def reg_id = ATTOREGID(reg, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -46,7 +62,7 @@ void popMem(std::shared_ptr<void> reg, regs* registers,  memory* mem) {
 	delete[] temp;
 }
 
-void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void pushMemSR(GLOBL_ARGS_D1) {
 	std::shared_ptr<std::string> value = std::make_shared<std::string>("");
 	b_getSR(value, registers, mem);
 
@@ -68,7 +84,7 @@ void pushMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] uc_s;
 	delete[] ssize;
 }
-void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
+void popMemSR(GLOBL_ARGS_D1) {
 	unsigned char* ssize = new unsigned char[sizeof(size_t)];
 	unsigned char* value = nullptr;
 
@@ -86,7 +102,7 @@ void popMemSR(std::shared_ptr<void> unused_p, regs* registers,  memory* mem) {
 	delete[] ssize;
 }
 
-void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void pushMemCR(GLOBL_ARGS_D1) {
 	std::shared_ptr<char> value = std::make_shared<char>('\0');
 	b_getCR(value, registers, mem);
 
@@ -96,7 +112,7 @@ void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->push(cptr, 1);
 	delete[] cptr;
 }
-void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void popMemCR(GLOBL_ARGS_D1) {
 	unsigned char* cptr = new unsigned char[1];
 	mem->pop(cptr, 1);
 
@@ -108,7 +124,7 @@ void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] cptr;
 }
 
-void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void pushMemDR(GLOBL_ARGS_D1) {
 	std::shared_ptr<double> value = std::make_shared<double>(0);
 	b_getDR(value, registers, mem);
 
@@ -123,7 +139,7 @@ void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mem->push(uc_d, sizeof(double));
 	delete[] uc_d;
 }
-void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void popMemDR(GLOBL_ARGS_D1) {
 	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
 	unsigned char* uc_d = new unsigned char[sizeof(double)];
 	mem->pop(uc_d, sizeof(double));
@@ -136,7 +152,7 @@ void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] uc_d;
 }
 
-void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movsm(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -148,7 +164,7 @@ void movsm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	mem->_MS(temp, sizeof(size_t), _addr);
 	delete[] temp;
 }
-void movgm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movgm(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -161,7 +177,7 @@ void movgm(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] temp;
 }
 
-void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movsmSR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -185,7 +201,7 @@ void movsmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	delete[] t_size;
 	delete[] temp;
 }
-void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movgmSR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -206,7 +222,7 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	registers->sr->set(value);
 }
 
-void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movsmCR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -217,7 +233,7 @@ void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	mem->_MS(temp, 1, _addr);
 	delete[] temp;
 }
-void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movgmCR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -228,7 +244,7 @@ void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	registers->cr->set((char)temp[0]);
 }
 
-void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movsmDR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -245,7 +261,7 @@ void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 	mem->_MS(temp, sizeof(double), _addr);
 	delete[] temp;
 }
-void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
+void movgmDR(GLOBL_ARGS_D2) {
 	registries_def _reg = ATTOREGID(reg_addr, mem);
 	registries_ptr_table ptr_table = registries_ptr_table(registers);
 	void* ptr = ptr_table.access(_reg);
@@ -270,7 +286,7 @@ void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem) {
 *	... ARRAY_SIZE ARRAY_TYPE
 *	With array_name in SR
 */
-void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_declArray(GLOBL_ARGS_D1) {
 	std::string array_name = registers->sr->get();
 
 	popMemSR(unused_p, registers, mem);
@@ -292,7 +308,7 @@ void m_declArray(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	... INDEX ARRAY_NAME
 *	With value to set/get in RDX or SR
 */
-void m_setAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_setAt(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string array_name = registers->sr->get();
@@ -310,7 +326,7 @@ void m_setAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		mem->_arrays.setArray(array_name, index);
 	}
 }
-void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_getAt(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string array_name = registers->sr->get();
@@ -336,7 +352,7 @@ void m_getAt(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	ARRAY_NAME in SR
 *	Output value in RDX if success
 */
-void m_getDynSize(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_getDynSize(GLOBL_ARGS_D1) {
 	std::string array_name = registers->sr->get();
 
 	if (mem->_arrays.getArrayType(array_name) != "UNDEFINED_ARRAY") {
@@ -349,7 +365,7 @@ void m_getDynSize(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 *	... VAR_TYPE
 *	With var_name in SR
 */
-void m_dyndecl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_dyndecl(GLOBL_ARGS_D1) {
 	std::string var_name = registers->sr->get();
 
 	popMemSR(unused_p, registers, mem);
@@ -366,7 +382,7 @@ void m_dyndecl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	... VAR_NAME
 *	With value to set/get in RDX or SR
 */
-void m_dynset(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_dynset(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string var_name = registers->sr->get(); 
@@ -377,7 +393,7 @@ void m_dynset(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		mem->_dynvars.dynSetVar(var_name);
 	}
 }
-void m_dynget(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_dynget(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string var_name = registers->sr->get();
@@ -395,7 +411,7 @@ void m_dynget(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 /* Stack structure before calling:
 *	... STRUCT_NAME 
 */
-void m_structdecl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_structdecl(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string structure_name = registers->sr->get();
@@ -404,7 +420,7 @@ void m_structdecl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 
 	mem->_structs.makeStruct(structure_name);
 }
-void m_structselect(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_structselect(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string structure_name = registers->sr->get();
@@ -418,7 +434,7 @@ void m_structselect(std::shared_ptr<void> unused_p, regs* registers, memory* mem
 *	... PROPERTY_VALUE/PROPERTY_TYPE PROPERTY_NAME
 *	With structure name in 'structPtr' register by calling corresponding struct select method
 */
-void m_structdeclprop(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_structdeclprop(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string property_name = registers->sr->get();
@@ -427,7 +443,7 @@ void m_structdeclprop(std::shared_ptr<void> unused_p, regs* registers, memory* m
 
 	mem->_structs.declStructProperty(property_name);
 }
-void m_structset(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_structset(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string property_name = registers->sr->get();
@@ -442,7 +458,7 @@ void m_structset(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *  Stack structure after calling:
 *	... PROPERTY_VALUE
 */
-void m_structget(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+void m_structget(GLOBL_ARGS_D1) {
 	std::string saved_sr = registers->sr->get();
 	popMemSR(unused_p, registers, mem);
 	std::string property_name = registers->sr->get();

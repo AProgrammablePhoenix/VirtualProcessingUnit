@@ -8,6 +8,8 @@
 #include "../Registers/registers_symbols.h"
 #include "memory_decl.h"
 
+void sdzsMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
 // Memory stack symbols
 void pushMem(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void popMem(std::shared_ptr<void> reg, regs* registers, memory* mem);

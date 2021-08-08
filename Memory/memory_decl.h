@@ -14,7 +14,7 @@ public:
 	memory(regs* _registers);
 
 	void update(regs* _registers);
-	size_t getMemLen();
+	size_t getMemLen()const ;
 
 	void push(unsigned char* data, size_t count);
 	void pop(unsigned char* data, size_t count);
@@ -31,7 +31,9 @@ public:
 	// Push readonly value on SDZ (equivalent to push, but value cannot be poped, only read at its address on stack)
 	void _SDZS(unsigned char* data, size_t count);
 	// Get SDZ stack top (should be used before pushing new value, to get its future address in SDZ stack)
-	size_t _SDZTOP();
+	size_t _SDZTOP() const;
+	// Get SDZ total size (used in SDZS instruction that wrapps a call to this function)
+	size_t _SDZS() const;
 
 	void destroy();
 
