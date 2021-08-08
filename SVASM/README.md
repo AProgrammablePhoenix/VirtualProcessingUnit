@@ -34,18 +34,4 @@ you're using RBP or RSP as pointer when calling mload
 instructions, no matter if you're using VASM or SVASM.
 
 ### SVASM Roadmap
-* [x] Implement mov instruction support
-* [x] Implement maths related instructions
-* [x] Implement memory related instructions (mload for I/O on heap, alloc to resize heap)
-* [x] Implement auto-saving management for calls
-* [x] Implement new comparisons system
-* [x] Implement labels (equivalent of VASM tags, but declared as '`<labelname>:`' instead of '`decltag <tagname>`')
-* [x] Implement safe and unsafe code directives (to enable/disable data protection, when assembler needs to put temp value in a register for instance)
-* [x] Implement RSP and RBP registers in both VASM and SVASM, changing memory behavior (espcially stack) => unifying stack and user memory
-* [x] Unifying unified memory (stack + user memory) with readonly memory (ROZ) [ROZ becoming SDZ (Static Data Zone)]
-
-* [ ] Implement auto assigning values for maths operations (ex: 'mul rax, 3' instead of 'mov rbx, 3 ; mul rax, rbx') -> In progress
-* [ ] Implement auto assigning values for memory operations (ex: 'push 3', instead of 'mov rax, 3 ; push rax') -> Planned
-* [ ] Implement auto assigning values for comparisons
-* [ ] Replace current DR register with FPRx registers where x varies from integers 0 to 3 (4 registers storing floating point numbers), which will be extended later (EFPRx & RFPRx) -> In progress
-* [ ] Make files operations more low-level, thus more flexible and optimized -> Planned
+See [here](https://github.com/AProgrammablePhoenix/VirtualThreadingEngine/projects/1) to access the SVASM dashboard
