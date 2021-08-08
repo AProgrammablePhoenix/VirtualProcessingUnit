@@ -144,7 +144,7 @@ public:
 			low = (value >> 0ULL) & ~(~0ULL << 32ULL);
 			high = (value >> 32ULL) & ~(~0ULL << 32ULL);
 		} else if constexpr (sizeof(size_t) <= 4) {
-			low = value;
+			low = (unsigned int)value;
 			high = 0;
 		}
 
