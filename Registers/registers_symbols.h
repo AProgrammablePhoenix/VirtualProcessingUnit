@@ -13,10 +13,14 @@
 
 //RPH: Regs Preproc Header
 #ifndef RPH
-	#define RPH_ARGS CUSTOM_STD_ARGS(a, registers, mem)
+	#define RPH_BIO_ARGS CUSTOM_STD_ARGS(a, registers, mem)
+	#define RPH_MOV_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
 
 	#define RPH_FPR_PROTO(io_type, regname) \
-		void b_##io_type##regname(RPH_ARGS);
+		void b_##io_type##regname(RPH_BIO_ARGS);
+
+	#define RPH_FPR_MOV_PROTO(regname) \
+		void b_mov##regname(RPH_MOV_ARGS);
 
 	#define RPH(...) (void)0
 #endif
@@ -72,7 +76,7 @@ enum class extra_registries {
 };
 
 // Arg_Tuple to reg id
-inline registries_def ATTOREGID(arg_tuple& at, memory*& mem) {
+inline registries_def ATTOREGID(arg_tuple& at, memory* const& mem) {
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->_MG(temp, sizeof(size_t), std::get<0>(at));
 	registries_def reg_id = (registries_def)(ATOULL(temp));
@@ -80,9 +84,19 @@ inline registries_def ATTOREGID(arg_tuple& at, memory*& mem) {
 	delete[] temp;
 	return reg_id;
 }
-
-inline registries_def ATTOREGID(std::shared_ptr<void>& at_ptr, memory*& mem) {
+inline registries_def ATTOREGID(std::shared_ptr<void>& at_ptr, memory* const& mem) {
 	return ATTOREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
+}
+inline extra_registries ATTOXREGID(arg_tuple& at, memory* const& mem) {
+	unsigned char* temp = new unsigned char[sizeof(size_t)]; 
+	mem->_MG(temp, sizeof(size_t), std::get<0>(at));
+	extra_registries xreg_id = (extra_registries)(ATOULL(temp));
+
+	delete[] temp;
+	return xreg_id;
+}
+inline extra_registries ATTOXREGID(std::shared_ptr<void>& at_ptr, memory* const& mem) {
+	return ATTOXREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
 }
 
 inline bool is_reg_fpreg(const extra_registries& regid) {
@@ -166,6 +180,21 @@ void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 void b_mov64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mov64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+RPH_FPR_MOV_PROTO(FPR0);
+RPH_FPR_MOV_PROTO(FPR1);
+RPH_FPR_MOV_PROTO(FPR2);
+RPH_FPR_MOV_PROTO(FPR3);
+
+RPH_FPR_MOV_PROTO(EFPR0);
+RPH_FPR_MOV_PROTO(EFPR1);
+RPH_FPR_MOV_PROTO(EFPR2);
+RPH_FPR_MOV_PROTO(EFPR3);
+
+RPH_FPR_MOV_PROTO(RFPR0);
+RPH_FPR_MOV_PROTO(RFPR1);
+RPH_FPR_MOV_PROTO(RFPR2);
+RPH_FPR_MOV_PROTO(RFPR3);
 #pragma endregion
 
 // Native maths ops

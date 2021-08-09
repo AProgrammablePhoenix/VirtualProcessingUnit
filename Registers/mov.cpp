@@ -13,12 +13,25 @@
 	#define HIDDN_BODY(reg, reg_ptr, opsize) \
 		registers->reg->set(*std::static_pointer_cast<opsize>(reg_ptr))
 
-	#define GLOBL_BODY(opname, opsize) \
-		registries_def reg_id = ATTOREGID(reg, mem); \
-		registries_ptr_table ptr_table = registries_ptr_table(registers); \
-		void* ptr = ptr_table.access(reg_id); \
-		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get()); \
+	#define GLOBL_BODY(opname, opsize)																\
+		registries_def reg_id = ATTOREGID(reg, mem);												\
+		registries_ptr_table ptr_table = registries_ptr_table(registers);							\
+		void* ptr = ptr_table.access(reg_id);														\
+		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get());	\
 		c_b_mov##opname(value, registers)
+	
+	#define FP_GLOBL_BODY(regname, dttype)																				\
+		extra_registries xreg_id = ATTOXREGID(reg, mem);																\
+		if (is_reg_fpreg(xreg_id)) {																					\
+			extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);								\
+			void* ptr = ptr_table.access(xreg_id);																		\
+			*registers->regname = (dttype)(((reg_int<long double>*)ptr)->get());										\
+		}
+	
+	#define FP_MOV_DEF(func_suffix, regname, dttype)				\
+		void b_mov##func_suffix(GLOBL_ARGS) {						\
+			FP_GLOBL_BODY(regname, dttype)							\
+		}
 	
 	#define MOV_PREPROC(...) (void)0
 #endif
@@ -116,3 +129,18 @@ void b_mov64RBP(GLOBL_ARGS) {
 void b_mov64RSP(GLOBL_ARGS) {
 	GLOBL_BODY(64RSP, size_t);
 }
+
+FP_MOV_DEF(FPR0, fpr0, float)
+FP_MOV_DEF(FPR1, fpr1, float)
+FP_MOV_DEF(FPR2, fpr2, float)
+FP_MOV_DEF(FPR3, fpr3, float)
+
+FP_MOV_DEF(EFPR0, efpr0, double)
+FP_MOV_DEF(EFPR1, efpr1, double)
+FP_MOV_DEF(EFPR2, efpr2, double)
+FP_MOV_DEF(EFPR3, efpr3, double)
+
+FP_MOV_DEF(RFPR0, rfpr0, long double)
+FP_MOV_DEF(RFPR1, rfpr1, long double)
+FP_MOV_DEF(RFPR2, rfpr2, long double)
+FP_MOV_DEF(RFPR3, rfpr3, long double)
