@@ -159,8 +159,8 @@ public:
 		unsigned int high;
 
 		if constexpr (sizeof(size_t) >= 8) {
-			low = ((unsigned __int64)value >> 0ULL) & ~(~0ULL << 32ULL);
-			high = ((unsigned __int64)value >> 32ULL) & ~(~0ULL << 32ULL);
+			low = ((uint64_t)value >> 0ULL) & ~(~0ULL << 32ULL);
+			high = ((uint64_t)value >> 32ULL) & ~(~0ULL << 32ULL);
 		} else if constexpr (sizeof(size_t) <= 4) {
 			low = (unsigned int)value;
 			high = 0;

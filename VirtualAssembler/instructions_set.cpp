@@ -29,7 +29,7 @@
 		setFPROPC(RFPR3, opcode)
 
 	#define setFPR_2ndSingle(regname) \
-		{##PREFIX_1::set##regname, fp_registers_set[##PREFIX_2::regname]}
+		{PREFIX_1::set##regname, fp_registers_set[PREFIX_2::regname]}
 	#define setFPRs2nd()			\
 		setFPR_2ndSingle(FPR0),		\
 		setFPR_2ndSingle(FPR1),		\
