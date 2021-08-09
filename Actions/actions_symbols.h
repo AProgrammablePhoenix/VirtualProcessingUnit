@@ -13,221 +13,233 @@
 
 enum class virtual_actions {
 	// Interrupts
-	_int  = 0x0001,
+	_int = 1,
 
 	// Registers
-	getAX = 0x0002,
-	getBX = 0x0003,
-	getCX = 0x0004,
-	getDX = 0x0005,
+	getAX,
+	getBX,
+	getCX,
+	getDX,
 
-	setAX = 0x0006,
-	setBX = 0x0007,
-	setCX = 0x0008,
-	setDX = 0x0009,
+	setAX,
+	setBX,
+	setCX,
+	setDX,
 
-	getEAX = 0x000A,
-	getEBX = 0x000B,
-	getECX = 0x000C,
-	getEDX = 0x000D,
+	getEAX,
+	getEBX,
+	getECX,
+	getEDX,
 
-	setEAX = 0x000E,
-	setEBX = 0x000F,
-	setECX = 0x0010,
-	setEDX = 0x0011,
+	setEAX,
+	setEBX,
+	setECX,
+	setEDX,
 
-	getRAX = 0x0012,
-	getRBX = 0x0013,
-	getRCX = 0x0014,
-	getRDX = 0x0015,
+	getRAX,
+	getRBX,
+	getRCX,
+	getRDX,
 
-	setRAX = 0x0016,
-	setRBX = 0x0017,
-	setRCX = 0x0018,
-	setRDX = 0x0019,
+	setRAX,
+	setRBX,
+	setRCX,
+	setRDX,
 
-	setSR = 0x001A,
-	getSR = 0x001B,
+	setSR,
+	getSR,
 
-	setCR = 0x001C,
-	getCR = 0x001D,
+	setCR,
+	getCR,
 
-	setDR = 0x001E,
-	getDR = 0x001F,
+	setDR,
+	getDR,
 
-	movAX = 0x0020,
-	movBX = 0x0021,
-	movCX = 0x0022,
-	movDX = 0x0023,
+	setFPR0,
+	setFPR1,
+	setFPR2,
+	setFPR3,
 
-	movEAX = 0x0024,
-	movEBX = 0x0025,
-	movECX = 0x0026,
-	movEDX = 0x0027,
+	setEFPR0,
+	setEFPR1,
+	setEFPR2,
+	setEFPR3,
 
-	movRAX = 0x0028,
-	movRBX = 0x0029,
-	movRCX = 0x002A,
-	movRDX = 0x002B,
+	setRFPR0,
+	setRFPR1,
+	setRFPR2,
+	setRFPR3,
 
-	inc = 0x002C,
-	dec = 0x002D,
+	movAX,
+	movBX,
+	movCX,
+	movDX,
 
-	incDR = 0x002E,
-	decDR = 0x002F,
+	movEAX,
+	movEBX,
+	movECX,
+	movEDX,
 
-	mulAX = 0x0030,
-	mulBX = 0x0031,
-	mulCX = 0x0032,
-	mulDX = 0x0033,
+	movRAX,
+	movRBX,
+	movRCX,
+	movRDX,
+	movRBP,
+	movRSP,
 
-	mulEAX = 0x0034,
-	mulEBX = 0x0035,
-	mulECX = 0x0036,
-	mulEDX = 0x0037,
+	inc,
+	dec,
 
-	mulRAX = 0x0038,
-	mulRBX = 0x0039,
-	mulRCX = 0x003A,
-	mulRDX = 0x003B,
+	incDR,
+	decDR,
 
-	divAX = 0x003C,
-	divBX = 0x003D,
-	divCX = 0x003E,
-	divDX = 0x003F,
+	mulAX,
+	mulBX,
+	mulCX,
+	mulDX,
 
-	divEAX = 0x0040,
-	divEBX = 0x0041,
-	divECX = 0x0042,
-	divEDX = 0x0043,
+	mulEAX,
+	mulEBX,
+	mulECX,
+	mulEDX,
 
-	divRAX = 0x0044,
-	divRBX = 0x0045,
-	divRCX = 0x0046,
-	divRDX = 0x0047,
+	mulRAX,
+	mulRBX,
+	mulRCX,
+	mulRDX,
 
-	addAX = 0x0048,
-	addBX = 0x0049,
-	addCX = 0x004A,
-	addDX = 0x004B,
+	divAX,
+	divBX,
+	divCX,
+	divDX,
 
-	addEAX = 0x004C,
-	addEBX = 0x004D,
-	addECX = 0x004E,
-	addEDX = 0x004F,
+	divEAX,
+	divEBX,
+	divECX,
+	divEDX,
 
-	addRAX = 0x0050,
-	addRBX = 0x0051,
-	addRCX = 0x0052,
-	addRDX = 0x0053,
+	divRAX,
+	divRBX,
+	divRCX,
+	divRDX,
 
-	subAX = 0x0054,
-	subBX = 0x0055,
-	subCX = 0x0056,
-	subDX = 0x0057,
+	addAX,
+	addBX,
+	addCX,
+	addDX,
 
-	subEAX = 0x0058,
-	subEBX = 0x0059,
-	subECX = 0x005A,
-	subEDX = 0x005B,
+	addEAX,
+	addEBX,
+	addECX,
+	addEDX,
 
-	subRAX = 0x005C,
-	subRBX = 0x005D,
-	subRCX = 0x005E,
-	subRDX = 0x005F,
+	addRAX,
+	addRBX,
+	addRCX,
+	addRDX,
+	addRBP,
+	addRSP,
+
+	subAX,
+	subBX,
+	subCX,
+	subDX,
+
+	subEAX,
+	subEBX,
+	subECX,
+	subEDX,
+
+	subRAX,
+	subRBX,
+	subRCX,
+	subRDX,
+	subRBP,
+	subRSP,
 
 	// Extended
-	toString = 0x0060,
-	castreg = 0x0061,
+	toString,
+	castreg,
+
+	sdzs,
 
 	// Memory
-	push = 0x0062,
-	pop = 0x0063,
+	push,
+	pop,
 
-	pushSR = 0x0064,
-	popSR = 0x0065,
+	pushSR,
+	popSR,
 
-	pushCR = 0x0066,
-	popCR = 0x0067,
+	pushCR,
+	popCR,
 
-	pushDR = 0x0068,
-	popDR = 0x0069,
+	pushDR,
+	popDR,
 
-	movsm = 0x006A,
-	movgm = 0x006B,
+	movsm,
+	movgm,
 
-	movsmSR = 0x006C,
-	movgmSR = 0x006D,
+	movsmSR,
+	movgmSR,
 
-	movsmCR = 0x006E,
-	movgmCR = 0x006F,
+	movsmCR,
+	movgmCR,
 
-	movsmDR = 0x0070,
-	movgmDR = 0x0071,
+	movsmDR,
+	movgmDR,
 
 	// Native binary ops [belong to Registers]
-	_not = 0x0072,
-	_and = 0x0073,
-	_or  = 0x0074,
-	_xor = 0x0075,
-	_shl = 0x0076,
-	_shr = 0x0077,
+	_not,
+	_and,
+	_or,
+	_xor,
+	_shl,
+	_shr,
 
-	_log = 0x0078,
-	_log2 = 0x0079,
-	_log10 = 0x007A,
-	_pow = 0x007B,
+	_log,
+	_log2,
+	_log10,
+	_pow,
 
-	_dlog = 0x007C,
-	_dlog2 = 0x007D,
-	_dlog10 = 0x007E,
-	_dpow = 0x007F,
+	_dlog,
+	_dlog2,
+	_dlog10,
+	_dpow,
 
 	// Process
-	jmp = 0x0080,
-	cmp = 0x0081,
-	je  = 0x0082,
-	jne = 0x0083,
-	jl  = 0x0084,
-	jg  = 0x0085,
-	jle = 0x0086,
-	jge = 0x0087,
-	cmpstr = 0x0088,
+	jmp,
+	cmp,
+	je,
+	jne,
+	jl,
+	jg,
+	jle,
+	jge,
+	cmpstr,
 
-	gca = 0x0089,
-	hlt = 0x008A,
+	gca,
+	hlt,
 
-	call = 0x008B,
-	lcall = 0x008C,
-	ret = 0x008D,
-	svcall = 0x008E,
-	rscall = 0x008F,
+	call,
+	lcall,
+	ret,
+	svcall,
+	rscall,
 
-	nopen  = 0x0090,
-	nclose = 0x0091,
-	nget   = 0x0092,
-	nsend  = 0x0093,
-	nhrecv = 0x0094,
-	ncrtep = 0x0095,
-	nselep = 0x0096,
+	nopen,
+	nclose,
+	nget,
+	nsend,
+	nhrecv,
+	ncrtep,
+	nselep,
 
-	pcrtthread = 0x0097,
-	prstthread = 0x0098,
-	pendthread = 0x0099,
-
-	addRBP = 0x009A,
-	addRSP = 0x009B,
-
-	subRBP = 0x009C,
-	subRSP = 0x009D,
-
-	movRBP = 0x009E,
-	movRSP = 0x009F,
-
-	sdzs = 0x00A0
+	pcrtthread,
+	prstthread,
+	pendthread	
 };
 
-extern void (*a_db[0x00A0 + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[(size_t)virtual_actions::pendthread + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -311,6 +323,21 @@ private:
 		a_db[(size_t)virtual_actions::setSR] = b_setSR;
 		a_db[(size_t)virtual_actions::setCR] = b_setCR;
 		a_db[(size_t)virtual_actions::setDR] = b_setDR;
+
+		a_db[(size_t)virtual_actions::setFPR0] = b_setFPR0;
+		a_db[(size_t)virtual_actions::setFPR1] = b_setFPR1;
+		a_db[(size_t)virtual_actions::setFPR2] = b_setFPR2;
+		a_db[(size_t)virtual_actions::setFPR3] = b_setFPR3;
+
+		a_db[(size_t)virtual_actions::setEFPR0] = b_setEFPR0;
+		a_db[(size_t)virtual_actions::setEFPR1] = b_setEFPR1;
+		a_db[(size_t)virtual_actions::setEFPR2] = b_setEFPR2;
+		a_db[(size_t)virtual_actions::setEFPR3] = b_setEFPR3;
+
+		a_db[(size_t)virtual_actions::setRFPR0] = b_setRFPR0;
+		a_db[(size_t)virtual_actions::setRFPR1] = b_setRFPR1;
+		a_db[(size_t)virtual_actions::setRFPR2] = b_setRFPR2;
+		a_db[(size_t)virtual_actions::setRFPR3] = b_setRFPR3;
 #pragma endregion
 #pragma region b_get
 		a_db[(size_t)virtual_actions::getAX] = b_get16AX;
