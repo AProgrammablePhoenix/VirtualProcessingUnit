@@ -173,6 +173,24 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			continue;
 		}
+		else if (parted_opcodes.find((*byteArray)[i]) != parted_opcodes.end()) {
+			if ((*byteArray)[i] == instructions_set[virtual_actions::setFPR0]) {
+				i++;
+
+				byte _fpr_opc = (*byteArray)[i];
+				virtual_actions real_op = findKeyByValue(map_FPR_set_2nd_opc, _fpr_opc);
+				i++;
+
+				size_t addr = mem->_SDZTOP();
+				mem->_SDZS(byteArray->data() + i, sizeof(double));
+				i += sizeof(double) - 1;
+
+				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&&>(addr, (size_t)sizeof(double))));
+				actions.push_back(_action);
+
+				continue;
+			}
+		}
 	}
 
 	return actions;

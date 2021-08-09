@@ -4,9 +4,52 @@
 #include <unordered_set>
 #include <vector>
 
-#include "../Compiler/action_parser.h"
+#include "../Compiler/action_parser.h" 
+
+#ifndef INST_Set_PREPROCESS
+	#define PREFIX_1 virtual_actions
+	#define PREFIX_2 extra_registries
+
+	#define MConcat(a,b) a ## b
+
+	#define setFPROPC(regname, opcode) \
+		{PREFIX_1::set ## regname, opcode}
+	#define setFPRs(opcode) 		\
+		setFPROPC(FPR0, opcode), 	\
+		setFPROPC(FPR1, opcode), 	\
+		setFPROPC(FPR2, opcode), 	\
+		setFPROPC(FPR3, opcode), 	\
+		setFPROPC(EFPR0, opcode), 	\
+		setFPROPC(EFPR1, opcode), 	\
+		setFPROPC(EFPR2, opcode), 	\
+		setFPROPC(EFPR3, opcode),	\
+		setFPROPC(RFPR0, opcode), 	\
+		setFPROPC(RFPR1, opcode), 	\
+		setFPROPC(RFPR2, opcode), 	\
+		setFPROPC(RFPR3, opcode)
+
+	#define setFPR_2ndSingle(regname) \
+		{##PREFIX_1::set##regname, fp_registers_set[##PREFIX_2::regname]}
+	#define setFPRs2nd()			\
+		setFPR_2ndSingle(FPR0),		\
+		setFPR_2ndSingle(FPR1),		\
+		setFPR_2ndSingle(FPR2),		\
+		setFPR_2ndSingle(FPR3),		\
+		setFPR_2ndSingle(EFPR0),	\
+		setFPR_2ndSingle(EFPR1),	\
+		setFPR_2ndSingle(EFPR2),	\
+		setFPR_2ndSingle(EFPR3),	\
+		setFPR_2ndSingle(RFPR0),	\
+		setFPR_2ndSingle(RFPR1),	\
+		setFPR_2ndSingle(RFPR2),	\
+		setFPR_2ndSingle(RFPR3)
+#endif
 
 typedef unsigned char byte;
+
+namespace {
+	constexpr byte FPRs_opcode = 0xA0;
+}
 
 std::map<registries_def, byte> registers_set = {
 	{registries_def::AH,  0x01},
@@ -37,6 +80,22 @@ std::map<registries_def, byte> registers_set = {
 
 	{registries_def::RBP, 0x15},
 	{registries_def::RSP, 0x16}
+};
+std::map<extra_registries, byte> fp_registers_set = {
+	{extra_registries::FPR0, 0x17},
+	{extra_registries::FPR1, 0x18},
+	{extra_registries::FPR2, 0x19},
+	{extra_registries::FPR3, 0x1A},
+
+	{extra_registries::EFPR0, 0x1B},
+	{extra_registries::EFPR1, 0x1C},
+	{extra_registries::EFPR2, 0x1D},
+	{extra_registries::EFPR3, 0x1E},
+
+	{extra_registries::RFPR0, 0x1F},
+	{extra_registries::RFPR1, 0x20},
+	{extra_registries::RFPR2, 0x21},
+	{extra_registries::RFPR3, 0x22}
 };
 std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::_int,   0x00},
@@ -227,7 +286,11 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::prstthread, 0x9D},
 	{virtual_actions::pendthread, 0x9E},
 
-	{virtual_actions::sdzs, 0x9F}
+	{virtual_actions::sdzs, 0x9F},
+	setFPRs(FPRs_opcode)
+};
+std::map<virtual_actions, byte> map_FPR_set_2nd_opc {
+	setFPRs2nd()
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -421,4 +484,7 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::_log2],
 	ops[virtual_actions::_log10],
 	ops[virtual_actions::_pow]
+};
+std::unordered_set<byte> parted_opcodes = {
+	FPRs_opcode
 };
