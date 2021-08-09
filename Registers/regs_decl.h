@@ -6,8 +6,24 @@
 #include <string>
 #include <vector>
 
+inline constexpr bool is_maxtype_valid() {
+	size_t maxtype_size = sizeof(size_t);
+
+	//check whether greater than or equal to 4 or not
+	if (maxtype_size < 4)
+		return false;
+
+	//check whether power of two or not
+	while (maxtype_size != 1) {
+		if (maxtype_size % 2)
+			return false;
+		maxtype_size /= 2;
+	}
+	return true;
+}
+
 #define MAXTYPECHK() \
-	static_assert(sizeof(size_t) <= 4 || sizeof(size_t) >= 8, "Your platform uses an unsupported size for type: size_t")
+	static_assert(is_maxtype_valid(), "Your platform uses an unsupported size for type: size_t")
 
 template<typename T> struct reg_int {
 public:
@@ -126,23 +142,25 @@ public:
 	unsigned int* h;
 
 	extendedEEXReg() {
+		MAXTYPECHK();
+
 		l = NULL;
 		h = NULL;
 	}
 	extendedEEXReg(extendedEXReg* low, unsigned int* high) {
+		MAXTYPECHK();
+
 		l = low;
 		h = high;
 	}
-
-	MAXTYPECHK();
 
 	void set(size_t value) {
 		unsigned int low;
 		unsigned int high;
 
 		if constexpr (sizeof(size_t) >= 8) {
-			low = (value >> 0ULL) & ~(~0ULL << 32ULL);
-			high = (value >> 32ULL) & ~(~0ULL << 32ULL);
+			low = ((unsigned __int64)value >> 0ULL) & ~(~0ULL << 32ULL);
+			high = ((unsigned __int64)value >> 32ULL) & ~(~0ULL << 32ULL);
 		} else if constexpr (sizeof(size_t) <= 4) {
 			low = (unsigned int)value;
 			high = 0;
@@ -151,7 +169,6 @@ public:
 		l->set(low);
 		*h = high;
 	}
-
 	size_t get() {
 		size_t value;
 
@@ -281,6 +298,24 @@ public:
 		*rsbgn = &_rsbgn,
 		*rsend = &_rsend;
 
+	OrphanReg<float>
+		*fpr0 = &_fpr0,
+		*fpr1 = &_fpr1,
+		*fpr2 = &_fpr2,
+		*fpr3 = &_fpr3;
+
+	OrphanReg<double>
+		*efpr0 = &_efpr0,
+		*efpr1 = &_efpr1,
+		*efpr2 = &_efpr2,
+		*efpr3 = &_efpr3;
+
+	OrphanReg<long double>
+		*rfpr0 = &_rfpr0,
+		*rfpr1 = &_rfpr1,
+		*rfpr2 = &_rfpr2,
+		*rfpr3 = &_rfpr3;
+
 	size_t* process_step = &_program_counter;
 	unsigned char* cmp_out = &_cmp_out;
 	bool* stopRequested = &_stopRequested;
@@ -331,6 +366,24 @@ private:
 		_rsp = 0,
 		_rsbgn = 0,
 		_rsend = 0;
+
+	OrphanReg<float>
+		_fpr0 = 0,
+		_fpr1 = 0,
+		_fpr2 = 0,
+		_fpr3 = 0;
+
+	OrphanReg<double>
+		_efpr0 = 0,
+		_efpr1 = 0,
+		_efpr2 = 0,
+		_efpr3 = 0;
+
+	OrphanReg<long double>
+		_rfpr0 = 0,
+		_rfpr1 = 0,
+		_rfpr2 = 0,
+		_rfpr3 = 0;
 
 	size_t _program_counter = 0;
 	unsigned char _cmp_out = 0xFF;

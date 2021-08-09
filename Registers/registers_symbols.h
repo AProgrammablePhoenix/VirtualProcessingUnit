@@ -11,39 +11,64 @@
 #include "../Memory/memory_decl.h"
 #include "regs_decl.h"
 
+//RPH: Regs Preproc Header
+#ifndef RPH
+	#define RPH_ARGS CUSTOM_STD_ARGS(a, registers, mem)
+
+	#define RPH_FPR_PROTO(io_type, regname) \
+		void b_##io_type##regname(RPH_ARGS);
+
+	#define RPH(...) (void)0
+#endif
+
 enum class registries_def {
 	AL = 0x01,
-	AH = 0x02,
-	BL = 0x03,
-	BH = 0x04,
-	CL = 0x05,
-	CH = 0x06,
-	DL = 0x07,
-	DH = 0x08,
+	AH,
+	BL,
+	BH,
+	CL,
+	CH,
+	DL,
+	DH,
 
-	AX = 0x09,
-	BX = 0x0A,
-	CX = 0x0B,
-	DX = 0x0C,
+	AX,
+	BX,
+	CX,
+	DX,
 
-	EAX = 0x0D,
-	EBX = 0x0E,
-	ECX = 0x0F,
-	EDX = 0x10,
+	EAX,
+	EBX,
+	ECX,
+	EDX,
 
-	RAX = 0x11,
-	RBX = 0x12,
-	RCX = 0x13,
-	RDX = 0x14,
+	RAX,
+	RBX,
+	RCX,
+	RDX,
 
-	RBP = 0x15,
-	RSP = 0x16
+	RBP,
+	RSP
 };
 
 enum class extra_registries {
 	SR = 0x17,
-	CR = 0x18,
-	DR = 0x19,
+	CR,
+	DR,
+
+	FPR0,
+	FPR1,
+	FPR2,
+	FPR3,
+
+	EFPR0,
+	EFPR1,
+	EFPR2,
+	EFPR3,
+
+	RFPR0,
+	RFPR1,
+	RFPR2,
+	RFPR3
 };
 
 // Arg_Tuple to reg id
@@ -58,6 +83,13 @@ inline registries_def ATTOREGID(arg_tuple& at, memory*& mem) {
 
 inline registries_def ATTOREGID(std::shared_ptr<void>& at_ptr, memory*& mem) {
 	return ATTOREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
+}
+
+inline bool is_reg_fpreg(const extra_registries& regid) {
+	if (regid >= extra_registries::FPR0 && regid <= extra_registries::RFPR3)
+		return true;
+	else
+		return false;
 }
 
 // Native registers ops
@@ -81,6 +113,18 @@ void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_setDR(std::shared_ptr<void> a, regs* registers, memory* mem);
 
+RPH_FPR_PROTO(set, FPR0);
+RPH_FPR_PROTO(set, FPR1);
+RPH_FPR_PROTO(set, FPR2);
+RPH_FPR_PROTO(set, FPR3);
+RPH_FPR_PROTO(set, EFPR0);
+RPH_FPR_PROTO(set, EFPR1);
+RPH_FPR_PROTO(set, EFPR2);
+RPH_FPR_PROTO(set, EFPR3);
+RPH_FPR_PROTO(set, RFPR0);
+RPH_FPR_PROTO(set, RFPR1);
+RPH_FPR_PROTO(set, RFPR2);
+RPH_FPR_PROTO(set, RFPR3);
 
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
 void b_get16BX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
@@ -289,18 +333,33 @@ public:
 	}
 #pragma warning (push)
 #pragma warning (disable : 26812)
-	void* access(extra_registries reg_id) {
+	void* access(const extra_registries& reg_id) {
 		return this->table[(size_t)reg_id];
 	}
 #pragma warning (pop)
 private:
 	regs* registers;
-	void* table[0x19 + 1];
+	void* table[(size_t)extra_registries::RFPR3 + 1];
 
 	void init() {
 		table[(size_t)extra_registries::SR] = registers->sr;
 		table[(size_t)extra_registries::CR] = registers->cr;
 		table[(size_t)extra_registries::DR] = registers->dr;
+
+		table[(size_t)extra_registries::FPR0] = registers->fpr0;
+		table[(size_t)extra_registries::FPR1] = registers->fpr1;
+		table[(size_t)extra_registries::FPR2] = registers->fpr2;
+		table[(size_t)extra_registries::FPR3] = registers->fpr3;
+
+		table[(size_t)extra_registries::EFPR0] = registers->efpr0;
+		table[(size_t)extra_registries::EFPR1] = registers->efpr1;
+		table[(size_t)extra_registries::EFPR2] = registers->efpr2;
+		table[(size_t)extra_registries::EFPR3] = registers->efpr3;
+
+		table[(size_t)extra_registries::RFPR0] = registers->rfpr0;
+		table[(size_t)extra_registries::RFPR1] = registers->rfpr1;
+		table[(size_t)extra_registries::RFPR2] = registers->rfpr2;
+		table[(size_t)extra_registries::RFPR3] = registers->rfpr3;
 	}
 };
 
@@ -367,5 +426,28 @@ inline void b_set_dbl(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	catch (...) {
 		if (uc_d)
 			delete[] uc_d;
+	}
+}
+
+inline long double b_fetch_dbl_args(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem, bool& exitcode) {
+	unsigned char* uc_d = nullptr;
+	try {
+		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
+
+		uc_d = new unsigned char[sizeof(long double)];
+		mem->_MG(uc_d, sizeof(double), vaddr);
+
+		long double res = ATOLD(uc_d);
+		delete[] uc_d;
+
+		exitcode ^= exitcode; // set exitcode to false (0)
+		return res;
+	}
+	catch (...) {
+		if (uc_d)
+			delete[] uc_d;
+
+		exitcode = true;
+		return 0;
 	}
 }
