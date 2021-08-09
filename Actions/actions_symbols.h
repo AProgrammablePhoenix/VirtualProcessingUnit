@@ -87,6 +87,21 @@ enum class virtual_actions {
 	movRBP,
 	movRSP,
 
+	movFPR0,
+	movFPR1,
+	movFPR2,
+	movFPR3,
+
+	movEFPR0,
+	movEFPR1,
+	movEFPR2,
+	movEFPR3,
+
+	movRFPR0,
+	movRFPR1,
+	movRFPR2,
+	movRFPR3,
+
 	inc,
 	dec,
 
@@ -377,6 +392,21 @@ private:
 
 		a_db[(size_t)virtual_actions::movRBP] = b_mov64RBP;
 		a_db[(size_t)virtual_actions::movRSP] = b_mov64RSP;
+
+		a_db[(size_t)virtual_actions::movFPR0] = b_movFPR0;
+		a_db[(size_t)virtual_actions::movFPR1] = b_movFPR1;
+		a_db[(size_t)virtual_actions::movFPR2] = b_movFPR2;
+		a_db[(size_t)virtual_actions::movFPR3] = b_movFPR3;
+
+		a_db[(size_t)virtual_actions::movEFPR0] = b_movEFPR0;
+		a_db[(size_t)virtual_actions::movEFPR1] = b_movEFPR1;
+		a_db[(size_t)virtual_actions::movEFPR2] = b_movEFPR2;
+		a_db[(size_t)virtual_actions::movEFPR3] = b_movEFPR3;
+
+		a_db[(size_t)virtual_actions::movRFPR0] = b_movRFPR0;
+		a_db[(size_t)virtual_actions::movRFPR1] = b_movRFPR1;
+		a_db[(size_t)virtual_actions::movRFPR2] = b_movRFPR2;
+		a_db[(size_t)virtual_actions::movRFPR3] = b_movRFPR3;
 #pragma endregion
 		a_db[(size_t)virtual_actions::inc] = b_inc;
 		a_db[(size_t)virtual_actions::dec] = b_dec;

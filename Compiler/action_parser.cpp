@@ -189,6 +189,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"movRBP", virtual_actions::movRBP},
 	{"movRSP", virtual_actions::movRSP},
 
+	{"movFPR0", virtual_actions::movFPR0},
+	{"movFPR1", virtual_actions::movFPR1},
+	{"movFPR2", virtual_actions::movFPR2},
+	{"movFPR3", virtual_actions::movFPR3},
+
+	{"movEFPR0", virtual_actions::movEFPR0},
+	{"movEFPR1", virtual_actions::movEFPR1},
+	{"movEFPR2", virtual_actions::movEFPR2},
+	{"movEFPR3", virtual_actions::movEFPR3},
+
+	{"movRFPR0", virtual_actions::movRFPR0},
+	{"movRFPR1", virtual_actions::movRFPR1},
+	{"movRFPR2", virtual_actions::movRFPR2},
+	{"movRFPR3", virtual_actions::movRFPR3},
+
 	{"inc", virtual_actions::inc},
 	{"dec", virtual_actions::dec},
 	{"incDR", virtual_actions::incDR},
