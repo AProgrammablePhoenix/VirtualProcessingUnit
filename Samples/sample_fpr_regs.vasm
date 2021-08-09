@@ -1,0 +1,4 @@
+setFPR0 ${{D3.14}}
+
+setSR ${{S"Test passed"}}
+int ${{N6}}
