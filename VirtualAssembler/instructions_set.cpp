@@ -12,43 +12,53 @@
 
 	#define MConcat(a,b) a ## b
 
-	#define setFPROPC(regname, opcode) \
-		{PREFIX_1::set ## regname, opcode}
-	#define setFPRs(opcode) 		\
-		setFPROPC(FPR0, opcode), 	\
-		setFPROPC(FPR1, opcode), 	\
-		setFPROPC(FPR2, opcode), 	\
-		setFPROPC(FPR3, opcode), 	\
-		setFPROPC(EFPR0, opcode), 	\
-		setFPROPC(EFPR1, opcode), 	\
-		setFPROPC(EFPR2, opcode), 	\
-		setFPROPC(EFPR3, opcode),	\
-		setFPROPC(RFPR0, opcode), 	\
-		setFPROPC(RFPR1, opcode), 	\
-		setFPROPC(RFPR2, opcode), 	\
-		setFPROPC(RFPR3, opcode)
+	#define FPROPC_PROTO(prefix, regname, opcode) \
+		{PREFIX_1::prefix##regname, opcode}
+	#define ALL_FPRs_PROTO(constructor, opcode) \
+		constructor(FPR0, opcode),				\
+		constructor(FPR1, opcode), 				\
+		constructor(FPR2, opcode), 				\
+		constructor(FPR3, opcode), 				\
+		constructor(EFPR0, opcode), 			\
+		constructor(EFPR1, opcode), 			\
+		constructor(EFPR2, opcode), 			\
+		constructor(EFPR3, opcode),				\
+		constructor(RFPR0, opcode), 			\
+		constructor(RFPR1, opcode), 			\
+		constructor(RFPR2, opcode), 			\
+		constructor(RFPR3, opcode)
+	#define FPR2ndOPCSingle_PROTO(prefix, regname) \
+		{PREFIX_1::prefix##regname, fp_registers_set[PREFIX_2::regname]}
+	#define ALL_FPRs2ndOPC_PROTO(constructor)	\
+		constructor(FPR0),						\
+		constructor(FPR1),						\
+		constructor(FPR2),						\
+		constructor(FPR3),						\
+		constructor(EFPR0),						\
+		constructor(EFPR1),						\
+		constructor(EFPR2),						\
+		constructor(EFPR3),						\
+		constructor(RFPR0),						\
+		constructor(RFPR1),						\
+		constructor(RFPR2),						\
+		constructor(RFPR3)
 
-	#define setFPR_2ndSingle(regname) \
-		{PREFIX_1::set##regname, fp_registers_set[PREFIX_2::regname]}
-	#define setFPRs2nd()			\
-		setFPR_2ndSingle(FPR0),		\
-		setFPR_2ndSingle(FPR1),		\
-		setFPR_2ndSingle(FPR2),		\
-		setFPR_2ndSingle(FPR3),		\
-		setFPR_2ndSingle(EFPR0),	\
-		setFPR_2ndSingle(EFPR1),	\
-		setFPR_2ndSingle(EFPR2),	\
-		setFPR_2ndSingle(EFPR3),	\
-		setFPR_2ndSingle(RFPR0),	\
-		setFPR_2ndSingle(RFPR1),	\
-		setFPR_2ndSingle(RFPR2),	\
-		setFPR_2ndSingle(RFPR3)
+	#define setFPROPC(regname, opcode) FPROPC_PROTO(set, regname, opcode)
+	#define setFPRs(opcode) ALL_FPRs_PROTO(setFPROPC, opcode)
+	#define setFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(set, regname)
+	#define setFPRs2nd() ALL_FPRs2ndOPC_PROTO(setFPR_2ndSingle)
+
+	#define movFPROPC(regname, opcode) FPROPC_PROTO(mov, regname, opcode)
+	#define movFPRs(opcode)	ALL_FPRs_PROTO(movFPROPC, opcode)
+	#define movFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(mov, regname)
+	#define movFPRs2nd() ALL_FPRs2ndOPC_PROTO(movFPR_2ndSingle)
 #endif
 
 typedef unsigned char byte;
 
 namespace {
-	constexpr byte FPRs_opcode = 0xA0;
+	constexpr byte setFPRs_opcode = 0xA0;
+	constexpr byte movFPRs_opcode = 0xA1;
 }
 
 std::map<registries_def, byte> registers_set = {
@@ -287,10 +297,16 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::pendthread, 0x9E},
 
 	{virtual_actions::sdzs, 0x9F},
-	setFPRs(FPRs_opcode)
+
+	setFPRs(setFPRs_opcode),
+	movFPRs(movFPRs_opcode)
 };
+
 std::map<virtual_actions, byte> map_FPR_set_2nd_opc {
 	setFPRs2nd()
+};
+std::map<virtual_actions, byte> map_FPR_mov_2nd_opc{
+	movFPRs2nd()
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -486,5 +502,6 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::_pow]
 };
 std::unordered_set<byte> parted_opcodes = {
-	FPRs_opcode
+	setFPRs_opcode,
+	movFPRs_opcode
 };

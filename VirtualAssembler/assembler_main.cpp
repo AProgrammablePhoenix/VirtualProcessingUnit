@@ -110,17 +110,31 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		return out;
 	}
 	else if (parted_opcodes.find(out[0]) != parted_opcodes.end()) {
-		if (out[0] == instructions_set[virtual_actions::setFPR0]) // All set(E|R|)FPRs have the same first opc
+		if (out[0] == instructions_set[virtual_actions::setFPR0]) {// All set(E|R|)FPRs have the same first opc
 			out.push_back(map_FPR_set_2nd_opc[_action.getAction()]);
 
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+			const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
-		byte* uc_a = new byte[vsize];
-		mem->_MG(uc_a, vsize, vaddr);
+			byte* uc_a = new byte[vsize];
+			mem->_MG(uc_a, vsize, vaddr);
 
-		for (size_t i = 0; i < vsize; i++)
-			out.push_back(uc_a[i]);
-		delete[] uc_a;
+			for (size_t i = 0; i < vsize; i++)
+				out.push_back(uc_a[i]);
+			delete[] uc_a;
+		}
+		else if (out[0] == instructions_set[virtual_actions::movFPR0]) { // All mov(E|R|)FPRs have the same first opc
+			out.push_back(map_FPR_mov_2nd_opc[_action.getAction()]);
+			const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+
+			byte* uc_n = new byte[sizeof(size_t)];
+			mem->_MG(uc_n, sizeof(size_t), vaddr);
+
+			byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
+			delete[] uc_n;
+
+			reg_value = fp_registers_set[(extra_registries)reg_value];
+			out.push_back(reg_value);
+		}		
 		
 		return out;
 	}
