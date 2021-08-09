@@ -86,6 +86,21 @@ void process_memory::setRegisters(variables_decl* vars) {
 	SETXREG(extra_registries::SR, "SR", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::CR, "CR", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::DR, "DR", uc_r, vars, this->data_ptrs);
+
+	SETXREG(extra_registries::FPR0, "FPR0", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::FPR1, "FPR1", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::FPR2, "FPR2", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::FPR3, "FPR3", uc_r, vars, this->data_ptrs);
+
+	SETXREG(extra_registries::EFPR0, "EFPR0", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::EFPR1, "EFPR1", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::EFPR2, "EFPR2", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::EFPR3, "EFPR3", uc_r, vars, this->data_ptrs);
+
+	SETXREG(extra_registries::RFPR0, "RFPR0", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::RFPR1, "RFPR1", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::RFPR2, "RFPR2", uc_r, vars, this->data_ptrs);
+	SETXREG(extra_registries::RFPR3, "RFPR3", uc_r, vars, this->data_ptrs);
 }
 
 std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
@@ -132,6 +147,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"setRBX", virtual_actions::setRBX},
 	{"setRCX", virtual_actions::setRCX},
 	{"setRDX", virtual_actions::setRDX},
+
+	{"setFPR0", virtual_actions::setFPR0},
+	{"setFPR1", virtual_actions::setFPR1},
+	{"setFPR2", virtual_actions::setFPR2},
+	{"setFPR3", virtual_actions::setFPR3},
+
+	{"setEFPR0", virtual_actions::setEFPR0},
+	{"setEFPR1", virtual_actions::setEFPR1},
+	{"setEFPR2", virtual_actions::setEFPR2},
+	{"setEFPR3", virtual_actions::setEFPR3},
+
+	{"setRFPR0", virtual_actions::setRFPR0},
+	{"setRFPR1", virtual_actions::setRFPR1},
+	{"setRFPR2", virtual_actions::setRFPR2},
+	{"setRFPR3", virtual_actions::setRFPR3},
 
 	{"setSR", virtual_actions::setSR},
 	{"getSR", virtual_actions::getSR},
