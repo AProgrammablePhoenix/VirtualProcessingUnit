@@ -52,6 +52,26 @@
 	#define movFPRs(opcode)	ALL_FPRs_PROTO(movFPROPC, opcode)
 	#define movFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(mov, regname)
 	#define movFPRs2nd() ALL_FPRs2ndOPC_PROTO(movFPR_2ndSingle)
+	
+	#define mulFPROPC(regname, opcode) FPROPC_PROTO(mul, regname, opcode)
+	#define mulFPRs(opcode) ALL_FPRs_PROTO(mulFPROPC, opcode)
+	#define mulFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(mul, regname)
+	#define mulFPRs2nd() ALL_FPRs2ndOPC_PROTO(mulFPR_2ndSingle)
+
+	#define divFPROPC(regname, opcode) FPROPC_PROTO(div, regname, opcode)
+	#define divFPRs(opcode) ALL_FPRs_PROTO(divFPROPC, opcode)
+	#define divFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(div, regname)
+	#define divFPRs2nd() ALL_FPRs2ndOPC_PROTO(divFPR_2ndSingle)
+
+	#define addFPROPC(regname, opcode) FPROPC_PROTO(add, regname, opcode)
+	#define addFPRs(opcode) ALL_FPRs_PROTO(addFPROPC, opcode)
+	#define addFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(add, regname)
+	#define addFPRs2nd() ALL_FPRs2ndOPC_PROTO(addFPR_2ndSingle)
+
+	#define subFPROPC(regname, opcode) FPROPC_PROTO(sub, regname, opcode)
+	#define subFPRs(opcode) ALL_FPRs_PROTO(subFPROPC, opcode)
+	#define subFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(sub, regname)
+	#define subFPRs2nd() ALL_FPRs2ndOPC_PROTO(subFPR_2ndSingle)
 #endif
 
 typedef unsigned char byte;
@@ -59,6 +79,11 @@ typedef unsigned char byte;
 namespace {
 	constexpr byte setFPRs_opcode = 0xA0;
 	constexpr byte movFPRs_opcode = 0xA1;
+
+	constexpr byte mulFPRs_opcode = 0xA2;
+	constexpr byte divFPRs_opcode = 0xA3;
+	constexpr byte addFPRs_opcode = 0xA4;
+	constexpr byte subFPRs_opcode = 0xA5;
 }
 
 std::map<registries_def, byte> registers_set = {
@@ -299,14 +324,32 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::sdzs, 0x9F},
 
 	setFPRs(setFPRs_opcode),
-	movFPRs(movFPRs_opcode)
+	movFPRs(movFPRs_opcode),
+
+	mulFPRs(mulFPRs_opcode),
+	divFPRs(divFPRs_opcode),
+	addFPRs(addFPRs_opcode),
+	subFPRs(subFPRs_opcode)
 };
 
-std::map<virtual_actions, byte> map_FPR_set_2nd_opc {
+std::map<virtual_actions, byte> map_FPR_set_2nd_opc = {
 	setFPRs2nd()
 };
-std::map<virtual_actions, byte> map_FPR_mov_2nd_opc{
+std::map<virtual_actions, byte> map_FPR_mov_2nd_opc = {
 	movFPRs2nd()
+};
+
+std::map<virtual_actions, byte> map_FPR_mul_2nd_opc = {
+	mulFPRs2nd()
+};
+std::map<virtual_actions, byte> map_FPR_div_2nd_opc = {
+	divFPRs2nd()
+};
+std::map<virtual_actions, byte> map_FPR_add_2nd_opc = {
+	addFPRs2nd()
+};
+std::map<virtual_actions, byte> map_FPR_sub_2nd_opc = {
+	subFPRs2nd()
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -503,5 +546,9 @@ std::unordered_set<byte> reg_args_opcodes = {
 };
 std::unordered_set<byte> parted_opcodes = {
 	setFPRs_opcode,
-	movFPRs_opcode
+	movFPRs_opcode,
+	mulFPRs_opcode,
+	divFPRs_opcode,
+	addFPRs_opcode,
+	subFPRs_opcode
 };
