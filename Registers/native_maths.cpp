@@ -24,6 +24,38 @@
 		opsize value = ((reg_int<opsize>*)ptr_table.access(reg_id))->get(); \
 		registers->opreg->set(registers->opreg->get() opsign value);
 
+	#define FP_OP(opreg, opsign, dttype)														\
+		extra_registries xreg_id = ATTOXREGID(reg, mem);										\
+		extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);			\
+		if (is_reg_fpreg(xreg_id)) {															\
+			dttype value = (dttype)((reg_int<long double>*)ptr_table.access(xreg_id))->get();	\
+			registers->opreg->set(registers->opreg->get() opsign value);						\
+		}
+	
+	#define DEF_FP_OP(opsuffix, regsuffix, opreg, opsign, dttype)	\
+		void b_##opsuffix##regsuffix(GLOBL_ARGS) {					\
+			FP_OP(opreg, opsign, dttype);							\
+		}
+
+	#define DEF_ALL_FP_OP(opsuffix, opsign)						\
+		DEF_FP_OP(opsuffix, FPR0, fpr0, opsign, float)			\
+		DEF_FP_OP(opsuffix, FPR1, fpr1, opsign, float)			\
+		DEF_FP_OP(opsuffix, FPR2, fpr2, opsign, float)			\
+		DEF_FP_OP(opsuffix, FPR3, fpr3, opsign, float)			\
+		DEF_FP_OP(opsuffix, EFPR0, efpr0, opsign, double)		\
+		DEF_FP_OP(opsuffix, EFPR1, efpr1, opsign, double)		\
+		DEF_FP_OP(opsuffix, EFPR2, efpr2, opsign, double)		\
+		DEF_FP_OP(opsuffix, EFPR3, efpr3, opsign, double)		\
+		DEF_FP_OP(opsuffix, RFPR0, rfpr0, opsign, long double)	\
+		DEF_FP_OP(opsuffix, RFPR1, rfpr1, opsign, long double)	\
+		DEF_FP_OP(opsuffix, RFPR2, rfpr2, opsign, long double)	\
+		DEF_FP_OP(opsuffix, RFPR3, rfpr3, opsign, long double)
+
+	#define DEF_ALL_FP_MUL DEF_ALL_FP_OP(mul, *)
+	#define DEF_ALL_FP_DIV DEF_ALL_FP_OP(div, /)
+	#define DEF_ALL_FP_ADD DEF_ALL_FP_OP(add, +)
+	#define DEF_ALL_FP_SUB DEF_ALL_FP_OP(sub, -)
+
 	#define NMATH_PREPROC(...) (void)0
 #endif
 
@@ -79,6 +111,11 @@ void b_mul64RCX(GLOBL_ARGS) {
 void b_mul64RDX(GLOBL_ARGS) {
 	NATIVE_OP(rdx, *, size_t);
 }
+
+DEF_ALL_FP_MUL
+DEF_ALL_FP_DIV
+DEF_ALL_FP_ADD
+DEF_ALL_FP_SUB
 
 
 void b_div16AX(GLOBL_ARGS) {

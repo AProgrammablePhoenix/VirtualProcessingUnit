@@ -15,12 +15,22 @@
 #ifndef RPH
 	#define RPH_BIO_ARGS CUSTOM_STD_ARGS(a, registers, mem)
 	#define RPH_MOV_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
+	#define RPH_NMATHS_ARGS RPH_MOV_ARGS
 
-	#define RPH_FPR_PROTO(io_type, regname) \
-		void b_##io_type##regname(RPH_BIO_ARGS);
+	#define RPH_FPR_PROTO(io_type, regname)	void b_##io_type##regname(RPH_BIO_ARGS)
 
-	#define RPH_FPR_MOV_PROTO(regname) \
-		void b_mov##regname(RPH_MOV_ARGS);
+	#define RPH_FPR_MOV_PROTO(regname) void b_mov##regname(RPH_MOV_ARGS)
+
+	#define RPH_FPR_NMATHS_PROTO(optype, regname) void b_##optype##regname(RPH_NMATHS_ARGS)
+	#define RPH_FPR_NMATHS_MUL_PROTO(regname) RPH_FPR_NMATHS_PROTO(mul, regname)
+	#define RPH_FPR_NMATHS_DIV_PROTO(regname) RPH_FPR_NMATHS_PROTO(div, regname)
+	#define RPH_FPR_NMATHS_ADD_PROTO(regname) RPH_FPR_NMATHS_PROTO(add, regname)
+	#define RPH_FPR_NMATHS_SUB_PROTO(regname) RPH_FPR_NMATHS_PROTO(sub, regname)
+	#define RPH_FPR_NMATHS_ALL_PROTO(regname)	\
+		RPH_FPR_NMATHS_MUL_PROTO(regname);		\
+		RPH_FPR_NMATHS_DIV_PROTO(regname);		\
+		RPH_FPR_NMATHS_ADD_PROTO(regname);		\
+		RPH_FPR_NMATHS_SUB_PROTO(regname)
 
 	#define RPH(...) (void)0
 #endif
@@ -269,6 +279,21 @@ void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 void b_sub64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_sub64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+RPH_FPR_NMATHS_ALL_PROTO(FPR0);
+RPH_FPR_NMATHS_ALL_PROTO(FPR1);
+RPH_FPR_NMATHS_ALL_PROTO(FPR2);
+RPH_FPR_NMATHS_ALL_PROTO(FPR3);
+
+RPH_FPR_NMATHS_ALL_PROTO(EFPR0);
+RPH_FPR_NMATHS_ALL_PROTO(EFPR1);
+RPH_FPR_NMATHS_ALL_PROTO(EFPR2);
+RPH_FPR_NMATHS_ALL_PROTO(EFPR3);
+
+RPH_FPR_NMATHS_ALL_PROTO(RFPR0);
+RPH_FPR_NMATHS_ALL_PROTO(RFPR1);
+RPH_FPR_NMATHS_ALL_PROTO(RFPR2);
+RPH_FPR_NMATHS_ALL_PROTO(RFPR3);
 #pragma endregion
 
 //extended ops
