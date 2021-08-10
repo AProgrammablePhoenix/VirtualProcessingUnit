@@ -172,6 +172,66 @@ enum class virtual_actions {
 	subRBP,
 	subRSP,
 
+	mulFPR0,
+	mulFPR1,
+	mulFPR2,
+	mulFPR3,
+
+	mulEFPR0,
+	mulEFPR1,
+	mulEFPR2,
+	mulEFPR3,
+
+	mulRFPR0,
+	mulRFPR1,
+	mulRFPR2,
+	mulRFPR3,
+
+	divFPR0,
+	divFPR1,
+	divFPR2,
+	divFPR3,
+
+	divEFPR0,
+	divEFPR1,
+	divEFPR2,
+	divEFPR3,
+
+	divRFPR0,
+	divRFPR1,
+	divRFPR2,
+	divRFPR3,
+
+	addFPR0,
+	addFPR1,
+	addFPR2,
+	addFPR3,
+
+	addEFPR0,
+	addEFPR1,
+	addEFPR2,
+	addEFPR3,
+
+	addRFPR0,
+	addRFPR1,
+	addRFPR2,
+	addRFPR3,
+
+	subFPR0,
+	subFPR1,
+	subFPR2,
+	subFPR3,
+
+	subEFPR0,
+	subEFPR1,
+	subEFPR2,
+	subEFPR3,
+
+	subRFPR0,
+	subRFPR1,
+	subRFPR2,
+	subRFPR3,
+
 	// Extended
 	toString,
 	castreg,
@@ -427,6 +487,21 @@ private:
 		a_db[(size_t)virtual_actions::mulRBX] = b_mul64RBX;
 		a_db[(size_t)virtual_actions::mulRCX] = b_mul64RCX;
 		a_db[(size_t)virtual_actions::mulRDX] = b_mul64RDX;
+
+		a_db[(size_t)virtual_actions::mulFPR0] = b_mulFPR0;
+		a_db[(size_t)virtual_actions::mulFPR1] = b_mulFPR1;
+		a_db[(size_t)virtual_actions::mulFPR2] = b_mulFPR2;
+		a_db[(size_t)virtual_actions::mulFPR3] = b_mulFPR3;
+
+		a_db[(size_t)virtual_actions::mulEFPR0] = b_mulEFPR0;
+		a_db[(size_t)virtual_actions::mulEFPR1] = b_mulEFPR1;
+		a_db[(size_t)virtual_actions::mulEFPR2] = b_mulEFPR2;
+		a_db[(size_t)virtual_actions::mulEFPR3] = b_mulEFPR3;
+
+		a_db[(size_t)virtual_actions::mulRFPR0] = b_mulRFPR0;
+		a_db[(size_t)virtual_actions::mulRFPR1] = b_mulRFPR1;
+		a_db[(size_t)virtual_actions::mulRFPR2] = b_mulRFPR2;
+		a_db[(size_t)virtual_actions::mulRFPR3] = b_mulRFPR3;
 #pragma endregion
 #pragma region b_div
 		a_db[(size_t)virtual_actions::divAX] = b_div16AX;
@@ -443,6 +518,21 @@ private:
 		a_db[(size_t)virtual_actions::divRBX] = b_div64RBX;
 		a_db[(size_t)virtual_actions::divRCX] = b_div64RCX;
 		a_db[(size_t)virtual_actions::divRDX] = b_div64RDX;
+
+		a_db[(size_t)virtual_actions::divFPR0] = b_divFPR0;
+		a_db[(size_t)virtual_actions::divFPR1] = b_divFPR1;
+		a_db[(size_t)virtual_actions::divFPR2] = b_divFPR2;
+		a_db[(size_t)virtual_actions::divFPR3] = b_divFPR3;
+
+		a_db[(size_t)virtual_actions::divEFPR0] = b_divEFPR0;
+		a_db[(size_t)virtual_actions::divEFPR1] = b_divEFPR1;
+		a_db[(size_t)virtual_actions::divEFPR2] = b_divEFPR2;
+		a_db[(size_t)virtual_actions::divEFPR3] = b_divEFPR3;
+
+		a_db[(size_t)virtual_actions::divRFPR0] = b_divRFPR0;
+		a_db[(size_t)virtual_actions::divRFPR1] = b_divRFPR1;
+		a_db[(size_t)virtual_actions::divRFPR2] = b_divRFPR2;
+		a_db[(size_t)virtual_actions::divRFPR3] = b_divRFPR3;
 #pragma endregion
 #pragma region b_add
 		a_db[(size_t)virtual_actions::addAX] = b_add16AX;
@@ -462,6 +552,21 @@ private:
 
 		a_db[(size_t)virtual_actions::addRBP] = b_add64RBP;
 		a_db[(size_t)virtual_actions::addRSP] = b_add64RSP;
+
+		a_db[(size_t)virtual_actions::addFPR0] = b_addFPR0;
+		a_db[(size_t)virtual_actions::addFPR1] = b_addFPR1;
+		a_db[(size_t)virtual_actions::addFPR2] = b_addFPR2;
+		a_db[(size_t)virtual_actions::addFPR3] = b_addFPR3;
+
+		a_db[(size_t)virtual_actions::addEFPR0] = b_addEFPR0;
+		a_db[(size_t)virtual_actions::addEFPR1] = b_addEFPR1;
+		a_db[(size_t)virtual_actions::addEFPR2] = b_addEFPR2;
+		a_db[(size_t)virtual_actions::addEFPR3] = b_addEFPR3;
+
+		a_db[(size_t)virtual_actions::addRFPR0] = b_addRFPR0;
+		a_db[(size_t)virtual_actions::addRFPR1] = b_addRFPR1;
+		a_db[(size_t)virtual_actions::addRFPR2] = b_addRFPR2;
+		a_db[(size_t)virtual_actions::addRFPR3] = b_addRFPR3;
 #pragma endregion
 #pragma region b_sub
 		a_db[(size_t)virtual_actions::subAX] = b_sub16AX;
@@ -481,6 +586,21 @@ private:
 
 		a_db[(size_t)virtual_actions::subRBP] = b_sub64RBP;
 		a_db[(size_t)virtual_actions::subRSP] = b_sub64RSP;
+
+		a_db[(size_t)virtual_actions::subFPR0] = b_subFPR0;
+		a_db[(size_t)virtual_actions::subFPR1] = b_subFPR1;
+		a_db[(size_t)virtual_actions::subFPR2] = b_subFPR2;
+		a_db[(size_t)virtual_actions::subFPR3] = b_subFPR3;
+
+		a_db[(size_t)virtual_actions::subEFPR0] = b_subEFPR0;
+		a_db[(size_t)virtual_actions::subEFPR1] = b_subEFPR1;
+		a_db[(size_t)virtual_actions::subEFPR2] = b_subEFPR2;
+		a_db[(size_t)virtual_actions::subEFPR3] = b_subEFPR3;
+
+		a_db[(size_t)virtual_actions::subRFPR0] = b_subRFPR0;
+		a_db[(size_t)virtual_actions::subRFPR1] = b_subRFPR1;
+		a_db[(size_t)virtual_actions::subRFPR2] = b_subRFPR2;
+		a_db[(size_t)virtual_actions::subRFPR3] = b_subRFPR3;
 #pragma endregion
 #pragma region b_extended
 		a_db[(size_t)virtual_actions::toString] = b_toString;

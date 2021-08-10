@@ -224,6 +224,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"mulRCX", virtual_actions::mulRCX},
 	{"mulRDX", virtual_actions::mulRDX},
 
+	{"mulFPR0", virtual_actions::mulFPR0},
+	{"mulFPR1", virtual_actions::mulFPR1},
+	{"mulFPR2", virtual_actions::mulFPR2},
+	{"mulFPR3", virtual_actions::mulFPR3},
+
+	{"mulEFPR0", virtual_actions::mulEFPR0},
+	{"mulEFPR1", virtual_actions::mulEFPR1},
+	{"mulEFPR2", virtual_actions::mulEFPR2},
+	{"mulEFPR3", virtual_actions::mulEFPR3},
+
+	{"mulRFPR0", virtual_actions::mulRFPR0},
+	{"mulRFPR1", virtual_actions::mulRFPR1},
+	{"mulRFPR2", virtual_actions::mulRFPR2},
+	{"mulRFPR3", virtual_actions::mulRFPR3},
+
 	{"divAX", virtual_actions::divAX},
 	{"divBX", virtual_actions::divBX},
 	{"divCX", virtual_actions::divCX},
@@ -238,6 +253,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"divRBX", virtual_actions::divRBX},
 	{"divRCX", virtual_actions::divRCX},
 	{"divRDX", virtual_actions::divRDX},
+
+	{"divFPR0", virtual_actions::divFPR0},
+	{"divFPR1", virtual_actions::divFPR1},
+	{"divFPR2", virtual_actions::divFPR2},
+	{"divFPR3", virtual_actions::divFPR3},
+
+	{"divEFPR0", virtual_actions::divEFPR0},
+	{"divEFPR1", virtual_actions::divEFPR1},
+	{"divEFPR2", virtual_actions::divEFPR2},
+	{"divEFPR3", virtual_actions::divEFPR3},
+
+	{"divRFPR0", virtual_actions::divRFPR0},
+	{"divRFPR1", virtual_actions::divRFPR1},
+	{"divRFPR2", virtual_actions::divRFPR2},
+	{"divRFPR3", virtual_actions::divRFPR3},
 
 	{"addAX", virtual_actions::addAX},
 	{"addBX", virtual_actions::addBX},
@@ -256,6 +286,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"addRBP", virtual_actions::addRBP},
 	{"addRSP", virtual_actions::addRSP},
 
+	{"addFPR0", virtual_actions::addFPR0},
+	{"addFPR1", virtual_actions::addFPR1},
+	{"addFPR2", virtual_actions::addFPR2},
+	{"addFPR3", virtual_actions::addFPR3},
+
+	{"addEFPR0", virtual_actions::addEFPR0},
+	{"addEFPR1", virtual_actions::addEFPR1},
+	{"addEFPR2", virtual_actions::addEFPR2},
+	{"addEFPR3", virtual_actions::addEFPR3},
+
+	{"addRFPR0", virtual_actions::addRFPR0},
+	{"addRFPR1", virtual_actions::addRFPR1},
+	{"addRFPR2", virtual_actions::addRFPR2},
+	{"addRFPR3", virtual_actions::addRFPR3},
+
 	{"subAX", virtual_actions::subAX},
 	{"subBX", virtual_actions::subBX},
 	{"subCX", virtual_actions::subCX},
@@ -272,6 +317,21 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"subRDX", virtual_actions::subRDX},
 	{"subRBP", virtual_actions::subRBP},
 	{"subRSP", virtual_actions::subRSP},
+
+	{"subFPR0", virtual_actions::subFPR0},
+	{"subFPR1", virtual_actions::subFPR1},
+	{"subFPR2", virtual_actions::subFPR2},
+	{"subFPR3", virtual_actions::subFPR3},
+
+	{"subEFPR0", virtual_actions::subEFPR0},
+	{"subEFPR1", virtual_actions::subEFPR1},
+	{"subEFPR2", virtual_actions::subEFPR2},
+	{"subEFPR3", virtual_actions::subEFPR3},
+
+	{"subRFPR0", virtual_actions::subRFPR0},
+	{"subRFPR1", virtual_actions::subRFPR1},
+	{"subRFPR2", virtual_actions::subRFPR2},
+	{"subRFPR3", virtual_actions::subRFPR3},
 
 	{"toString", virtual_actions::toString},
 	{"castreg", virtual_actions::castreg},
