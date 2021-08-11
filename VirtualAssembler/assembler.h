@@ -14,6 +14,11 @@ extern std::map<virtual_actions, unsigned char> instructions_set;
 extern std::map<virtual_actions, byte> map_FPR_set_2nd_opc;
 extern std::map<virtual_actions, byte> map_FPR_mov_2nd_opc;
 
+extern std::map<virtual_actions, byte> map_FPR_mul_2nd_opc;
+extern std::map<virtual_actions, byte> map_FPR_div_2nd_opc;
+extern std::map<virtual_actions, byte> map_FPR_add_2nd_opc;
+extern std::map<virtual_actions, byte> map_FPR_sub_2nd_opc;
+
 extern std::map<virtual_actions, byte>& ops;
 
 extern std::unordered_set<byte> zero_args_opcodes;

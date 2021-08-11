@@ -16,20 +16,37 @@
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
 
-void ulongToByteArray(size_t value, byte** const output) {
-	*output = new byte[8];
+namespace {
+	void ulongToByteArray(size_t value, byte** const output) {
+		*output = new byte[8];
 
-	for (long long j = 0, i = 7; i >= 0; i--, j++) {
-		(*output)[j] = (value >> (i * 8)) & 0xff;
+		for (long long j = 0, i = 7; i >= 0; i--, j++) {
+			(*output)[j] = (value >> (i * 8)) & 0xff;
+		}
 	}
-}
-void doubleToByteArray(double value, byte** const output) {
-	*output = new byte[8];
+	void doubleToByteArray(double value, byte** const output) {
+		*output = new byte[8];
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined (__CYGWIN__)
-	memcpy_s(*output, sizeof(double), &value, sizeof(double));
+		memcpy_s(*output, sizeof(double), &value, sizeof(double));
 #else
-	memcpy(*output, &value, sizeof(double));
+		memcpy(*output, &value, sizeof(double));
 #endif
+	}
+	
+	inline void ASMBL_FP_NMATHS(std::vector<byte>& out, const std::map<virtual_actions, byte>& map2ndOPC,
+			action& _action, memory* const& mem) {
+		out.push_back(map2ndOPC.at(_action.getAction()));
+		const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+
+		byte* uc_n = new byte[sizeof(size_t)];
+		mem->_MG(uc_n, sizeof(size_t), vaddr);
+
+		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
+		delete[] uc_n;
+
+		reg_value = fp_registers_set[(extra_registries)reg_value];
+		out.push_back(reg_value);
+	}
 }
 
 std::vector<byte> assembleAction(action _action, memory* const mem) {
@@ -122,20 +139,17 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 				out.push_back(uc_a[i]);
 			delete[] uc_a;
 		}
-		else if (out[0] == instructions_set[virtual_actions::movFPR0]) { // All mov(E|R|)FPRs have the same first opc
-			out.push_back(map_FPR_mov_2nd_opc[_action.getAction()]);
-			const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		else if (out[0] == instructions_set[virtual_actions::movFPR0]) // All mov(E|R|)FPRs have the same first opc
+			ASMBL_FP_NMATHS(out, map_FPR_mov_2nd_opc, _action, mem);
+		else if (out[0] == instructions_set[virtual_actions::mulFPR0])
+			ASMBL_FP_NMATHS(out, map_FPR_mul_2nd_opc, _action, mem);
+		else if (out[0] == instructions_set[virtual_actions::divFPR0])
+			ASMBL_FP_NMATHS(out, map_FPR_div_2nd_opc, _action, mem);
+		else if (out[0] == instructions_set[virtual_actions::addFPR0])
+			ASMBL_FP_NMATHS(out, map_FPR_add_2nd_opc, _action, mem);
+		else if (out[0] == instructions_set[virtual_actions::subFPR0])
+			ASMBL_FP_NMATHS(out, map_FPR_sub_2nd_opc, _action, mem);
 
-			byte* uc_n = new byte[sizeof(size_t)];
-			mem->_MG(uc_n, sizeof(size_t), vaddr);
-
-			byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
-			delete[] uc_n;
-
-			reg_value = fp_registers_set[(extra_registries)reg_value];
-			out.push_back(reg_value);
-		}		
-		
 		return out;
 	}
 	else {
