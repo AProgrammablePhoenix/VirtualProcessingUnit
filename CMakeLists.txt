@@ -65,7 +65,7 @@ target_link_libraries(vas compiler)
 
 # vexe: virtual executable runner
 add_executable (vexe "VirtualAssembler/instructions_set.cpp" "VirtualExecutableRunner/runner_main.cpp" 
-				"VirtualExecutableRunner/runner.h" "utility.h")
+				 "VirtualAssembler/assembler.h" "utility.h")
 
 target_link_libraries(vexe registers)
 target_link_libraries(vexe memory)

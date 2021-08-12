@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <map>
 #include <memory>
 #include <tuple>
 
@@ -187,4 +188,14 @@ inline size_t EXTDBA(unsigned char*& cba, unsigned char length) {
 
 		return baselen;
 	}
+}
+
+template<typename Tk, typename Tv>
+Tk findKeyByValue(std::map<Tk, Tv> map, Tv value) {
+	for (auto const& pair : map) {
+		if (pair.second == value)
+			return pair.first;
+	}
+
+	return Tk();
 }

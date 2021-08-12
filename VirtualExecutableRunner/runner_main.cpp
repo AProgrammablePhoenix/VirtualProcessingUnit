@@ -13,7 +13,34 @@
 
 #include "../utility.h"
 #include "../Compiler/action_parser.h"
-#include "runner.h"
+#include "../VirtualAssembler/assembler.h"
+
+namespace {
+	inline void DCODE_FP_NMATHS(std::vector<action>& actions, const std::map<virtual_actions, byte>& map2ndOPC, 
+			const std::vector<byte>& exe_code, size_t& iterator, memory* const& mem) {
+		size_t& i = iterator;
+		i++;
+
+		byte _fpr_opc = exe_code[i];
+		virtual_actions real_op = findKeyByValue(map2ndOPC, _fpr_opc);
+		i++;
+
+		byte _reg = exe_code[i];
+		size_t real_reg = (size_t)(findKeyByValue(fp_registers_set, _reg));
+
+		byte* uc_n = nullptr;
+		ULLTOA(real_reg, &uc_n);
+
+		size_t addr = mem->_SDZTOP();
+		size_t len = sizeof(size_t);
+		mem->_SDZS(uc_n, len);
+
+		delete[] uc_n;
+
+		action _action{ real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len))};
+		actions.push_back(_action);
+	}
+}
 
 std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memory*& mem) {
 	std::vector<action> actions;
@@ -191,28 +218,19 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 				continue;
 			}
 			else if ((*byteArray)[i] == instructions_set[virtual_actions::movFPR0]) {
-				i++;
-				
-				byte _fpr_opc = (*byteArray)[i];
-				virtual_actions real_op = findKeyByValue(map_FPR_mov_2nd_opc, _fpr_opc);
-				i++;
-
-				byte _reg = (*byteArray)[i];
-				size_t real_reg = (size_t)(findKeyByValue(fp_registers_set, _reg));
-
-				byte* uc_n = nullptr;
-				ULLTOA(real_reg, &uc_n);
-
-				size_t addr = mem->_SDZTOP();
-				size_t len = sizeof(size_t);
-				mem->_SDZS(uc_n, len);
-
-				delete[] uc_n;
-
-				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
-				actions.push_back(_action);
-
-				continue;
+				DCODE_FP_NMATHS(actions, map_FPR_mov_2nd_opc, *byteArray, i, mem); continue;
+			}
+			else if ((*byteArray)[i] == instructions_set[virtual_actions::mulFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_mul_2nd_opc, *byteArray, i, mem); continue;
+			}
+			else if ((*byteArray)[i] == instructions_set[virtual_actions::divFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_div_2nd_opc, *byteArray, i, mem); continue;
+			}
+			else if ((*byteArray)[i] == instructions_set[virtual_actions::addFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_add_2nd_opc, *byteArray, i, mem); continue;
+			}
+			else if ((*byteArray)[i] == instructions_set[virtual_actions::subFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_sub_2nd_opc, *byteArray, i, mem); continue;
 			}
 		}
 	}
