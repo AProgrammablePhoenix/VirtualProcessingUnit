@@ -19,13 +19,23 @@
 		void* ptr = ptr_table.access(reg_id);														\
 		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get());	\
 		c_b_mov##opname(value, registers)
+
+	#define FP_GLOBL_SUB(regname, dttype, basetype) *registers->regname = (basetype)((OrphanReg<dttype>*)ptr)->get()
 	
 	#define FP_GLOBL_BODY(regname, dttype)																				\
 		extra_registries xreg_id = ATTOXREGID(reg, mem);																\
 		if (is_reg_fpreg(xreg_id)) {																					\
 			extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);								\
 			void* ptr = ptr_table.access(xreg_id);																		\
-			*registers->regname = (dttype)(((reg_int<long double>*)ptr)->get());										\
+			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)ptr)) {												\
+				FP_GLOBL_SUB(regname, float, dttype);																	\
+			}																											\
+			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)ptr)) {											\
+				FP_GLOBL_SUB(regname, double, dttype);																	\
+			}																											\
+			else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)ptr)) {								\
+				FP_GLOBL_SUB(regname, long double, dttype);																\
+			}																											\
 		}
 	
 	#define FP_MOV_DEF(func_suffix, regname, dttype)				\
