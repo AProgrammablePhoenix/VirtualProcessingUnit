@@ -350,6 +350,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"pushDR", virtual_actions::pushDR},
 	{"popDR", virtual_actions::popDR},
 
+	{"pushFP", virtual_actions::pushFP},
+	{"popFP", virtual_actions::popFP},
+
 	{"movsm", virtual_actions::movsm},
 	{"movgm", virtual_actions::movgm},
 
@@ -361,6 +364,9 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"movsmDR", virtual_actions::movsmDR},
 	{"movgmDR", virtual_actions::movgmDR},
+
+	{"movsmFP", virtual_actions::movsmFP},
+	{"movgmFP", virtual_actions::movgmFP},
 
 	{"not", virtual_actions::_not},
 	{"and", virtual_actions::_and},
