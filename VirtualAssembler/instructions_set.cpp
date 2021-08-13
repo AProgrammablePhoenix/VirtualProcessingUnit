@@ -329,7 +329,13 @@ std::map<virtual_actions, byte> instructions_set = {
 	mulFPRs(mulFPRs_opcode),
 	divFPRs(divFPRs_opcode),
 	addFPRs(addFPRs_opcode),
-	subFPRs(subFPRs_opcode)
+	subFPRs(subFPRs_opcode),
+
+	{virtual_actions::pushFP, subFPRs_opcode + 1},
+	{virtual_actions::popFP, subFPRs_opcode + 2},
+
+	{virtual_actions::movsmFP, subFPRs_opcode + 3},
+	{virtual_actions::movgmFP, subFPRs_opcode + 4} // 0xA9
 };
 
 std::map<virtual_actions, byte> map_FPR_set_2nd_opc = {
@@ -517,6 +523,9 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::push],
 	ops[virtual_actions::pop],
 
+	ops[virtual_actions::pushFP],
+	ops[virtual_actions::popFP],
+
 	ops[virtual_actions::movsm],
 	ops[virtual_actions::movgm],
 
@@ -528,6 +537,9 @@ std::unordered_set<byte> reg_args_opcodes = {
 
 	ops[virtual_actions::movsmDR],
 	ops[virtual_actions::movgmDR],
+
+	ops[virtual_actions::movsmFP],
+	ops[virtual_actions::movgmFP],
 
 	ops[virtual_actions::toString],
 	ops[virtual_actions::castreg],

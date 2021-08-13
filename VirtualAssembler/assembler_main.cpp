@@ -121,7 +121,10 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
 		delete[] uc_n;
 
-		reg_value = registers_set[(registries_def)reg_value];
+		if (reg_value <= (byte)registries_def::RSP)
+			reg_value = registers_set[(registries_def)reg_value];
+		else
+			reg_value = fp_registers_set[(extra_registries)reg_value];
 
 		out.push_back(reg_value);
 		return out;

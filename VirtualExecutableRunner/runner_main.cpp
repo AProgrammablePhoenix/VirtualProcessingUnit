@@ -184,7 +184,12 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			i++;
 
 			byte _reg = (*byteArray)[i];
-			size_t real_reg = (size_t)(findKeyByValue(registers_set, _reg));
+			size_t real_reg = 0;
+
+			if (_reg <= registers_set[registries_def::RSP])
+				real_reg = (size_t)(findKeyByValue(registers_set, _reg));
+			else
+				real_reg = (size_t)(findKeyByValue(fp_registers_set, _reg));
 
 			byte* uc_n = nullptr;
 			ULLTOA(real_reg, &uc_n);
