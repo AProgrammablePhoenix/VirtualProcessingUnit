@@ -6,6 +6,10 @@ project ("vas")
 project ("vexe")
 project ("testnet")
 
+if (${CMAKE_SIZEOF_VOID_P} LESS 8)
+	message(FATAL_ERROR "Platforms that are not supporting 64 bits are not supported")
+endif()
+
 add_library(registers STATIC
 			"Registers/regs_decl.h" "Registers/registers_symbols.h" "Registers/registers_symbols.cpp"
 			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp" "Registers/native_binary.cpp" "utility.h")
@@ -84,5 +88,6 @@ target_link_libraries(svas memory)
 target_link_libraries(svas virtual_engine)
 
 target_compile_features(registers PUBLIC cxx_std_17)
+target_compile_features(memory PUBLIC cxx_std_20)
 target_compile_features(compiler PUBLIC cxx_std_17)
 target_compile_features(vas PUBLIC cxx_std_17)
