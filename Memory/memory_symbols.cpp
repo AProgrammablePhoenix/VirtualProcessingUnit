@@ -1,3 +1,4 @@
+#include <concepts>
 #include <iostream>
 #include <memory>
 #include <string>
@@ -26,6 +27,65 @@
 
 	#define MEMORY_PREPROC(...) (void)0
 #endif
+
+namespace {
+	void FPR_push_helper(const std::floating_point auto& value, const size_t& bin_size, memory* const& mem) {
+		unsigned char* uc_fp = new unsigned char[bin_size];
+#if defined(ISWIN)
+		memcpy_s(uc_fp, bin_size, &value, bin_size);
+#else
+		memcpy(uc_fp, &value, bin_size);
+#endif
+		mem->push(uc_fp, bin_size);
+		delete[] uc_fp;
+	}
+	void FPR_push_helper(const auto& value, const size_t& bin_size, memory* const& mem) {
+		static_assert(0, "'FPR_push_helper' function only handles floating point types (float, double, long double)");
+	}
+
+	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, std::floating_point auto& output) {
+		unsigned char* uc_fp = new unsigned char[bin_size];
+		mem->pop(uc_fp, bin_size);
+
+#if defined(ISWIN)
+		memcpy_s(&output, bin_size, uc_fp, bin_size);
+#else
+		memcpy(&output, uc_fp, bin_size);
+#endif
+		delete[] uc_fp;
+	}
+	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, auto& output) {
+		static_assert(0, "'FPR_pop_helper' function only handles floating point types (float, double, long double)");
+	}
+
+	void FPR_mem_set(const std::floating_point auto& value, const size_t& bin_size, const size_t& addr, memory* const& mem) {
+		unsigned char* uc_fp = new unsigned char[bin_size];
+#if defined(ISWIN)
+		memcpy_s(uc_fp, bin_size, &value, bin_size);
+#else
+		memcpy(uc_fp, &value, bin_size);
+#endif
+		mem->_MS(uc_fp, bin_size, addr);
+		delete[] uc_fp;
+	}
+	void FPR_mem_set(const auto& value, const size_t& bin_size, const size_t& addr, memory* const& mem) {
+		static_assert(0, "'FPR_mem_set' function only handles floating point types (float, double, long double)");
+	}
+
+	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, std::floating_point auto& output) {
+		unsigned char* uc_fp = new unsigned char[bin_size];
+		mem->_MG(uc_fp, bin_size, addr);
+#if defined(ISWIN)
+		memcpy_s(&output, bin_size, uc_fp, bin_size);
+#else
+		memcpy(&output, uc_fp, bin_size);
+#endif
+		delete[] uc_fp;
+	}
+	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, auto& output) {
+		static_assert(0, "'FPR_mem_get' function only handles floating point types (float, double, long double)");
+	}
+}
 
 void sdzsMem(GLOBL_ARGS) {
 	registries_def reg_id = ATTOREGID(reg, mem);
@@ -150,6 +210,25 @@ void popMemDR(GLOBL_ARGS_D1) {
 	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
 
 	delete[] uc_d;
+}
+
+void pushMemFPR(GLOBL_ARGS) {
+	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
+		FPR_push_helper(((OrphanReg<float>*)regptr)->get(), sizeof(float), mem);
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
+		FPR_push_helper(((OrphanReg<double>*)regptr)->get(), sizeof(double), mem);
+	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
+		FPR_push_helper(((OrphanReg<long double>*)regptr)->get(), sizeof(long double), mem);
+}
+void popMemFPR(GLOBL_ARGS) {
+	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) 
+		FPR_pop_helper(sizeof(float), mem, ((OrphanReg<float>*)regptr)->data());
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
+		FPR_pop_helper(sizeof(double), mem, ((OrphanReg<double>*)regptr)->data());
+	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
+		FPR_pop_helper(sizeof(long double), mem, ((OrphanReg<long double>*)regptr)->data());
 }
 
 void movsm(GLOBL_ARGS_D2) {
@@ -279,6 +358,30 @@ void movgmDR(GLOBL_ARGS_D2) {
 	delete[] temp;
 
 	registers->dr->set(value);
+}
+
+// Input/Output addr into RAX (into RDI soon with the implementation of RSI/RDI (and their respective lower size versions registers))
+void movsmFPR(GLOBL_ARGS) {
+	size_t addr = registers->rax->get();
+
+	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
+		FPR_mem_set(((OrphanReg<float>*)regptr)->get(), sizeof(float), addr, mem);
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
+		FPR_mem_set(((OrphanReg<double>*)regptr)->get(), sizeof(double), addr, mem);
+	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
+		FPR_mem_set(((OrphanReg<long double>*)regptr)->get(), sizeof(long double), addr, mem);
+}
+void movgmFPR(GLOBL_ARGS) {
+	size_t addr = registers->rax->get();
+
+	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
+		FPR_mem_get(sizeof(float), addr, mem, ((OrphanReg<float>*)regptr)->data());
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
+		FPR_mem_get(sizeof(double), addr, mem, ((OrphanReg<double>*)regptr)->data());
+	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
+		FPR_mem_get(sizeof(long double), addr, mem, ((OrphanReg<long double>*)regptr)->data());
 }
 
 // Memory arrays symbols
