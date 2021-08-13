@@ -39,9 +39,6 @@ namespace {
 		mem->push(uc_fp, bin_size);
 		delete[] uc_fp;
 	}
-	void FPR_push_helper(const auto& value, const size_t& bin_size, memory* const& mem) {
-		static_assert(0, "'FPR_push_helper' function only handles floating point types (float, double, long double)");
-	}
 
 	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, std::floating_point auto& output) {
 		unsigned char* uc_fp = new unsigned char[bin_size];
@@ -54,9 +51,6 @@ namespace {
 #endif
 		delete[] uc_fp;
 	}
-	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, auto& output) {
-		static_assert(0, "'FPR_pop_helper' function only handles floating point types (float, double, long double)");
-	}
 
 	void FPR_mem_set(const std::floating_point auto& value, const size_t& bin_size, const size_t& addr, memory* const& mem) {
 		unsigned char* uc_fp = new unsigned char[bin_size];
@@ -68,9 +62,6 @@ namespace {
 		mem->_MS(uc_fp, bin_size, addr);
 		delete[] uc_fp;
 	}
-	void FPR_mem_set(const auto& value, const size_t& bin_size, const size_t& addr, memory* const& mem) {
-		static_assert(0, "'FPR_mem_set' function only handles floating point types (float, double, long double)");
-	}
 
 	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, std::floating_point auto& output) {
 		unsigned char* uc_fp = new unsigned char[bin_size];
@@ -81,9 +72,6 @@ namespace {
 		memcpy(&output, uc_fp, bin_size);
 #endif
 		delete[] uc_fp;
-	}
-	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, auto& output) {
-		static_assert(0, "'FPR_mem_get' function only handles floating point types (float, double, long double)");
 	}
 }
 
