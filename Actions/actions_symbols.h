@@ -251,6 +251,9 @@ enum class virtual_actions {
 	pushDR,
 	popDR,
 
+	pushFP,
+	popFP,
+
 	movsm,
 	movgm,
 
@@ -262,6 +265,9 @@ enum class virtual_actions {
 
 	movsmDR,
 	movgmDR,
+
+	movsmFP,
+	movgmFP,
 
 	// Native binary ops [belong to Registers]
 	_not,
@@ -637,6 +643,9 @@ private:
 		a_db[(size_t)virtual_actions::pushDR] = pushMemDR;
 		a_db[(size_t)virtual_actions::popDR] = popMemDR;
 
+		a_db[(size_t)virtual_actions::pushFP] = pushMemFPR;
+		a_db[(size_t)virtual_actions::popFP] = popMemFPR;
+
 		a_db[(size_t)virtual_actions::movsm] = movsm;
 		a_db[(size_t)virtual_actions::movgm] = movgm;
 
@@ -648,6 +657,9 @@ private:
 
 		a_db[(size_t)virtual_actions::movsmDR] = movsmDR;
 		a_db[(size_t)virtual_actions::movgmDR] = movgmDR;
+
+		a_db[(size_t)virtual_actions::movsmFP] = movsmFPR;
+		a_db[(size_t)virtual_actions::movgmFP] = movgmFPR;
 
 		a_db[(size_t)virtual_actions::sdzs] = sdzsMem;
 #pragma endregion
