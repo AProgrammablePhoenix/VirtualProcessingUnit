@@ -256,6 +256,8 @@ public:
 		return this->value;
 	}
 
+	datatype& data() { return this->value; }
+
 	operator datatype& () { return this->value; }
 	operator datatype() const { return this->value; }
 private:
