@@ -1,14 +1,11 @@
-; expected VEXE code:
-; 00 00 00 00 00 10 10 00 00 00 00 00 00 00 00 00 
-; 00 00 00 00 00 00 00 00 1F A0 17 1F 85 EB 51 B8
-; 1E 09 40 A1 18 17 A4 18 17 19 07 0C 54 65 73 74
-; 20 70 61 73 73 65 64 00 00 07 06
-
 ; expected output:
 ; Test passed
 
 setFPR0 ${{D3.14}}
 movFPR1 FPR0
+
+pushFP FPR1
+popFP FPR3
 
 ; same as mul FPR1, FPR3 (implies that 2 is stored in FPR3)
 addFPR1 FPR0
