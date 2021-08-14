@@ -50,15 +50,16 @@ movgmCR AX
 int ${{N10}}
 int ${{N6}}
 
-setDR ${{D3.14}}
-setAX ${{N31}}
-addAX RDX
-movsmDR AX
+setRFPR0 ${{D3.14}}
+setRAX ${{N31}}
+addRAX RDX
+movsmFP RFPR0
 
 ; in cas the program has unexpected behaviour
-setDR ${{D-1}}
+setRFPR0 ${{D-1}}
 
-movgmDR AX
+movgmFP RFPR0
+pushFP RFPR0
 int ${{N12}}
 int ${{N6}}
 
