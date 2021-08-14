@@ -208,6 +208,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"dec", virtual_actions::dec},
 	{"incDR", virtual_actions::incDR},
 	{"decDR", virtual_actions::decDR},
+	{"incFP", virtual_actions::incFP},
+	{"decFP", virtual_actions::decFP},
 
 	{"mulAX", virtual_actions::mulAX},
 	{"mulBX", virtual_actions::mulBX},
