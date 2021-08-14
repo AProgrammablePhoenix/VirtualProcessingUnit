@@ -39,7 +39,6 @@ namespace {
 		mem->push(uc_fp, bin_size);
 		delete[] uc_fp;
 	}
-
 	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, std::floating_point auto& output) {
 		unsigned char* uc_fp = new unsigned char[bin_size];
 		mem->pop(uc_fp, bin_size);
@@ -62,7 +61,6 @@ namespace {
 		mem->_MS(uc_fp, bin_size, addr);
 		delete[] uc_fp;
 	}
-
 	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, std::floating_point auto& output) {
 		unsigned char* uc_fp = new unsigned char[bin_size];
 		mem->_MG(uc_fp, bin_size, addr);

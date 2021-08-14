@@ -108,6 +108,9 @@ enum class virtual_actions {
 	incDR,
 	decDR,
 
+	incFP,
+	decFP,
+
 	mulAX,
 	mulBX,
 	mulCX,
@@ -478,6 +481,8 @@ private:
 		a_db[(size_t)virtual_actions::dec] = b_dec;
 		a_db[(size_t)virtual_actions::incDR] = b_incDR;
 		a_db[(size_t)virtual_actions::decDR] = b_decDR;
+		a_db[(size_t)virtual_actions::incFP] = b_incFP;
+		a_db[(size_t)virtual_actions::decFP] = b_decFP;
 #pragma region b_mul
 		a_db[(size_t)virtual_actions::mulAX] = b_mul16AX;
 		a_db[(size_t)virtual_actions::mulBX] = b_mul16BX;

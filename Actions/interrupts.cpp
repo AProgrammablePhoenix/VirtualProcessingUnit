@@ -49,9 +49,9 @@ void interrupts::init() {
 	ints_db[(size_t)int_codes::fromString] = b_fromString;
 	ints_db[(size_t)int_codes::CRToSR] = b_CRToSR;
 	ints_db[(size_t)int_codes::RevSR] = b_RevSR;
-	ints_db[(size_t)int_codes::DRToSR] = b_DRToSR;
-	ints_db[(size_t)int_codes::DRToULL] = b_DRToULL;
-	ints_db[(size_t)int_codes::DRToLL] = b_DRToLL;
+	ints_db[(size_t)int_codes::FPToSR] = b_FPToSR;
+	ints_db[(size_t)int_codes::FPToULL] = b_FPToULL;
+	ints_db[(size_t)int_codes::FPToLL] = b_FPToLL;
 #pragma endregion
 #pragma region int_memory
 	ints_db[(size_t)int_codes::declArray] = m_declArray;
