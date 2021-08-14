@@ -213,6 +213,8 @@ void b_inc(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_dec(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_decDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_incFP(RPH_NMATHS_ARGS);
+void b_decFP(RPH_NMATHS_ARGS);
 
 void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mul16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
@@ -313,9 +315,9 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_FPToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_FPToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 #pragma endregion
 
 // Native binary ops
@@ -325,9 +327,9 @@ void b_log2(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_log10(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_log(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
-void b_dlog2(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void b_dlog10(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
-void b_dlog(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* mem);
+void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 
 void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem);
@@ -337,7 +339,7 @@ void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
-void b_dpow(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
 struct registries_ptr_table {

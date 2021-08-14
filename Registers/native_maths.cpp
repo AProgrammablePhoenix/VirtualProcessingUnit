@@ -15,8 +15,21 @@
 		registries_ptr_table ptr_table = registries_ptr_table(registers);												\
 		((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() opsign 1)
 
-	#define FP_INCDEC(reg, opsign) \
-		registers->reg->set(registers->reg->get() opsign 1)
+	#define FP_INCDEC(opsign)																							\
+		extra_registries xreg_id = ATTOXREGID(reg, mem);																\
+		if (is_reg_fpreg(xreg_id)) {																					\
+			void* regptr = extra_registries_ptr_table(registers).access(xreg_id);										\
+			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {												\
+				*((OrphanReg<float>*)regptr) = (*((OrphanReg<float>*)regptr)) opsign 1;									\
+			}																											\
+			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr)) {										\
+				*((OrphanReg<double>*)regptr) = (*((OrphanReg<double>*)regptr)) opsign 1;								\
+			}																											\
+			else {																										\
+				*((OrphanReg<long double>*)regptr)  = (*((OrphanReg<long double>*)regptr)) opsign 1;					\
+			}																											\
+		}
+		
 
 	#define NATIVE_OP(opreg, opsign, opsize)								\
 		registries_def reg_id = ATTOREGID(reg, mem);						\
@@ -77,11 +90,19 @@ void b_dec(GLOBL_ARGS) {
 	NATIVE_INCDEC(-);
 }
 
+// inc/dec(DR) is now deprecated and would have no effect if called
 void b_incDR(GLOBL_ARGS_D1) {
-	FP_INCDEC(dr, +);
+	//FP_INCDEC(dr, +);
 }
 void b_decDR(GLOBL_ARGS_D1) {
-	FP_INCDEC(dr, -);
+	//FP_INCDEC(dr, -);
+}
+
+void b_incFP(GLOBL_ARGS) {
+	FP_INCDEC(+);
+}
+void b_decFP(GLOBL_ARGS) {
+	FP_INCDEC(-);
 }
 
 void b_mul16AX(GLOBL_ARGS) {

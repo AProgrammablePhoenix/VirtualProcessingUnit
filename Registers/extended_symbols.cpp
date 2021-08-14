@@ -163,18 +163,17 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 /* STACK before calling:
 *	... CAST_TYPE VALUE
-*	With output pushed in stack
 *
 *	CAST TYPES:
 *	- 0 = string -> unsigned number
 *	- 1 = string -> signed number
 *	- 2 = string -> char (only first char)
-*	- 3 = string -> double
+*	- 3 = string -> long double (retrieve value by popFP RFPRx (where x varies from 0 to 3 included)
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get();
 
-	popMemSR(unused_p, registers, mem);
+	popMemSR(nullptr, registers, mem);
 	std::string value = registers->sr->get();
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -224,15 +223,17 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		registers->cr->set(saved_cr);
 	}
 	else if (cast_type == 3) {
-		double saved_dr = registers->dr->get(), d_value = 0;
+		long double saved_rfpr0 = *registers->rfpr0, d_value = 0;
 		std::stringstream ss(value);
 		ss >> d_value;
 
-		registers->dr->set(d_value);
-		pushMemDR(nullptr, registers, mem);
+		auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+		mp_memcpy(&d_value, uc_ld.get(), sizeof(long double));
+
+		mem->push(uc_ld.get(), sizeof(long double));
 
 		registers->sr->set(saved_sr);
-		registers->dr->set(saved_dr);
+		*registers->rfpr0 = saved_rfpr0;
 	}
 }
 
@@ -255,44 +256,60 @@ void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(vstr);
 }
 
-/*	Registers before calling:
-*	DR: input value
+/*	Stack before calling:
+*	... VALUE (pushed with pushFP RFPRx)(so that a long double value is used)
+*	
+*	Registers before calling:
 *	SR: any value
 *	With output set up on SR, and previous value of SR is lost (unlss you pushed it on the stack before)
 */
-void b_DRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	double d = registers->dr->get();
+void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+	mem->pop(uc_ld.get(), sizeof(long double));
+
+	long double d = 0;
+	mp_memcpy(uc_ld.get(), &d, sizeof(long double));
+
 	std::ostringstream ss;
 	ss << std::fixed << d;
 	std::string s_value = ss.str();
+
 	registers->sr->set(s_value);
 }
 
-/* Registers before calling:
-*	DR: input value
+/*  Stack statis before calling:
+*	... VALUE (pushed with pushFP RFPRx)
 *	With output pushed onto stack
 * 
-*   Convert value in DR to size_t
+*   Convert pushed value of FP register to size_t
 */
-void b_DRToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	double d = registers->dr->get();
+void b_FPToULL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+	mem->pop(uc_ld.get(), sizeof(long double));
+
+	long double d = 0;
+	mp_memcpy(uc_ld.get(), &d, sizeof(long double));
+
 	size_t n = (size_t)std::llround(d);
 
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(&n, temp);
-	mem->push(temp, sizeof(size_t));
+	auto temp = std::make_unique<unsigned char[]>(sizeof(size_t));
+	mp_memcpy(&n, temp.get(), sizeof(size_t));
 
-	delete[] temp;
+	mem->push(temp.get(), sizeof(size_t));
 }
 
-// Same as DRToULL but it converts value in DR to long long
-void b_DRToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	double d = registers->dr->get();
+// Same as FPToULL but it converts pushed value of FP register to long long
+void b_FPToLL(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+	mem->pop(uc_ld.get(), sizeof(long double));
+
+	long double d = 0;
+	mp_memcpy(uc_ld.get(), &d, sizeof(long double));
+
 	long long n = std::llround(d);
 
-	unsigned char* temp = new unsigned char[sizeof(long long)];
-	mp_memcpy(&n, temp, sizeof(long long));
-	mem->push(temp, sizeof(long long));
+	auto temp = std::make_unique<unsigned char[]>(sizeof(long double));
+	mp_memcpy(&n, temp.get(), sizeof(long long));
 
-	delete[] temp;
+	mem->push(temp.get(), sizeof(long long));
 }
