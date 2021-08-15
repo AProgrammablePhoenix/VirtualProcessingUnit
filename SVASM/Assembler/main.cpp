@@ -9,6 +9,7 @@
 #include <stdio.h>
 #endif
 
+#include "../../VirtualAssembler/assembler.h"
 #include "compiler.h"
 #include "parser.h"
 
@@ -48,7 +49,11 @@ int main(int argc, char* argv[]) {
 	test_exit(exit_code);
 
 	std::vector<byte> linked;
-	linked.reserve(0x11 + out_bytes.size());
+	linked.reserve(0x17 + out_bytes.size());
+	linked.resize(linked.size() + sizeof(size_t));
+
+	//setup requested memory
+	std::copy(out_bytes.begin(), out_bytes.begin() + 8, linked.begin());
 
 	// setup main header
 	linked.emplace_back(0);
@@ -56,13 +61,13 @@ int main(int argc, char* argv[]) {
 		linked.emplace_back(0);
 	byte* temp = nullptr;
 
-	ULLTOA(out_bytes.size(), &temp);
+	ULLTOA(out_bytes.size() - sizeof(size_t), &temp); // take back bytes of requested memory (first 8 bytes normally)
 	for (byte i = 0; i < sizeof(size_t); i++)
 		linked.emplace_back(temp[i]);
 	delete[] temp;
 
-	for (byte b : out_bytes)
-		linked.emplace_back(b);
+	for (size_t i = sizeof(size_t); i < out_bytes.size(); i++)
+		linked.emplace_back(out_bytes[i]);
 
 	byte* linkedBytes = new byte[linked.size()];
 	std::copy(linked.begin(), linked.end(), linkedBytes);

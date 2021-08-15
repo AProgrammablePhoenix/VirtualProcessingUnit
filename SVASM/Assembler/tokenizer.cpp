@@ -19,9 +19,25 @@ static const std::unordered_set<std::string> registers = {
 	"rcx",
 	"rdx",
 
+	"rbp",
+	"rsp",
+
 	"sr",
-	"dr",
 	"cr"
+};
+static const std::unordered_set<std::string> fp_regs = {
+	"fpr0",
+	"fpr1",
+	"fpr2",
+	"fpr3",
+	"efpr0",
+	"efpr1",
+	"efpr2",
+	"efpr3",
+	"rfpr0",
+	"rfpr1",
+	"rfpr2",
+	"rfpr3"
 };
 
 // checks whether s represent a number or not, ignore out_type if returns false
@@ -123,6 +139,10 @@ static bool isRegAddr(const std::string& s) {
 int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized) {
 	if (registers.find(arg) != registers.end()) {
 		out_tokenized = token(arg, tokenTypes::reg);
+		return OK;
+	}
+	else if (fp_regs.find(arg) != fp_regs.end()) {
+		out_tokenized = token(arg, tokenTypes::fp_reg);
 		return OK;
 	}
 	else {
