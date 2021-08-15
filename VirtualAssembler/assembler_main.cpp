@@ -101,17 +101,6 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		delete[] uc_c;
 		return out;
 	}
-	else if (out[0] == ops[virtual_actions::setDR]) {
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
-
-		byte* uc_d = new byte[sizeof(double)];
-		mem->_MG(uc_d, sizeof(double), vaddr);
-		
-		for (byte i = 0; i < sizeof(double); i++)
-			out.push_back(uc_d[i]);
-		delete[] uc_d;
-		return out;
-	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
 		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 

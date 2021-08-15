@@ -6,11 +6,14 @@
 #include <unordered_set>
 #include <vector>
 
+#include "../Registers/registers_symbols.h"
+#include "../Actions/actions_symbols.h"
+
 typedef unsigned char byte;
 
 extern std::map<registries_def, byte> registers_set;
 extern std::map<extra_registries, byte> fp_registers_set;
-extern std::map<virtual_actions, unsigned char> instructions_set;
+extern std::map<virtual_actions, byte> instructions_set;
 
 extern std::map<virtual_actions, byte> map_FPR_set_2nd_opc;
 extern std::map<virtual_actions, byte> map_FPR_mov_2nd_opc;

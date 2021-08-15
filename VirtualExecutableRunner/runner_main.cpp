@@ -156,28 +156,6 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			continue;
 		}
-		else if ((*byteArray)[i] == ops[virtual_actions::setDR]) {
-			byte _op = (*byteArray)[i];
-			virtual_actions real_op = findKeyByValue(instructions_set, _op);
-			i++;
-
-			byte* b_value = new byte[sizeof(double)];
-			for (size_t j = 0; j < sizeof(double); i++, j++) {
-				b_value[j] = (*byteArray)[i];
-			}
-			i--;
-
-			size_t addr = mem->_SDZTOP();
-			size_t len = sizeof(double);
-			mem->_SDZS(b_value, len);
-
-			delete[] b_value;
-
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&>(addr, len)));
-			actions.push_back(_action);
-
-			continue;
-		}
 		else if (reg_args_opcodes.find((*byteArray)[i]) != reg_args_opcodes.end()) {
 			byte _op = (*byteArray)[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
