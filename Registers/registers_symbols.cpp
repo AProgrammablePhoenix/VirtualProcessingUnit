@@ -105,9 +105,6 @@ void b_setSR(GLOBL_ARGS) {
 void b_setCR(GLOBL_ARGS) {
 	b_set_chr(a, registers, mem);
 }
-void b_setDR(GLOBL_ARGS) {
-	b_set_dbl(a, registers, mem);
-}
 
 DEF_ALL_FPRegs;
 
@@ -157,7 +154,4 @@ void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) 
 }
 void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
 	*(std::static_pointer_cast<char>(receiver)) = registers->cr->get();
-}
-void b_getDR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
-	*(std::static_pointer_cast<double>(receiver)) = registers->dr->get();
 }

@@ -222,25 +222,6 @@ private:
 	char value;
 };
 
-struct doubleReg: reg_int<double> {
-public:
-	doubleReg() {
-		this->value = 0;
-	}
-	doubleReg(double d) {
-		this->value = d;
-	}
-
-	void set(double d) {
-		this->value = d;
-	}
-	double get() {
-		return this->value;
-	}
-private:
-	double value;
-};
-
 template<typename datatype>
 struct OrphanReg : public reg_int<datatype> {
 public:
@@ -324,7 +305,6 @@ public:
 	size_t *process_call_address = &_process_call_address;
 	std::map<size_t, int>* threadsStatuses = nullptr;
 
-	doubleReg* dr = &_dr;
 	charReg* cr = &_cr;
 	stringReg* sr = &_sr;
 	stringReg* structPtr = &_structPtr;
@@ -392,7 +372,6 @@ private:
 	bool _stopRequested = false;
 	size_t _process_call_address = 0;
 
-	doubleReg _dr = doubleReg();
 	charReg _cr = charReg();
 	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();

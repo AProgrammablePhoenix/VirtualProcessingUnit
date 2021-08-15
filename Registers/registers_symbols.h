@@ -67,7 +67,6 @@ enum class registries_def {
 enum class extra_registries {
 	SR = 0x17,
 	CR,
-	DR,
 
 	FPR0,
 	FPR1,
@@ -135,7 +134,6 @@ void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* mem);
 
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_setDR(std::shared_ptr<void> a, regs* registers, memory* mem);
 
 RPH_FPR_PROTO(set, FPR0);
 RPH_FPR_PROTO(set, FPR1);
@@ -400,7 +398,6 @@ private:
 	void init() {
 		table[(size_t)extra_registries::SR] = registers->sr;
 		table[(size_t)extra_registries::CR] = registers->cr;
-		table[(size_t)extra_registries::DR] = registers->dr;
 
 		table[(size_t)extra_registries::FPR0] = registers->fpr0;
 		table[(size_t)extra_registries::FPR1] = registers->fpr1;
@@ -466,22 +463,6 @@ inline void b_set_chr(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	catch (...) {
 		if (uc_c)
 			delete[] uc_c;
-	}
-}
-inline void b_set_dbl(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem) {
-	unsigned char* uc_d = nullptr;
-	try {
-		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
-
-		uc_d = new unsigned char[sizeof(double)];
-		mem->_MG(uc_d, sizeof(double), vaddr);
-
-		registers->dr->set(ATOD(uc_d));
-		delete[] uc_d;
-	}
-	catch (...) {
-		if (uc_d)
-			delete[] uc_d;
 	}
 }
 
