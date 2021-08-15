@@ -85,7 +85,6 @@ void process_memory::setRegisters(variables_decl* vars) {
 
 	SETXREG(extra_registries::SR, "SR", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::CR, "CR", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::DR, "DR", uc_r, vars, this->data_ptrs);
 
 	SETXREG(extra_registries::FPR0, "FPR0", uc_r, vars, this->data_ptrs);
 	SETXREG(extra_registries::FPR1, "FPR1", uc_r, vars, this->data_ptrs);
@@ -169,9 +168,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"setCR", virtual_actions::setCR},
 	{"getCR", virtual_actions::getCR},
 
-	{"setDR", virtual_actions::setDR},
-	{"getDR", virtual_actions::getDR},
-
 	{"movAX", virtual_actions::movAX},
 	{"movBX", virtual_actions::movBX},
 	{"movCX", virtual_actions::movCX},
@@ -206,8 +202,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"inc", virtual_actions::inc},
 	{"dec", virtual_actions::dec},
-	{"incDR", virtual_actions::incDR},
-	{"decDR", virtual_actions::decDR},
 	{"incFP", virtual_actions::incFP},
 	{"decFP", virtual_actions::decFP},
 
@@ -349,9 +343,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"pushCR", virtual_actions::pushCR},
 	{"popCR", virtual_actions::popCR},
 
-	{"pushDR", virtual_actions::pushDR},
-	{"popDR", virtual_actions::popDR},
-
 	{"pushFP", virtual_actions::pushFP},
 	{"popFP", virtual_actions::popFP},
 
@@ -363,9 +354,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"movsmCR", virtual_actions::movsmCR},
 	{"movgmCR", virtual_actions::movgmCR},
-
-	{"movsmDR", virtual_actions::movsmDR},
-	{"movgmDR", virtual_actions::movgmDR},
 
 	{"movsmFP", virtual_actions::movsmFP},
 	{"movgmFP", virtual_actions::movgmFP},
@@ -396,6 +384,7 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"jle", virtual_actions::jle},
 	{"jge", virtual_actions::jge},
 	{"cmpstr", virtual_actions::cmpstr},
+	{"cmpdbl", virtual_actions::cmpdbl},
 
 	{"gca", virtual_actions::gca},
 	{"hlt", virtual_actions::hlt},
