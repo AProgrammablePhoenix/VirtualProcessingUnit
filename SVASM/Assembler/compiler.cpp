@@ -722,15 +722,39 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[1].element == "sr")
-			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
+			return ARGV_ERROR; // Won't probably be implemented (or maybe for a long time)
 
-		if (args[0].element == "cr" || args[0].element == "dr" || args[1].element == "cr" || args[1].element == "dr") {
+		if (args[0].element == "cr" || args[1].element == "cr") {
 			// Not yet implemented
 			return OK;
 		}
 
 		if (args[1].type != tokenTypes::reg) {
-			// Not yet implemented
+			if (args[1].type != tokenTypes::unsigned_n)
+				return ARGV_ERROR;
+
+			if (args[0].element == "rax") {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+
+				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+				pushAction(out_actions, virtual_actions::_and, tokenTypes::reg, "rax");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+			}
+			else {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_and, tokenTypes::reg, args[0].element);
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+			}
 		}
 		else {
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
@@ -747,13 +771,37 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[0].element == "dr" || args[1].element == "cr" || args[1].element == "dr") {
+		if (args[0].element == "cr" || args[1].element == "cr") {
 			// Not yet implemented
 			return OK;
 		}
 
 		if (args[1].type != tokenTypes::reg) {
-			// Not yet implemented
+			if (args[1].type != tokenTypes::unsigned_n)
+				return ARGV_ERROR;
+
+			if (args[0].element == "rax") {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+
+				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+				pushAction(out_actions, virtual_actions::_xor, tokenTypes::reg, "rax");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+			}
+			else {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_xor, tokenTypes::reg, args[0].element);
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+			}
 		}
 		else {
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
@@ -770,13 +818,37 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[0].element == "dr" || args[1].element == "cr" || args[1].element == "dr") {
+		if (args[0].element == "cr" || args[1].element == "cr") {
 			// Not yet implemented
 			return OK;
 		}
 
 		if (args[1].type != tokenTypes::reg) {
-			// Not yet implemented
+			if (args[1].type != tokenTypes::unsigned_n)
+				return ARGV_ERROR;
+
+			if (args[0].element == "rax") {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+
+				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+				pushAction(out_actions, virtual_actions::_or, tokenTypes::reg, "rax");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+			}
+			else {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_or, tokenTypes::reg, args[0].element);
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+			}
 		}
 		else {
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
@@ -793,13 +865,37 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[0].element == "dr" || args[1].element == "cr" || args[1].element == "dr") {
+		if (args[0].element == "cr" || args[1].element == "cr") {
 			// Not yet implemented
 			return OK;
 		}
 
 		if (args[1].type != tokenTypes::reg) {
-			// Not yet implemented
+			if (args[1].type != tokenTypes::unsigned_n)
+				return ARGV_ERROR;
+
+			if (args[0].element == "rax") {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+
+				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+				pushAction(out_actions, virtual_actions::_shr, tokenTypes::reg, "rax");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+			}
+			else {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_shr, tokenTypes::reg, args[0].element);
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+			}
 		}
 		else {
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
@@ -816,13 +912,37 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[0].element == "dr" || args[1].element == "cr" || args[1].element == "dr") {
+		if (args[0].element == "cr" || args[1].element == "cr") {
 			// Not yet implemented
 			return OK;
 		}
 
 		if (args[1].type != tokenTypes::reg) {
-			// Not yet implemented
+			if (args[1].type != tokenTypes::unsigned_n)
+				return ARGV_ERROR;
+
+			if (args[0].element == "rax") {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+
+				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+				pushAction(out_actions, virtual_actions::_shl, tokenTypes::reg, "rax");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+			}
+			else {
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::_shl, tokenTypes::reg, args[0].element);
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+			}
 		}
 		else {
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
