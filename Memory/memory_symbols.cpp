@@ -170,34 +170,6 @@ void popMemCR(GLOBL_ARGS_D1) {
 	delete[] cptr;
 }
 
-void pushMemDR(GLOBL_ARGS_D1) {
-	std::shared_ptr<double> value = std::make_shared<double>(0);
-	b_getDR(value, registers, mem);
-
-	unsigned char* uc_d = new unsigned char[sizeof(double)];
-
-#if defined(ISWIN)
-	memcpy_s(uc_d, sizeof(double), value.get(), sizeof(double));
-#else
-	memcpy(uc_d, value.get(), sizeof(double));
-#endif
-
-	mem->push(uc_d, sizeof(double));
-	delete[] uc_d;
-}
-void popMemDR(GLOBL_ARGS_D1) {
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	unsigned char* uc_d = new unsigned char[sizeof(double)];
-	mem->pop(uc_d, sizeof(double));
-
-	double d = 0;
-	mp_memcpy(uc_d, &d, sizeof(double));
-
-	((reg_int<double>*)ptr_table.access(extra_registries::DR))->set(d);
-
-	delete[] uc_d;
-}
-
 void pushMemFPR(GLOBL_ARGS) {
 	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
@@ -307,43 +279,6 @@ void movgmCR(GLOBL_ARGS_D2) {
 	unsigned char* temp = new unsigned char[1];
 	mem->_MG(temp, 1, _addr);
 	registers->cr->set((char)temp[0]);
-}
-
-void movsmDR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
-
-	size_t _addr = ((reg_int<size_t>*)ptr)->get();
-	double value = registers->dr->get();
-	unsigned char* temp = new unsigned char[sizeof(double)];
-
-#if defined(ISWIN)
-	memcpy_s(temp, sizeof(double), &value, sizeof(double));
-#else
-	std::memcpy(temp, &value, sizeof(double));
-#endif
-	mem->_MS(temp, sizeof(double), _addr);
-	delete[] temp;
-}
-void movgmDR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
-
-	size_t _addr = ((reg_int<size_t>*)ptr)->get();
-	unsigned char* temp = new unsigned char[sizeof(double)];
-	mem->_MG(temp, sizeof(double), _addr);
-
-	double value = 0;
-#if defined(ISWIN)
-	memcpy_s(&value, sizeof(double), temp, sizeof(double));
-#else
-	std::memcpy(&value, temp, sizeof(double));
-#endif
-	delete[] temp;
-
-	registers->dr->set(value);
 }
 
 // Input/Output addr into RAX (into RDI soon with the implementation of RSI/RDI (and their respective lower size versions registers))

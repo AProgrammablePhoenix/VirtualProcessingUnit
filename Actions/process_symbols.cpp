@@ -39,10 +39,10 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	size_t c1, c2;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->pop(temp, sizeof(size_t)); // pop rax
+	mem->pop(temp, sizeof(size_t));
 	mp_memcpy(temp, &c1);
 
-	mem->pop(temp, sizeof(size_t)); // pop rbx
+	mem->pop(temp, sizeof(size_t));
 	mp_memcpy(temp, &c2);
 
 	if (c1 == c2) {
@@ -85,6 +85,25 @@ void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	}
 
 	registers->sr->set(saved_sr);
+}
+void p_cmpdbl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	long double d1, d2;
+
+	auto temp = std::make_unique<unsigned char[]>(sizeof(long double));
+	mem->pop(temp.get(), sizeof(long double));
+	mp_memcpy(temp.get(), &d1, sizeof(long double));
+
+	mem->pop(temp.get(), sizeof(long double));
+	mp_memcpy(temp.get(), &d2, sizeof(long double));
+
+	if (d1 == d2)
+		*(registers->cmp_out) = 0;
+	else if (d1 < d2)
+		*(registers->cmp_out) = 1;
+	else if (d1 > d2)
+		*(registers->cmp_out) = 2;
+	else
+		*(registers->cmp_out) = 0xFE; // Unknown comparison
 }
 
 // Jump if equal

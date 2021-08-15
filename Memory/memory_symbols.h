@@ -20,9 +20,6 @@ void popMemSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void pushMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void popMemCR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
-void pushMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void popMemDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-
 void pushMemFPR(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void popMemFPR(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
@@ -35,9 +32,6 @@ void movgmSR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
 
 void movsmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
 void movgmCR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
-
-void movsmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
-void movgmDR(std::shared_ptr<void> reg_addr, regs* registers, memory* mem);
 
 void movsmFPR(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void movgmFPR(std::shared_ptr<void> reg, regs* registers, memory* mem);

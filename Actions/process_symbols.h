@@ -15,6 +15,7 @@
 void p_jmp(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
+void p_cmpdbl(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
 void p_je(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 void p_jne(std::shared_ptr<void> args_p, regs* registers, memory* mem);

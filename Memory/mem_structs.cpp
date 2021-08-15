@@ -108,12 +108,12 @@ void __struct__::get(std::string property_name) {
 				delete[] temp;
 			}
 			else {
-				double saved_dr = this->registers->dr->get();
+				long double ld = this->double_properties[property_name];
 
-				this->registers->dr->set(this->double_properties[property_name]);
-				pushMemDR(nullptr, this->registers, this->mem);
+				auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+				mp_memcpy(&ld, uc_ld.get(), sizeof(long double));
 
-				this->registers->dr->set(saved_dr);
+				mem->push(uc_ld.get(), sizeof(long double));
 			}
 		}
 	}
@@ -158,12 +158,12 @@ void __struct__::set(std::string property_name) {
 				this->snum_properties[property_name] = (long long)value;
 			}
 			else {
-				double saved_dr = this->registers->dr->get();
+				long double ld = 0;
+				auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
+				mem->pop(uc_ld.get(), sizeof(long long));
 
-				popMemDR(nullptr, this->registers, this->mem);
-				this->double_properties[property_name] = this->registers->dr->get();
-
-				this->registers->dr->set(saved_dr);
+				mp_memcpy(uc_ld.get(), &ld, sizeof(long long));
+				this->double_properties[property_name] = ld;
 			}
 		}
 	}

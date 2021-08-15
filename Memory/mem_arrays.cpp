@@ -177,40 +177,40 @@ void snum_mem_array::destroy() {
 	}
 }
 
-double_mem_array::double_mem_array() {
+ldouble_mem_array::ldouble_mem_array() {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
 		}
 	}
 }
-double_mem_array::double_mem_array(regs* _registers, size_t size) {
+ldouble_mem_array::ldouble_mem_array(regs* _registers, size_t size) {
 	if (!this->initialized) {
 		if (this->container != NULL) {
 			delete[] this->container;
 		}
 		this->registers = _registers;
-		this->container = new double[size];
+		this->container = new long double[size];
 		this->container_size = size;
 		this->values_type = "double";
 		this->initialized = true;
 	}
 }
-void double_mem_array::getAt(size_t index) {
+void ldouble_mem_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
-			this->registers->dr->set(this->container[index]);
+			*this->registers->rfpr3 = this->container[index];
 		}
 	}
 }
-void double_mem_array::setAt(size_t index) {
+void ldouble_mem_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container_size) {
-			this->container[index] = this->registers->dr->get();
+			this->container[index] = *this->registers->rfpr3;
 		}
 	}
 }
-void double_mem_array::destroy() {
+void ldouble_mem_array::destroy() {
 	if (this->container) {
 		delete[] this->container;
 	}
@@ -368,14 +368,14 @@ void dyn_snum_array::getSize() {
 	this->registers->rdx->set(this->container.size());
 }
 
-dyn_double_array::dyn_double_array() {
+dyn_ldouble_array::dyn_ldouble_array() {
 	if (!this->initialized) {
 		if (!this->container.empty()) {
 			this->container.clear();
 		}
 	}
 }
-dyn_double_array::dyn_double_array(regs* _registers) {
+dyn_ldouble_array::dyn_ldouble_array(regs* _registers) {
 	if (!this->initialized) {
 		if (!this->container.empty()) {
 			this->container.clear();
@@ -385,24 +385,24 @@ dyn_double_array::dyn_double_array(regs* _registers) {
 		this->initialized = true;
 	}
 }
-void dyn_double_array::getAt(size_t index) {
+void dyn_ldouble_array::getAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
-			this->registers->dr->set(this->container[index]);
+			*this->registers->rfpr3 = this->container[index];
 		}
 	}
 }
-void dyn_double_array::setAt(size_t index) {
+void dyn_ldouble_array::setAt(size_t index) {
 	if (this->initialized) {
 		if (index < this->container.size()) {
-			this->container[index] = this->registers->dr->get();
+			this->container[index] = *this->registers->rfpr3;
 		}
 		else {
-			this->container.push_back(this->registers->dr->get());
+			this->container.push_back(*this->registers->rfpr3);
 		}
 	}
 }
-void dyn_double_array::getSize() {
+void dyn_ldouble_array::getSize() {
 	this->registers->rdx->set(this->container.size());
 }
 
@@ -443,9 +443,9 @@ void mem_arrays::makeArray(std::string name, std::string type,  size_t size) {
 			this->static_arrays.push_back(name);
 		}
 		else if (type == STATIC_DOUBLE_ARRAY) {
-			double_mem_array _array = double_mem_array(this->registers, size);
+			ldouble_mem_array _array = ldouble_mem_array(this->registers, size);
 			this->double_arrays[name] = _array;
-			this->arrays_table[name] = std::make_shared<double_mem_array>(this->double_arrays[name]);
+			this->arrays_table[name] = std::make_shared<ldouble_mem_array>(this->double_arrays[name]);
 			this->types_table[name] = STATIC_DOUBLE_ARRAY;
 			this->static_arrays.push_back(name);
 		}
@@ -474,9 +474,9 @@ void mem_arrays::makeArray(std::string name, std::string type,  size_t size) {
 			this->types_table[name] = DYNAMIC_CHAR_ARRAY;
 		}
 		else if (type == DYNAMIC_DOUBLE_ARRAY) {
-			dyn_double_array _array = dyn_double_array(this->registers);
+			dyn_ldouble_array _array = dyn_ldouble_array(this->registers);
 			this->dyn_double_arrays[name] = _array;
-			this->arrays_table[name] = std::make_shared<dyn_double_array>(this->dyn_double_arrays[name]);
+			this->arrays_table[name] = std::make_shared<dyn_ldouble_array>(this->dyn_double_arrays[name]);
 			this->types_table[name] = DYNAMIC_DOUBLE_ARRAY;
 		}
 	}

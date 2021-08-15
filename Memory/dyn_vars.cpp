@@ -16,142 +16,122 @@
 
 dyn_str_var::dyn_str_var() {
 	if (!this->initialized) {
-		if (!this->content.empty()) {
+		if (!this->content.empty())
 			this->content.clear();
-		}
 	}
 }
 dyn_str_var::dyn_str_var(regs* _registers) {
 	if (!this->initialized) {
-		if (!this->content.empty()) {
+		if (!this->content.empty())
 			this->content.clear();
-		}
 		this->registers = _registers;
 		this->value_type = STR_TYPE;
 		this->initialized = true;
 	}
 }
 void dyn_str_var::dynget() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->registers->sr->set(this->content);
-	}
 }
 void dyn_str_var::dynset() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->content = this->registers->sr->get();
-	}
 }
 
 dyn_char_var::dyn_char_var() {
 	if (!this->initialized) {
-		if (this->content != '\0') {
+		if (this->content != '\0')
 			this->content = '\0';
-		}
 	}
 }
 dyn_char_var::dyn_char_var(regs* _registers) {
 	if (!this->initialized) {
-		if (!this->content != '\0') {
+		if (!this->content != '\0')
 			this->content = '\0';
-		}
 		this->registers = _registers;
 		this->value_type = "";
 		this->initialized = true;
 	}
 }
 void dyn_char_var::dynget() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->registers->cr->set(this->content);
-	}
 }
 void dyn_char_var::dynset() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->content = this->registers->cr->get();
-	}
 }
 
 dyn_unum_var::dyn_unum_var() {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 	}
 }
 dyn_unum_var::dyn_unum_var(regs* _registers) {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 		this->registers = _registers;
 		this->value_type = CHAR_TYPE;
 		this->initialized = true;
 	}
 }
 void dyn_unum_var::dynget() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->registers->rdx->set(this->content);
-	}
 }
 void dyn_unum_var::dynset() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->content = this->registers->rdx->get();
-	}
 }
 
 dyn_snum_var::dyn_snum_var() {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 	}
 }
 dyn_snum_var::dyn_snum_var(regs* _registers) {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 		this->registers = _registers;
 		this->value_type = SNUM_TYPE;
 		this->initialized = true;
 	}
 }
 void dyn_snum_var::dynget() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->registers->rdx->set((size_t)this->content);
-	}
 }
 void dyn_snum_var::dynset() {
-	if (this->initialized) {
+	if (this->initialized)
 		this->content = (long long)this->registers->rdx->get();
-	}
 }
 
-dyn_double_var::dyn_double_var() {
+dyn_ldouble_var::dyn_ldouble_var() {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 	}
 }
-dyn_double_var::dyn_double_var(regs* _registers) {
+dyn_ldouble_var::dyn_ldouble_var(regs* _registers) {
 	if (!this->initialized) {
-		if (this->content) {
+		if (this->content)
 			this->content = 0;
-		}
 		this->registers = _registers;
 		this->value_type = DOUBLE_TYPE;
 		this->initialized = true;
 	}
 }
-void dyn_double_var::dynget() {
-	if (this->initialized) {
-		this->registers->dr->set(this->content);
-	}
+void dyn_ldouble_var::dynget() {
+	if (this->initialized)
+		*this->registers->rfpr3 = this->content;
 }
-void dyn_double_var::dynset() {
-	if (this->initialized) {
-		this->content = this->registers->dr->get();
-	}
+void dyn_ldouble_var::dynset() {
+	if (this->initialized)
+		this->content = *this->registers->rfpr3;
 }
 
 mem_dyn_vars::mem_dyn_vars() {
@@ -187,9 +167,9 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 			this->types_table[name] = CHAR_TYPE;
 		}
 		else if (type == DOUBLE_TYPE) {
-			dyn_double_var _var = dyn_double_var(this->registers);
+			dyn_ldouble_var _var = dyn_ldouble_var(this->registers);
 			this->dyn_double_vars[name] = _var;
-			this->variables_table[name] = std::make_shared<dyn_double_var>(this->dyn_double_vars[name]);
+			this->variables_table[name] = std::make_shared<dyn_ldouble_var>(this->dyn_double_vars[name]);
 			this->types_table[name] = DOUBLE_TYPE;
 		}
 	}

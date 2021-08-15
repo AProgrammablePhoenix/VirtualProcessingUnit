@@ -27,7 +27,7 @@ private:
 	std::map<std::string, char> char_properties;
 	std::map<std::string, size_t> unum_properties;
 	std::map<std::string, long long> snum_properties;
-	std::map<std::string, double> double_properties;
+	std::map<std::string, long double> double_properties;
 
 	std::map<std::string, std::string> types_table;
 };

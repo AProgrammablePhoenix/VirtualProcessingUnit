@@ -52,9 +52,6 @@ enum class virtual_actions {
 	setCR,
 	getCR,
 
-	setDR,
-	getDR,
-
 	setFPR0,
 	setFPR1,
 	setFPR2,
@@ -104,9 +101,6 @@ enum class virtual_actions {
 
 	inc,
 	dec,
-
-	incDR,
-	decDR,
 
 	incFP,
 	decFP,
@@ -251,9 +245,6 @@ enum class virtual_actions {
 	pushCR,
 	popCR,
 
-	pushDR,
-	popDR,
-
 	pushFP,
 	popFP,
 
@@ -265,9 +256,6 @@ enum class virtual_actions {
 
 	movsmCR,
 	movgmCR,
-
-	movsmDR,
-	movgmDR,
 
 	movsmFP,
 	movgmFP,
@@ -300,6 +288,7 @@ enum class virtual_actions {
 	jle,
 	jge,
 	cmpstr,
+	cmpdbl,
 
 	gca,
 	hlt,
@@ -373,12 +362,10 @@ public:
 	}
 
 	void destroy() {
-		if (this->self_mem) {
+		if (this->self_mem)
 			delete this->self_mem;
-		}
-		if (this->self_regs) {
+		if (this->self_regs)
 			delete this->self_regs;
-		}
 	}
 private:
 	memory* self_mem;
@@ -406,7 +393,6 @@ private:
 
 		a_db[(size_t)virtual_actions::setSR] = b_setSR;
 		a_db[(size_t)virtual_actions::setCR] = b_setCR;
-		a_db[(size_t)virtual_actions::setDR] = b_setDR;
 
 		a_db[(size_t)virtual_actions::setFPR0] = b_setFPR0;
 		a_db[(size_t)virtual_actions::setFPR1] = b_setFPR1;
@@ -441,7 +427,6 @@ private:
 
 		a_db[(size_t)virtual_actions::getSR] = b_getSR;
 		a_db[(size_t)virtual_actions::getCR] = b_getCR;
-		a_db[(size_t)virtual_actions::getDR] = b_getDR;
 #pragma endregion
 #pragma region b_mov
 		a_db[(size_t)virtual_actions::movAX] = b_mov16AX;
@@ -479,8 +464,6 @@ private:
 #pragma endregion
 		a_db[(size_t)virtual_actions::inc] = b_inc;
 		a_db[(size_t)virtual_actions::dec] = b_dec;
-		a_db[(size_t)virtual_actions::incDR] = b_incDR;
-		a_db[(size_t)virtual_actions::decDR] = b_decDR;
 		a_db[(size_t)virtual_actions::incFP] = b_incFP;
 		a_db[(size_t)virtual_actions::decFP] = b_decFP;
 #pragma region b_mul
@@ -645,9 +628,6 @@ private:
 		a_db[(size_t)virtual_actions::pushCR] = pushMemCR;
 		a_db[(size_t)virtual_actions::popCR] = popMemCR;
 
-		a_db[(size_t)virtual_actions::pushDR] = pushMemDR;
-		a_db[(size_t)virtual_actions::popDR] = popMemDR;
-
 		a_db[(size_t)virtual_actions::pushFP] = pushMemFPR;
 		a_db[(size_t)virtual_actions::popFP] = popMemFPR;
 
@@ -659,9 +639,6 @@ private:
 
 		a_db[(size_t)virtual_actions::movsmCR] = movsmCR;
 		a_db[(size_t)virtual_actions::movgmCR] = movgmCR;
-
-		a_db[(size_t)virtual_actions::movsmDR] = movsmDR;
-		a_db[(size_t)virtual_actions::movgmDR] = movgmDR;
 
 		a_db[(size_t)virtual_actions::movsmFP] = movsmFPR;
 		a_db[(size_t)virtual_actions::movgmFP] = movgmFPR;
@@ -678,6 +655,7 @@ private:
 		a_db[(size_t)virtual_actions::jle] = p_jle;
 		a_db[(size_t)virtual_actions::jge] = p_jge;
 		a_db[(size_t)virtual_actions::cmpstr] = p_cmpstr;
+		a_db[(size_t)virtual_actions::cmpdbl] = p_cmpdbl;
 
 		a_db[(size_t)virtual_actions::gca] = p_gca;
 		a_db[(size_t)virtual_actions::hlt] = p_hlt;
