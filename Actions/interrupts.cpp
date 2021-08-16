@@ -67,8 +67,4 @@ void interrupts::init() {
 	ints_db[(size_t)int_codes::_struct_get] = m_structget;
 	ints_db[(size_t)int_codes::_struct_set] = m_structset;
 #pragma endregion
-#pragma region int_ex_symbols
-	ints_db[(size_t)int_codes::readfile]  = ex_readFile;
-	ints_db[(size_t)int_codes::writefile] = ex_writeFile;
-#pragma endregion
 }

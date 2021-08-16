@@ -328,7 +328,11 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::cmpdbl, subFPRs_opcode + 5},
 
 	{virtual_actions::incFP, subFPRs_opcode + 6},
-	{virtual_actions::decFP, subFPRs_opcode + 7}
+	{virtual_actions::decFP, subFPRs_opcode + 7},
+
+	{virtual_actions::rfread, subFPRs_opcode + 8},
+	{virtual_actions::rfwrite, subFPRs_opcode + 9},
+	{virtual_actions::rflen, subFPRs_opcode + 10}
 };
 
 std::map<virtual_actions, byte> map_FPR_set_2nd_opc = {
@@ -389,7 +393,9 @@ std::unordered_set<byte> zero_args_opcodes = {
 	ops[virtual_actions::_dlog],
 	ops[virtual_actions::_dlog2],
 	ops[virtual_actions::_dlog10],
-	ops[virtual_actions::_dpow]
+	ops[virtual_actions::_dpow],
+
+	ops[virtual_actions::rflen]
 };
 std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::_int],
@@ -429,7 +435,10 @@ std::unordered_set<byte> uint64_args_opcodes = {
 
 	ops[virtual_actions::pcrtthread],
 	ops[virtual_actions::prstthread],
-	ops[virtual_actions::pendthread]
+	ops[virtual_actions::pendthread],
+
+	ops[virtual_actions::rfread],
+	ops[virtual_actions::rfwrite]
 };
 std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::movAX],

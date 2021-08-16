@@ -420,7 +420,7 @@ template<typename T>
 inline void b_set_num(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem, registries_def reg_id) {
 	unsigned char* uc_n = nullptr;
 	try {
-		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
+		const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(args_ptr); 
 		uc_n = new unsigned char[sizeof(size_t)];
 		mem->_MG(uc_n, sizeof(size_t), vaddr);
 

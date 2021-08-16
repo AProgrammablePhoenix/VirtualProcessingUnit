@@ -1,4 +1,5 @@
 #include <iostream>
+#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <string>
@@ -8,74 +9,116 @@
 #include "../Memory/memory_symbols.h"
 #include "files.h"
 
-/* Registers statuses/values before call:
-*	SR: path to file to open
-*	RAX: number of bytes to read/write
-*	RBX: Address of output/input byte array
-*	RCX: Output for status: Successfull(0), File opening error(1), Error while reading/writing bytes(2)
-*/
-void ex_readFile(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+
+
+void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(args_p);
+
 	std::string filename = registers->sr->get();
-	size_t nBytes = registers->rax->get();
-	size_t addr = registers->rbx->get();
+	size_t nBytes, oaddr, file_offset;
+	
+	auto temp = std::make_unique<unsigned char[]>(sizeof(size_t));
+	mem->_MG(temp.get(), sizeof(size_t), vaddr);
+	nBytes = ATOULL(temp.get());
+
+	if (!nBytes) {
+		registers->rax->set(1);
+		return;
+	}
+
+	mem->pop(temp.get(), sizeof(size_t));
+	oaddr = ATOULL(temp.get());
+
+	mem->pop(temp.get(), sizeof(size_t));
+	file_offset = ATOULL(temp.get());
 
 	std::ifstream file(filename);
 
-	if (!nBytes) {
-		registers->rcx->set(1);
-		return;
-	}
-
-	unsigned char* read = new unsigned char[nBytes];
+	auto read = std::make_unique<unsigned char[]>(nBytes);
 
 	if (file) {
-		file.read((char*)read, nBytes);
-
-		if (!file) {
-			registers->rcx->set(2);
-			delete[] read;
+		if (std::filesystem::file_size(filename) <= file_offset) {
+			registers->rax->set(2);
+			file.close();
 			return;
 		}
 
-		mem->_MS(read, nBytes, addr);
-		delete[] read;
-		registers->rcx->set(0);
+		file.seekg(file_offset);
+		file.read((char*)read.get(), nBytes);
+
+		if (!file) {
+			registers->rax->set(3);
+			file.close();
+			return;
+		}
+
+		mem->_MS(read.get(), nBytes, oaddr);
+		registers->rax->set(0);
 	}
 	else {
-		registers->rcx->set(1);
-		delete[] read;
+		registers->rax->set(4);
 		return;
 	}
 }
-void ex_writeFile(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string filename = registers->sr->get();
-	size_t nBytes = registers->rax->get();
-	size_t addr = registers->rcx->get();
+void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(args_p);
 
-	std::ofstream file(filename);
+	std::string filename = registers->sr->get();
+	size_t nBytes, iaddr, file_offset;
+
+	auto temp = std::make_unique<unsigned char[]>(sizeof(size_t));
+	mem->_MG(temp.get(), sizeof(size_t), vaddr);
+	nBytes = ATOULL(temp.get());
 
 	if (!nBytes) {
 		registers->rcx->set(1);
 		return;
 	}
 
-	unsigned char* bytes = new unsigned char[nBytes];
-	mem->_MG(bytes, nBytes, addr);
+	mem->pop(temp.get(), sizeof(size_t));
+	iaddr = ATOULL(temp.get());
+
+	mem->pop(temp.get(), sizeof(size_t));
+	file_offset = ATOULL(temp.get());
+
+	std::ofstream file(filename);
+
+	auto bytes = std::make_unique<unsigned char[]>(nBytes);
+	mem->_MG(bytes.get(), nBytes, iaddr);
 
 	if (file) {
-		file.write((const char*)bytes, nBytes);
-		delete[] bytes;
+		if (std::filesystem::file_size(filename) <= file_offset) {
+			file.close();
+			file.clear();
+			file.open(filename, std::ios::app);
+		}
+		else {
+			file.seekp(file_offset);
+		}
+
+		file.write((const char*)bytes.get(), nBytes);
 
 		if (!file) {
-			registers->rcx->set(2);
+			registers->rcx->set(3);
 			return;
 		}
 
 		registers->rcx->set(0);
 	}
 	else {
-		registers->rcx->set(1);
-		delete[] bytes;
+		registers->rcx->set(4);
 		return;
 	}
+}
+
+void ex_rflen(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	void* ptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
+
+	std::error_code ec;
+	((reg_int<size_t>*)ptr)->set(std::filesystem::file_size(registers->sr->get(), ec));
+
+	if (ec)
+		registers->rax->set(1);
+	else
+		registers->rax->set(0);
 }

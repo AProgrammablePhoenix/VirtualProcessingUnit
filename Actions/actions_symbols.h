@@ -307,9 +307,13 @@ enum class virtual_actions {
 	ncrtep,
 	nselep,
 
+	rfread,
+	rfwrite,
+	rflen,
+
 	pcrtthread,
 	prstthread,
-	pendthread	
+	pendthread
 };
 
 extern void (*a_db[(size_t)virtual_actions::pendthread + 1])(std::shared_ptr<void>, regs*, memory*);
@@ -674,6 +678,11 @@ private:
 		a_db[(size_t)virtual_actions::nhrecv] = net_hrecv;
 		a_db[(size_t)virtual_actions::ncrtep] = net_crtep;
 		a_db[(size_t)virtual_actions::nselep] = net_selep;
+#pragma endregion
+#pragma region ext_symbols
+		a_db[(size_t)virtual_actions::rfread] = ex_rfread;
+		a_db[(size_t)virtual_actions::rfwrite] = ex_rfwrite;
+		a_db[(size_t)virtual_actions::rflen] = ex_rflen;
 #pragma endregion
 #pragma region threading
 		a_db[(size_t)virtual_actions::pcrtthread] = p_crtthread;

@@ -405,7 +405,11 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"crtthread", virtual_actions::pcrtthread},
 	{"rstthread", virtual_actions::prstthread},
-	{"endthread", virtual_actions::pendthread}
+	{"endthread", virtual_actions::pendthread},
+
+	{"rfread", virtual_actions::rfread},
+	{"rfwrite", virtual_actions::rfwrite},
+	{"rflen", virtual_actions::rflen}
 #pragma endregion
 };
 
