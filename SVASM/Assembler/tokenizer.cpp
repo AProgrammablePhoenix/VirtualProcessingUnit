@@ -121,7 +121,7 @@ static bool isAddr(const std::string& s) {
 
 	return true;
 }
-// check whether s represents a memory address stores in a register or not
+// check whether s represents a memory address stored in a register or not
 static bool isRegAddr(const std::string& s) {
 	if (!isAddr(s))
 		return false;
@@ -129,6 +129,20 @@ static bool isRegAddr(const std::string& s) {
 	std::string potential_reg = s.substr(1, s.size() - 2);
 	if (registers.find(potential_reg) != registers.end()) {
 		if (potential_reg != "sr" && potential_reg != "cr" && potential_reg != "dr")
+			return true;
+	}
+
+	return false;
+}
+// check whether s represents an immediate address or not
+static bool isImmAddr(const std::string& s) {
+	if (!isAddr(s))
+		return false;
+
+	std::string potential_addr = s.substr(1, s.size() - 2);
+	tokenTypes tempT;
+	if (isNum(potential_addr, tempT)) {
+		if (tempT == tokenTypes::hex_n || tempT == tokenTypes::unsigned_n)
 			return true;
 	}
 
@@ -157,6 +171,10 @@ int tokenizeArgument(const std::unordered_set<std::string> labels, const std::st
 		}
 		else if (isRegAddr(arg)) {
 			out_tokenized = token(arg, tokenTypes::stored_addr_reg);
+			return OK;
+		}
+		else if (isImmAddr(arg)) {
+			out_tokenized = token(arg, tokenTypes::stored_addr_raw);
 			return OK;
 		}
 		else {
@@ -205,6 +223,14 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 		if (targ.type == tokenTypes::hex_n) {
 			targ.element = std::to_string(std::stoull(targ.element, 0, 0x10));
 			targ.type = tokenTypes::unsigned_n;
+		}
+		else if (targ.type == tokenTypes::stored_addr_raw) {
+			tokenTypes tempT;
+			targ.element = targ.element.substr(1, targ.element.size() - 2);
+			isNum(targ.element, tempT);
+
+			if (tempT == tokenTypes::hex_n)
+				targ.element = std::to_string(std::stoull(targ.element, 0, 0x10));
 		}
 
 		out_tokenized.arguments.emplace_back(targ);

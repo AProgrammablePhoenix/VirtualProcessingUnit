@@ -366,21 +366,8 @@ int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions)
 	else if (args[0].element == "cr")
 		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 	else if (args[0].type == tokenTypes::fp_reg) {
-		if (args[0].element.starts_with("rfpr")) {
-			pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-			pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-		}
-		else {
-			if (!unsafe_flag)
-				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3"); // Save rfpr3
-
-			pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[0].element);
-			pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-			pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-
-			if (!unsafe_flag)
-				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3"); // Restore rfpr3
-		}
+		pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
 	}
 	else
 		pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
@@ -1015,34 +1002,8 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			if (args[1].type != tokenTypes::double_n && args[1].type != tokenTypes::fp_reg)
 				return ARGV_ERROR; // Not possible
 			else if (args[1].type == tokenTypes::fp_reg) {
-				if (args[1].element.starts_with("rfpr")) {
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-					pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, args[0].element);
-				}
-				else {
-					if (args[0].element != "rfpr3") {
-						if (!unsafe_flag)
-							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-
-						pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[1].element);
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-						pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, args[0].element);
-
-						if (!unsafe_flag)
-							pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-					}
-					else {
-						if (!unsafe_flag)
-							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
-
-						pushAction(out_actions, virtual_actions::movRFPR2, tokenTypes::fp_reg, args[1].element);
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
-						pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, "rfpr3");
-
-						if (!unsafe_flag)
-							pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr2");
-					}
-				}
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
+				pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, args[0].element);
 			}
 			else {
 				if (args[0].element != "rfpr3") {
@@ -1132,28 +1093,70 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 	if (args.size() != 1)
 		return WRONGNARGS;
 
-	if (args[0].type != tokenTypes::reg && args[0].type != tokenTypes::fp_reg)
+	if (args[0].type == tokenTypes::label || args[0].type == tokenTypes::str) // Str is not enough stable to be processed in this case
 		return ARGV_ERROR;
 
-	if (inst == "push") {
-		if (args[0].element == "sr")
-			pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
-		else if (args[0].element == "cr")
-			pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, "");
-		else if (args[0].type == tokenTypes::fp_reg)
-			pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-		else
-			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+	if (args[0].type == tokenTypes::reg || args[0].type == tokenTypes::fp_reg) {
+		if (inst == "push") {
+			if (args[0].element == "sr")
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+			else if (args[0].element == "cr")
+				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, "");
+			else if (args[0].type == tokenTypes::fp_reg)
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+			else
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+		}
+		else if (inst == "pop") {
+			if (args[0].element == "sr")
+				pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, "");
+			else if (args[0].element == "cr")
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
+			else if (args[0].type == tokenTypes::fp_reg)
+				pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, args[0].element);
+			else
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+		}
 	}
-	else if (inst == "pop") {
-		if (args[0].element == "sr")
-			pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, "");
-		else if (args[0].element == "cr")
-			pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
-		else if (args[0].type == tokenTypes::fp_reg)
-			pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, args[0].element);
-		else
-			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+	else if (args[0].type != tokenTypes::stored_addr_raw && args[0].type != tokenTypes::stored_addr_reg) {
+		if (inst == "push") {
+			if (args[0].type == tokenTypes::unsigned_n || args[0].type == tokenTypes::signed_n) { // Assuming x is 1*sizeof(size_t)
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(sizeof(size_t))); // RSP - x
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // RSP - 2x
+					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(2 * sizeof(size_t))); // RSP
+				}
+
+				pushAction(out_actions, virtual_actions::setRAX, args[0].type, args[0].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // RSP - x
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(sizeof(size_t))); // RSP - 2x
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // RSP - x => wanted result
+				}
+			}
+			else if (args[0].type == tokenTypes::double_n) { // Assuming x is 1*sizeof(long double)
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(sizeof(long double))); // RSP - x
+					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3"); // RSP - 2x
+					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(2 * sizeof(long double))); // RSP
+				}
+
+				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[0].element);
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(sizeof(long double))); // RSP - 2x
+					pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3"); // RSP - x
+				}
+			}
+		}
+		else if (inst == "pop") { // Not possible			
+			return ARGV_ERROR;
+		}
+	}
+	else {
+		// Needs presence of type quantifiers to know much data to push/pop from/to the specified address
 	}
 
 	return OK;
@@ -1163,59 +1166,212 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 		if (args.size() != 2)
 			return WRONGNARGS;
 
-		/* MLOAD:
-		*	if args[0] := stored_addr_reg && args[1] := reg. interpreted as movsm
-		*	else if args[0] := reg && args[1] := stored_addr_reg. interpreted as movgm
-		*	else returns ARGV_ERROR
-		*/
-		if (args[0].type == tokenTypes::stored_addr_reg && (args[1].type == tokenTypes::reg || args[1].type == tokenTypes::fp_reg)) {
-			if (args[1].element == "sr")
-				pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			else if (args[1].element == "cr")
-				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-			else if (args[1].type == tokenTypes::fp_reg) {
-				std::string reg_addr = args[0].element.substr(1, args[0].element.size() - 2);
-				if (reg_addr == "rax")
-					pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
+		if (args[0].type == tokenTypes::stored_addr_reg || args[0].type == tokenTypes::stored_addr_raw) {
+			if (args[1].type == tokenTypes::reg || args[1].type == tokenTypes::fp_reg) {
+				if (args[0].type == tokenTypes::stored_addr_reg) {
+					if (args[1].element == "sr")
+						pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+					else if (args[1].element == "cr")
+						pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+					else if (args[1].type == tokenTypes::fp_reg) {
+						std::string reg_addr = args[0].element.substr(1, args[0].element.size() - 2);
+						if (reg_addr == "rax")
+							pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
+						else {
+							if (!unsafe_flag)
+								pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+							pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
+							pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
+
+							if (!unsafe_flag)
+								pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+						}
+					}
+					else {
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+					}
+				}
 				else {
-					if (!unsafe_flag)
+					if (args[1].element != "rax") {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
+
+						if (args[1].element == "sr")
+							pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, "rax");
+						else if (args[1].element == "cr")
+							pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
+						else if (args[1].type == tokenTypes::fp_reg)
+							pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
+						else {
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+							pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+						}
+
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+					}
+					else {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+						pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[0].element);
+
+						// If args[1].element == "rax" then the only possibility of movsm is that one
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
-					pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
-
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+						if (args[1].element == "sr")
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+					}
 				}
 			}
-			else {
-				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
-				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+			else if (args[1].type == tokenTypes::unsigned_n || args[1].type == tokenTypes::signed_n) {
+				if (args[0].type == tokenTypes::stored_addr_reg) {
+					if (args[0].element == "[rax]") {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+						pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+					}
+					else {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+					}
+				}
+				else {
+					if (!unsafe_flag) {
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+					}
+					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
+					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+					pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+
+					if (!unsafe_flag) {
+						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+					}
+				}
+			}
+			else if (args[1].type == tokenTypes::double_n) {
+				if (args[0].type == tokenTypes::stored_addr_reg) {
+					if (args[0].element == "[rax]") {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+
+						pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+						pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
+
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
+					}
+					else {
+						if (!unsafe_flag) {
+							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+						}
+
+						pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
+						pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+						pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
+
+						if (!unsafe_flag) {
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+							pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
+						}
+					}
+				}
+				else {
+					if (!unsafe_flag) {
+						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					}
+
+					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
+					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
+
+					if (!unsafe_flag) {
+						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
+					}
+				}
 			}
 		}
-		else if ((args[0].type == tokenTypes::reg || args[0].type == tokenTypes::fp_reg) && args[1].type == tokenTypes::stored_addr_reg) {
-			if (args[0].element == "sr")
-				pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			else if (args[0].element == "cr")
-				pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-			else if (args[0].type == tokenTypes::fp_reg) {
-				std::string reg_addr = args[1].element.substr(1, args[1].element.size() - 2);
-				if (reg_addr == "rax")
-					pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
+		else if ((args[0].type == tokenTypes::reg || args[0].type == tokenTypes::fp_reg) 
+				&& (args[1].type == tokenTypes::stored_addr_reg || args[1].type == tokenTypes::stored_addr_raw)) {
+			if (args[1].type == tokenTypes::stored_addr_reg) {
+				if (args[0].element == "sr")
+					pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+				else if (args[0].element == "cr")
+					pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+				else if (args[0].type == tokenTypes::fp_reg) {
+					std::string reg_addr = args[1].element.substr(1, args[1].element.size() - 2);
+					if (reg_addr == "rax")
+						pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
+					else {
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+
+						pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
+						pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
+
+						if (!unsafe_flag)
+							pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+					}
+				}
 				else {
+					pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+				}
+			}
+			else {
+				if (args[0].element != "rax") {
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
 
-					pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
-					pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
+					if (args[0].element == "sr")
+						pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, "rax");
+					else if (args[0].element == "cr")
+						pushAction(out_actions, virtual_actions::movgmCR, tokenTypes::reg, "rax");
+					else if (args[0].type == tokenTypes::fp_reg)
+						pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
+					else {
+						pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
+						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+					}
 
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
 				}
-			}
-			else {
-				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, args[1].element.substr(1, args[1].element.size() - 2));
-				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
+				else {
+					if (!unsafe_flag)
+						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
+					pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+
+					pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rbx");
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+
+					if (!unsafe_flag)
+						pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rbx");
+				}
 			}
 		}
 		else { return ARGV_ERROR; }
@@ -1354,26 +1510,10 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 		}
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
 			if (args[1].type == tokenTypes::fp_reg) {
-				if (args[1].element.starts_with("rfpr")) {
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
-				}
-				else {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[1].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-
-					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
-
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-				}
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 			}
 			else {
 				// Not yet implemented
@@ -1439,41 +1579,19 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 		}
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
 			if (args[1].type == tokenTypes::fp_reg) {
-				if (args[1].element.starts_with("rfpr")) {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
 
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-					pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
 
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
-				}
-				else {
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					}
-
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[1].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
-
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
-
-					pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
-
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-						pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
-					}
-				}
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
 			}
 			else {
 				// Not yet implemented
@@ -1560,7 +1678,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 			}
 		}
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
-			return ARGV_ERROR; // No real meaning of doing that comparison
+			return ARGV_ERROR; // No real purpose of doing that comparison
 		}
 		else {
 			if (args[1].type != tokenTypes::reg) {
@@ -1595,41 +1713,19 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 	else if (args[0].type == tokenTypes::fp_reg) {
 		if (args[1].element == "sr" || args[1].type == tokenTypes::str) {
 			if (args[1].type == tokenTypes::reg) {
-				if (args[0].element.starts_with("rfpr")) {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
 
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-					pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
 
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
-				}
-				else {
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					}
-
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
-
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
-					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
-
-					pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
-
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-						pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
-					}
-				}
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
 			}
 			else {
 				// Not yet implemented
@@ -1652,93 +1748,39 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::popFP, tokenTypes::reg, "rfpr2");
 			}
 			else {
-				if (args[0].element.starts_with("rfpr")) {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::cmpdbl, tokenTypes::reg, "");
-
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::reg, "rfpr3");
-				}
-				else {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::cmpdbl, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+				pushAction(out_actions, virtual_actions::cmpdbl, tokenTypes::reg, "");
 
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::reg, "rfpr3");
-				}
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popFP, tokenTypes::reg, "rfpr3");
 			}
 		}
 		else {
 			if (args[1].type == tokenTypes::reg) {
-				if (args[0].element.starts_with("rfpr")) {
-					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
 
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
-				}
-				else {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-
-					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
-
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
-
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-				}
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 			}
 			else {
-				if (args[0].element.starts_with("rfpr")) {
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					if (!unsafe_flag)
-						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-				}
-				else {
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					}
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-
-					pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[0].element);
-					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-					pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
-					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
-
-					if (!unsafe_flag) {
-						pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
-						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-					}
-				}
 			}
 		}
 	}
