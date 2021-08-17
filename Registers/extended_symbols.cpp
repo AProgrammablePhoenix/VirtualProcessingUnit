@@ -257,7 +257,7 @@ void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 }
 
 /*	Stack before calling:
-*	... VALUE (pushed with pushFP RFPRx)(so that a long double value is used)
+*	... FP_VALUE
 *	
 *	Registers before calling:
 *	SR: any value
@@ -278,7 +278,7 @@ void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 }
 
 /*  Stack statis before calling:
-*	... VALUE (pushed with pushFP RFPRx)
+*	... FP_VALUE
 *	With output pushed onto stack
 * 
 *   Convert pushed value of FP register to size_t

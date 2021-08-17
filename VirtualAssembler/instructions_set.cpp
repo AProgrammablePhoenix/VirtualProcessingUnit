@@ -390,11 +390,6 @@ std::unordered_set<byte> zero_args_opcodes = {
 	ops[virtual_actions::svcall],
 	ops[virtual_actions::rscall],
 
-	ops[virtual_actions::_dlog],
-	ops[virtual_actions::_dlog2],
-	ops[virtual_actions::_dlog10],
-	ops[virtual_actions::_dpow],
-
 	ops[virtual_actions::rflen]
 };
 std::unordered_set<byte> uint64_args_opcodes = {
@@ -551,7 +546,12 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::_log],
 	ops[virtual_actions::_log2],
 	ops[virtual_actions::_log10],
-	ops[virtual_actions::_pow]
+	ops[virtual_actions::_pow],
+
+	ops[virtual_actions::_dlog],
+	ops[virtual_actions::_dlog2],
+	ops[virtual_actions::_dlog10],
+	ops[virtual_actions::_dpow]
 };
 std::unordered_set<byte> parted_opcodes = {
 	setFPRs_opcode,

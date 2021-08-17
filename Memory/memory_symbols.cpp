@@ -29,45 +29,45 @@
 #endif
 
 namespace {
-	void FPR_push_helper(const std::floating_point auto& value, const size_t& bin_size, memory* const& mem) {
-		unsigned char* uc_fp = new unsigned char[bin_size];
+	void FPR_push_helper(const long double& value, memory* const& mem) {
+		unsigned char* uc_fp = new unsigned char[sizeof(long double)];
 #if defined(ISWIN)
-		memcpy_s(uc_fp, bin_size, &value, bin_size);
+		memcpy_s(uc_fp, sizeof(long double), &value, sizeof(long double));
 #else
-		memcpy(uc_fp, &value, bin_size);
+		memcpy(uc_fp, &value, sizeof(long double));
 #endif
-		mem->push(uc_fp, bin_size);
+		mem->push(uc_fp, sizeof(long double));
 		delete[] uc_fp;
 	}
-	void FPR_pop_helper(const size_t& bin_size, memory* const& mem, std::floating_point auto& output) {
-		unsigned char* uc_fp = new unsigned char[bin_size];
-		mem->pop(uc_fp, bin_size);
+	void FPR_pop_helper(memory* const& mem, long double& output) {
+		unsigned char* uc_fp = new unsigned char[sizeof(long double)];
+		mem->pop(uc_fp, sizeof(long double));
 
 #if defined(ISWIN)
-		memcpy_s(&output, bin_size, uc_fp, bin_size);
+		memcpy_s(&output, sizeof(long double), uc_fp, sizeof(long double));
 #else
-		memcpy(&output, uc_fp, bin_size);
+		memcpy(&output, uc_fp, sizeof(long double));
 #endif
 		delete[] uc_fp;
 	}
 
-	void FPR_mem_set(const std::floating_point auto& value, const size_t& bin_size, const size_t& addr, memory* const& mem) {
-		unsigned char* uc_fp = new unsigned char[bin_size];
+	void FPR_mem_set(const long double& value, const size_t& addr, memory* const& mem) {
+		unsigned char* uc_fp = new unsigned char[sizeof(long double)];
 #if defined(ISWIN)
-		memcpy_s(uc_fp, bin_size, &value, bin_size);
+		memcpy_s(uc_fp, sizeof(long double), &value, sizeof(long double));
 #else
-		memcpy(uc_fp, &value, bin_size);
+		memcpy(uc_fp, &value, sizeof(long double));
 #endif
-		mem->_MS(uc_fp, bin_size, addr);
+		mem->_MS(uc_fp, sizeof(long double), addr);
 		delete[] uc_fp;
 	}
-	void FPR_mem_get(const size_t& bin_size, const size_t& addr, memory* const& mem, std::floating_point auto& output) {
-		unsigned char* uc_fp = new unsigned char[bin_size];
-		mem->_MG(uc_fp, bin_size, addr);
+	void FPR_mem_get(const size_t& addr, memory* const& mem, long double& output) {
+		unsigned char* uc_fp = new unsigned char[sizeof(long double)];
+		mem->_MG(uc_fp, sizeof(long double), addr);
 #if defined(ISWIN)
-		memcpy_s(&output, bin_size, uc_fp, bin_size);
+		memcpy_s(&output, sizeof(long double), uc_fp, sizeof(long double));
 #else
-		memcpy(&output, uc_fp, bin_size);
+		memcpy(&output, uc_fp, sizeof(long double));
 #endif
 		delete[] uc_fp;
 	}
@@ -173,20 +173,26 @@ void popMemCR(GLOBL_ARGS_D1) {
 void pushMemFPR(GLOBL_ARGS) {
 	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
-		FPR_push_helper(((OrphanReg<float>*)regptr)->get(), sizeof(float), mem);
+		FPR_push_helper((long double)((OrphanReg<float>*)regptr)->get(),mem);
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
-		FPR_push_helper(((OrphanReg<double>*)regptr)->get(), sizeof(double), mem);
+		FPR_push_helper((long double)((OrphanReg<double>*)regptr)->get(), mem);
 	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
-		FPR_push_helper(((OrphanReg<long double>*)regptr)->get(), sizeof(long double), mem);
+		FPR_push_helper(((OrphanReg<long double>*)regptr)->get(), mem);
 }
 void popMemFPR(GLOBL_ARGS) {
 	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
-	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) 
-		FPR_pop_helper(sizeof(float), mem, ((OrphanReg<float>*)regptr)->data());
-	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
-		FPR_pop_helper(sizeof(double), mem, ((OrphanReg<double>*)regptr)->data());
+	long double ld = 0;
+
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {
+		FPR_pop_helper(mem, ld);
+		*((OrphanReg<float>*)regptr) = (float)ld;
+	}
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr)) {
+		FPR_pop_helper(mem, ld);
+		*((OrphanReg<double>*)regptr) = (double)ld;
+	}
 	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
-		FPR_pop_helper(sizeof(long double), mem, ((OrphanReg<long double>*)regptr)->data());
+		FPR_pop_helper(mem, ((OrphanReg<long double>*)regptr)->data());
 }
 
 void movsm(GLOBL_ARGS_D2) {
@@ -287,22 +293,27 @@ void movsmFPR(GLOBL_ARGS) {
 
 	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
-		FPR_mem_set(((OrphanReg<float>*)regptr)->get(), sizeof(float), addr, mem);
+		FPR_mem_set((long double)((OrphanReg<float>*)regptr)->get(), addr, mem);
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
-		FPR_mem_set(((OrphanReg<double>*)regptr)->get(), sizeof(double), addr, mem);
+		FPR_mem_set((long double)((OrphanReg<double>*)regptr)->get(), addr, mem);
 	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
-		FPR_mem_set(((OrphanReg<long double>*)regptr)->get(), sizeof(long double), addr, mem);
+		FPR_mem_set(((OrphanReg<long double>*)regptr)->get(), addr, mem);
 }
 void movgmFPR(GLOBL_ARGS) {
 	size_t addr = registers->rax->get();
-
 	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
-	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
-		FPR_mem_get(sizeof(float), addr, mem, ((OrphanReg<float>*)regptr)->data());
-	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
-		FPR_mem_get(sizeof(double), addr, mem, ((OrphanReg<double>*)regptr)->data());
+	long double ld = 0;
+
+	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {
+		FPR_mem_get(addr, mem, ld);
+		*((OrphanReg<float>*)regptr) = (float)ld;
+	}
+	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr)) {
+		FPR_mem_get(addr, mem, ld);
+		*((OrphanReg<double>*)regptr) = (double)ld;
+	}
 	else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)regptr))
-		FPR_mem_get(sizeof(long double), addr, mem, ((OrphanReg<long double>*)regptr)->data());
+		FPR_mem_get(addr, mem, ((OrphanReg<long double>*)regptr)->data());
 }
 
 // Memory arrays symbols
