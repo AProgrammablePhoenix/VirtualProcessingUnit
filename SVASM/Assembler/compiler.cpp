@@ -276,7 +276,7 @@ namespace {
 		}
 	}
 
-	inline void CRToNum(std::vector<action>& out_actions, const bool& useRAX) {
+	inline void CRToNum(std::vector<action>& out_actions, const bool useRAX) {
 		if (useRAX) {
 			// Set first 8 bytes of memory to 0
 			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
@@ -382,8 +382,11 @@ int preprocInc(const std::vector<token>& args, std::vector<action>& out_actions)
 	if (args[0].type != tokenTypes::reg && args[0].type != tokenTypes::fp_reg)
 		return ARGV_ERROR;
 
+	if (args[0].element == "sr")
+		return ARGV_ERROR; // No purpose of incrementing sr
+
 	// Not yet implemented
-	if (args[0].element == "sr" || args[0].element == "cr")
+	if (args[0].element == "cr")
 		return ARGV_ERROR;
 	else if (args[0].type == tokenTypes::fp_reg)
 		pushAction(out_actions, virtual_actions::incFP, tokenTypes::fp_reg, args[0].element);
@@ -399,8 +402,11 @@ int preprocDec(const std::vector<token>& args, std::vector<action>& out_actions)
 	if (args[0].type != tokenTypes::reg)
 		return ARGV_ERROR;
 
+	if (args[0].element == "sr")
+		return ARGV_ERROR;
+
 	// Not yet implemented
-	if (args[0].element == "sr" || args[0].element == "cr")
+	if (args[0].element == "cr")
 		return ARGV_ERROR;
 	else if (args[0].type == tokenTypes::fp_reg)
 		pushAction(out_actions, virtual_actions::decFP, tokenTypes::fp_reg, args[0].element);
@@ -690,12 +696,10 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr")
-			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
+			return ARGV_ERROR; // No purpose of doing that
 
-		if (args[0].element == "cr" || args[0].element == "dr") {
-			// Not yet implemented
+		if (args[0].element == "cr") // Not yet implemented
 			return OK;
-		}
 
 		pushAction(out_actions, virtual_actions::_not, tokenTypes::reg, args[0].element);
 
@@ -709,12 +713,10 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[1].element == "sr")
-			return ARGV_ERROR; // Won't probably be implemented (or maybe for a long time)
+			return ARGV_ERROR; // No purpose of doing that
 
-		if (args[0].element == "cr" || args[1].element == "cr") {
-			// Not yet implemented
+		if (args[0].element == "cr" || args[1].element == "cr") // Not yet implemented
 			return OK;
-		}
 
 		if (args[1].type != tokenTypes::reg) {
 			if (args[1].type != tokenTypes::unsigned_n)
@@ -756,12 +758,10 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[1].element == "sr")
-			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
+			return ARGV_ERROR; // No purpose of doing that
 
-		if (args[0].element == "cr" || args[1].element == "cr") {
-			// Not yet implemented
+		if (args[0].element == "cr" || args[1].element == "cr") // Not yet implemented
 			return OK;
-		}
 
 		if (args[1].type != tokenTypes::reg) {
 			if (args[1].type != tokenTypes::unsigned_n)
@@ -803,12 +803,10 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[1].element == "sr")
-			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
+			return ARGV_ERROR; // No purpose of doing that
 
-		if (args[0].element == "cr" || args[1].element == "cr") {
-			// Not yet implemented
+		if (args[0].element == "cr" || args[1].element == "cr")  // Not yet implemented			
 			return OK;
-		}
 
 		if (args[1].type != tokenTypes::reg) {
 			if (args[1].type != tokenTypes::unsigned_n)
@@ -852,10 +850,8 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[1].element == "cr") {
-			// Not yet implemented
+		if (args[0].element == "cr" || args[1].element == "cr") // Not yet implemented
 			return OK;
-		}
 
 		if (args[1].type != tokenTypes::reg) {
 			if (args[1].type != tokenTypes::unsigned_n)
@@ -899,10 +895,8 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		if (args[0].element == "sr" || args[1].element == "sr")
 			return ARGV_ERROR; // Won't probably be implemented (or maybe in a long time)
 
-		if (args[0].element == "cr" || args[1].element == "cr") {
-			// Not yet implemented
+		if (args[0].element == "cr" || args[1].element == "cr") // Not yet implemented
 			return OK;
-		}
 
 		if (args[1].type != tokenTypes::reg) {
 			if (args[1].type != tokenTypes::unsigned_n)
@@ -948,7 +942,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[0].element == "cr")
-			return OK; // Probably won't be implemented
+			return OK; // No purpose of doing that
 		else if (args[0].type == tokenTypes::fp_reg)
 			pushAction(out_actions, virtual_actions::_dlog, tokenTypes::fp_reg, args[0].element);
 		else
@@ -964,7 +958,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[0].element == "cr")
-			return ARGV_ERROR; // Probably won't be implemented
+			return ARGV_ERROR; // No purpose of doing that
 		else if (args[0].type == tokenTypes::fp_reg)
 			pushAction(out_actions, virtual_actions::_dlog2, tokenTypes::fp_reg, args[0].element);
 		else
@@ -980,7 +974,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[0].element == "cr")
-			return ARGV_ERROR; // Probably won't be implemented
+			return ARGV_ERROR; // No purpose of doing that
 		else if (args[0].type == tokenTypes::fp_reg)
 			pushAction(out_actions, virtual_actions::_dlog10, tokenTypes::fp_reg, args[0].element);
 		else
@@ -996,7 +990,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			return ARGV_ERROR;
 
 		if (args[0].element == "sr" || args[0].element == "cr" || args[1].element == "sr" || args[1].element == "cr")
-			return ARGV_ERROR; // Probably won't be implemented
+			return ARGV_ERROR; // No purpose of doing that
 
 		else if (args[0].type == tokenTypes::fp_reg) {
 			if (args[1].type != tokenTypes::double_n && args[1].type != tokenTypes::fp_reg)
@@ -1461,7 +1455,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 		return ARGV_ERROR;
 
 	if (num_registers.find(args[0].element) != num_registers.end()) {
-		if (args[1].element == "sr" || args[1].type == tokenTypes::str) {
+		if ((args[1].element == "sr" && args[1].type == tokenTypes::reg) || args[1].type == tokenTypes::str) {
 			if (args[1].type == tokenTypes::reg) { // TODO: change to compare SR with string repr of register
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save SR
@@ -1477,7 +1471,19 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore SR
 			}
 			else {
-				// Not yet implemented
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, "");
 			}
 		}
 		else if (args[1].element == "cr") {
@@ -1516,7 +1522,17 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 			}
 			else {
-				// Not yet implemented
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
 			}
 		}
 		else {
@@ -1574,7 +1590,22 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				}
 			}
 			else {
-				// Not yet implemented
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+					pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
+				}
+
+				pushAction(out_actions, virtual_actions::setCR, tokenTypes::str, args[1].element);
+				CRToNum(out_actions, true);
+				getFirstCharSR(out_actions);
+
+				// Do comparison
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+				}
 			}
 		}
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
@@ -1594,7 +1625,24 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
 			}
 			else {
-				// Not yet implemented
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
+				}
+				
+				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rpfr3");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::popFP, tokenTypes::fp_reg, "rfpr3");
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Save sr
+				}
 			}
 		}
 		else {
@@ -1660,6 +1708,44 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
 				// Set value of CR into 7th byte of memory
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, std::to_string(sizeof(size_t) - 1));
+				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
+
+				// Fetch first 8 bytes of memory and leave them on stack
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
+
+				CRToNum(out_actions, true); // Convert CR to ULL and leave its value on stack
+
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
+			}
+			else {
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				}
+
+				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
+				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+
+				// Get first char of SR
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+				// Prepare recast arguments
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+				// Invoke recast inerrupt
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+				// Pop first char of SR from stack
+				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
+				// Set first 8 bytes of memory to 0
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
+				// Set value of CR into 7th byte of memory
 				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "7");
 				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
@@ -1668,13 +1754,14 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
 				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
 
-				CRToNum(out_actions, true);
+				CRToNum(out_actions, true); // Convert CR to ULL and leave its value on stack
 
-				if (!unsafe_flag)
+				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, "");
 					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax"); // Restore rax
-			}
-			else {
-				// Not yet implemented
+				}
 			}
 		}
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
@@ -1699,7 +1786,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
 
-				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
 
 				CRToNum(out_actions, true);
 
@@ -1728,7 +1815,20 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
 			}
 			else {
-				// Not yet implemented
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
+
+				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
+
+				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
+
+				if (!unsafe_flag)
+					pushAction(out_actions, virtual_actions::popSR, tokenTypes::reg, ""); // Restore sr
 			}
 		}
 		else if (args[1].element == "cr") {
