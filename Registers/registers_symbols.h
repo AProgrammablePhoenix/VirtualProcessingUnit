@@ -472,7 +472,7 @@ inline long double b_fetch_dbl_args(const std::shared_ptr<void>& args_ptr, regs*
 		const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args_ptr);
 
 		uc_d = new unsigned char[sizeof(long double)];
-		mem->_MG(uc_d, sizeof(double), vaddr);
+		mem->_MG(uc_d, sizeof(long double), vaddr);
 
 		long double res = ATOLD(uc_d);
 		delete[] uc_d;

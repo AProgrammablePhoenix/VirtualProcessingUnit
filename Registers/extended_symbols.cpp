@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <memory>
 #include <sstream>
 #include <string>
@@ -271,7 +273,7 @@ void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	mp_memcpy(uc_ld.get(), &d, sizeof(long double));
 
 	std::ostringstream ss;
-	ss << std::fixed << d;
+	ss << std::setprecision(std::numeric_limits<long double>::digits10) << std::fixed << d;
 	std::string s_value = ss.str();
 
 	registers->sr->set(s_value);

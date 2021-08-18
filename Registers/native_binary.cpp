@@ -162,7 +162,7 @@ void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 
 	long double _pow = 0;
 	mem->pop(uc_ld.get(), sizeof(long double));
-	mp_memcpy(uc_ld.get(), &_pow, sizeof(long long));
+	mp_memcpy(uc_ld.get(), &_pow, sizeof(long double));
 	
 
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {

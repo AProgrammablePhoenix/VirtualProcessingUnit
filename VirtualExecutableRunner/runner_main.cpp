@@ -192,10 +192,10 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 				i++;
 
 				size_t addr = mem->_SDZTOP();
-				mem->_SDZS(byteArray->data() + i, sizeof(double));
-				i += sizeof(double) - 1;
+				mem->_SDZS(byteArray->data() + i, sizeof(long double));
+				i += sizeof(long double) - 1;
 
-				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&&>(addr, (size_t)sizeof(double))));
+				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple<size_t&, size_t&&>(addr, (size_t)sizeof(long double))));
 				actions.push_back(_action);
 
 				continue;

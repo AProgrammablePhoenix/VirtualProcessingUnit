@@ -1,5 +1,7 @@
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -309,14 +311,14 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 				}
 				else if (parsed[i].decl_type == "double") {
 					std::stringstream ss(parsed[i].decl_value);
-					double n_value;
-					ss >> n_value;
+					long double n_value;
+					ss >> std::setprecision(std::numeric_limits<long double>::digits10) >> n_value;
 
 					unsigned char* uc_d = nullptr;
 					
-					DTOA(n_value, &uc_d);
+					LDTOA(n_value, &uc_d);
 
-					storage.set(parsed[i].decl_name, uc_d, sizeof(double));
+					storage.set(parsed[i].decl_name, uc_d, sizeof(long double));
 					storage.setVariablesTree(parsed[i]);
 
 					delete[] uc_d;

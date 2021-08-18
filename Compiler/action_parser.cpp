@@ -1,6 +1,8 @@
 #include <filesystem>
 #include <fstream>
+#include <iomanip>
 #include <iostream>
+#include <limits>
 #include <map>
 #include <memory>
 #include <sstream>
@@ -496,9 +498,9 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 		else if (prefix == "D") {
 			std::string s_val = content.substr(1);
 
-			double value;
+			long double value;
 			std::stringstream ss(s_val);
-			ss >> value;
+			ss >> std::setprecision(std::numeric_limits<long double>::digits10) >> value;
 			std::stringstream().swap(ss);
 
 			ss << std::hex << vars->sys_vars_count;
@@ -514,9 +516,9 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 			std::stringstream().swap(ss);
 
 			unsigned char* uc_d = nullptr;
-			DTOA(value, &uc_d);
+			LDTOA(value, &uc_d);
 
-			vars->set(var_name, uc_d, sizeof(double));
+			vars->set(var_name, uc_d, sizeof(long double));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
