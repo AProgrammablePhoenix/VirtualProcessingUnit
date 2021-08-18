@@ -1,7 +1,7 @@
 ﻿cmake_minimum_required (VERSION 3.8)
 include(${CMAKE_CURRENT_SOURCE_DIR}/SVASM/CMakeLists.txt)
 
-project ("ThreadPoolEmulation")
+project ("vpu")
 project ("vas")
 project ("vexe")
 project ("testnet")
@@ -50,13 +50,13 @@ target_link_libraries(virtual_engine exSymbols)
 target_link_libraries(virtual_engine netlib)
 target_link_libraries(compiler virtual_engine)
 
-add_executable (ThreadPoolEmulation "ThreadPoolEmulation.cpp"  "utility.h")
+add_executable (vpu "VPU_main.cpp"  "utility.h")
 
-target_link_libraries(ThreadPoolEmulation registers)
-target_link_libraries(ThreadPoolEmulation memory)
-target_link_libraries(ThreadPoolEmulation exSymbols)
-target_link_libraries(ThreadPoolEmulation virtual_engine)
-target_link_libraries(ThreadPoolEmulation compiler)
+target_link_libraries(vpu registers)
+target_link_libraries(vpu memory)
+target_link_libraries(vpu exSymbols)
+target_link_libraries(vpu virtual_engine)
+target_link_libraries(vpu compiler)
 
 # vas: virtual assembler
 add_executable (vas "VirtualAssembler/assembler_main.cpp"  "VirtualAssembler/assembler.h" "VirtualAssembler/instructions_set.cpp" "utility.h")

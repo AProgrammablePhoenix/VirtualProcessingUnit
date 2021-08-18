@@ -315,9 +315,8 @@ void executeFile(const std::vector<byte>& main_code, const std::vector<std::tupl
 
 	mem->_MRSZ(req_mem);
 
-	for (size_t i = 0; i < threads_actions.size(); i++) {
+	for (size_t i = 0; i < threads_actions.size(); i++)
 		_proc.addThread(std::get<0>(threads_actions[i]), std::get<1>(threads_actions[i]));
-	}
 
 	_proc.updateStackRegs();
 	_proc.start();
