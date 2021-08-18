@@ -176,47 +176,35 @@ void mem_dyn_vars::makeDynVar(std::string name, std::string type) {
 }
 void mem_dyn_vars::dynGetVar(std::string name) {
 	if (this->variables_table.count(name)) {
-		if (this->types_table[name] == UNUM_TYPE) {
+		if (this->types_table[name] == UNUM_TYPE)
 			(std::static_pointer_cast<dyn_var_int<size_t>>(this->variables_table[name]))->dynget();
-		}
-		else if (this->types_table[name] == SNUM_TYPE) {
+		else if (this->types_table[name] == SNUM_TYPE)
 			(std::static_pointer_cast<dyn_var_int<long long>>(this->variables_table[name]))->dynget();
-		}
-		else if (this->types_table[name] == STR_TYPE) {
+		else if (this->types_table[name] == STR_TYPE)
 			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynget();
-		}
-		else if (this->types_table[name] == CHAR_TYPE) {
+		else if (this->types_table[name] == CHAR_TYPE)
 			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynget();
-		}
-		else if (this->types_table[name] == DOUBLE_TYPE) {
+		else if (this->types_table[name] == DOUBLE_TYPE)
 			(std::static_pointer_cast<dyn_var_int<double>>(this->variables_table[name]))->dynget();
-		}
 	}
 }
 void mem_dyn_vars::dynSetVar(std::string name) {
 	if (this->variables_table.count(name)) {
-		if (this->types_table[name] == UNUM_TYPE) {
+		if (this->types_table[name] == UNUM_TYPE)
 			(std::static_pointer_cast<dyn_var_int<size_t>>(this->variables_table[name]))->dynset();
-		}
-		else if (this->types_table[name] == SNUM_TYPE) {
+		else if (this->types_table[name] == SNUM_TYPE)
 			(std::static_pointer_cast<dyn_var_int<long long>>(this->variables_table[name]))->dynset();
-		}
-		else if (this->types_table[name] == STR_TYPE) {
+		else if (this->types_table[name] == STR_TYPE)
 			(std::static_pointer_cast<dyn_var_int<std::string>>(this->variables_table[name]))->dynset();
-		}
-		else if (this->types_table[name] == CHAR_TYPE) {
+		else if (this->types_table[name] == CHAR_TYPE)
 			(std::static_pointer_cast<dyn_var_int<char>>(this->variables_table[name]))->dynset();
-		}
-		else if (this->types_table[name] == DOUBLE_TYPE) {
+		else if (this->types_table[name] == DOUBLE_TYPE)
 			(std::static_pointer_cast<dyn_var_int<double>>(this->variables_table[name]))->dynset();
-		}
 	}
 }
 std::string mem_dyn_vars::getVarType(std::string name) {
-	if (this->types_table.count(name)) {
+	if (this->types_table.count(name))
 		return this->types_table[name];
-	}
-	else {
+	else
 		return "UNDEFINED_VARIABLE";
-	}
 }

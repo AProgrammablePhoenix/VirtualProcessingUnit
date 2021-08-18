@@ -12,7 +12,7 @@
 
 
 void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
-	const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(args_p);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
 	std::string filename = registers->sr->get();
 	size_t nBytes, oaddr, file_offset;
@@ -61,7 +61,7 @@ void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 	}
 }
 void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
-	const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(args_p);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
 	std::string filename = registers->sr->get();
 	size_t nBytes, iaddr, file_offset;

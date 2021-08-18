@@ -90,14 +90,6 @@ void b_dec(GLOBL_ARGS) {
 	NATIVE_INCDEC(-);
 }
 
-// inc/dec(DR) is now deprecated and would have no effect if called
-void b_incDR(GLOBL_ARGS_D1) {
-	//FP_INCDEC(dr, +);
-}
-void b_decDR(GLOBL_ARGS_D1) {
-	//FP_INCDEC(dr, -);
-}
-
 void b_incFP(GLOBL_ARGS) {
 	FP_INCDEC(+);
 }

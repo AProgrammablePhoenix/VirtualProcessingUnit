@@ -8,9 +8,9 @@
 #include "interrupts.h"
 
 void actions_engine::_intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(value_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(value_ptr);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	this->self_mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+	this->self_mem->_MG(uc_n, sizeof(size_t), vaddr);
 
 	size_t intcode = ATOULL(uc_n);
 	this->self_ints.pass((unsigned char)intcode);

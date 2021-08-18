@@ -27,7 +27,7 @@ inline void SETREG(registries_def reg, std::string str_reg, unsigned char*& buff
 	ULLTOA((size_t)reg, &buffer);
 	vars->set(str_reg, buffer, sizeof(size_t));
 	delete[] buffer;
-	ptr_table[str_reg] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(str_reg));
+	ptr_table[str_reg] = std::make_shared<arg_tuple>(vars->getVarInfos(str_reg));
 }
 
 inline void SETXREG(extra_registries xreg, std::string str_xreg, unsigned char*& buffer,
@@ -35,15 +35,14 @@ inline void SETXREG(extra_registries xreg, std::string str_xreg, unsigned char*&
 	ULLTOA((size_t)xreg, &buffer);
 	vars->set(str_xreg, buffer, sizeof(size_t));
 	delete[] buffer;
-	ptr_table[str_xreg] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(str_xreg));
+	ptr_table[str_xreg] = std::make_shared<arg_tuple>(vars->getVarInfos(str_xreg));
 }
 
 void process_memory::set(variables_decl* var) {
 	std::vector<code_file_decl_form> headers = var->getVariablesTree();
 
-	for (size_t i = 0; i < headers.size(); i++) {
-		this->data_ptrs[headers[i].decl_name] = std::make_shared<std::tuple<size_t, size_t>>(var->getVarInfos(headers[i].decl_name));
-	}
+	for (size_t i = 0; i < headers.size(); i++)
+		this->data_ptrs[headers[i].decl_name] = std::make_shared<arg_tuple>(var->getVarInfos(headers[i].decl_name));
 }
 void process_memory::setTags(variables_decl* vars) {
 	std::vector<tag_decl_form> tags_headers = vars->getTagsTree();
@@ -57,7 +56,7 @@ void process_memory::setTags(variables_decl* vars) {
 		std::string tag_name = RES_TAG_VAR_TAG + ss.str();
 		vars->set(tag_name, uc_t, sizeof(size_t));
 
-		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<std::tuple<size_t, size_t>>(vars->getVarInfos(tag_name));
+		this->data_ptrs[tags_headers[i].tagname] = std::make_shared<arg_tuple>(vars->getVarInfos(tag_name));
 		std::stringstream().swap(ss);
 
 		vars->tag_vars_count += 1;
@@ -105,9 +104,8 @@ void process_memory::setRegisters(variables_decl* vars) {
 }
 
 std::shared_ptr<void> process_memory::getVarPtr(std::string var_name) {
-	if (this->data_ptrs.count(var_name)) {
+	if (this->data_ptrs.count(var_name))
 		return this->data_ptrs[var_name];
-	}
 	else {
 		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
 		return std::make_shared<size_t>(0);
@@ -696,9 +694,8 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 std::vector<virtual_actions> convertSymbols(std::vector<std::vector<std::string>> parsed) {
 	std::vector<virtual_actions> converted;
 
-	for (size_t i = 0; i < parsed.size(); i++) {
+	for (size_t i = 0; i < parsed.size(); i++)
 		converted.push_back(symbols_converter[parsed[i][0]]);
-	}
 
 	return converted;
 }
@@ -721,18 +718,16 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename, bo
 		while (!file.eof()) {
 			std::getline(file, line);
 
-			if (line.empty() || line[0] == ';') {
+			if (line.empty() || line[0] == ';')
 				continue;
-			}
 
 			if (!line.rfind("decltag ", 0)) {
 				std::string tagname = line.substr(8);
 				parsed.push_back(std::vector<std::string>({"decltag", tagname}));
 				continue;
 			}
-			if (!line.rfind("decl ", 0)) {
+			else if (!line.rfind("decl ", 0))
 				continue;
-			}
 
 			std::stringstream ss(line);
 			std::string action, argument;
@@ -787,12 +782,10 @@ std::vector<std::shared_ptr<void>> convertVariables(std::vector<std::vector<std:
 	std::vector<std::shared_ptr<void>> arguments;
 
 	for (size_t i = 0; i < cleaned_parsed.size(); i++) {
-		if (cleaned_parsed[i][1] == "0" || cleaned_parsed[i][1] == "NULL") {
+		if (cleaned_parsed[i][1] == "0" || cleaned_parsed[i][1] == "NULL")
 			arguments.push_back(NULL);
-		}
-		else {
+		else
 			arguments.push_back(p_mem->getVarPtr(cleaned_parsed[i][1]));
-		}
 	}
 
 	return arguments;
@@ -814,9 +807,8 @@ void build_process(std::string filename, process* out_proc, engine* engine, proc
 
 	std::vector<std::shared_ptr<void>> converted_arguments = convertVariables(parsed, out_mem);
 
-	for (size_t i = 0; i < converted_actions.size(); i++) {
+	for (size_t i = 0; i < converted_actions.size(); i++)
 		out_proc->addAction(converted_actions[i], converted_arguments[i]);
-	}
 
 	std::vector<std::tuple<std::vector<action>, size_t>> sub_threads;
 	for (size_t i = 0; i < threadsToBuild.size(); i++) {

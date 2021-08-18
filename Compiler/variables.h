@@ -6,6 +6,7 @@
 #include <string>
 #include <tuple>
 
+#include "../utility.h"
 #include "../Memory/memory_decl.h"
 
 // a user variable can't start with a variable name like that
@@ -41,14 +42,14 @@ public:
 	void setTagsBranch(tag_decl_form branch);
 	std::vector<tag_decl_form> getTagsTree();
 
-	std::tuple<size_t, size_t> getVarInfos(std::string var_name);
+	arg_tuple getVarInfos(std::string var_name);
 
 	size_t sys_vars_count = 0;
 	size_t tag_vars_count = 0;
 private:
 	memory* mem;
 
-	std::map<std::string, std::tuple<size_t, size_t>> vars;
+	std::map<std::string, arg_tuple> vars;
 	
 	std::map<std::string, code_file_decl_form> variables_tree;
 	std::vector<code_file_decl_form> variables_vector;

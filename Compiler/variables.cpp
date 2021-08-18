@@ -39,35 +39,46 @@ std::unordered_set<std::string> regs_names = {
 
 	"SR",
 	"CR",
-	"DR"
+
+	"FPR0",
+	"FPR1",
+	"FPR2",
+	"FPR3",
+
+	"EFPR0",
+	"EFPR1",
+	"EFPR2",
+	"EFPR3",
+
+	"RFPR0",
+	"RFPR1",
+	"RFPR2",
+	"RFPR3"
 };
 
 variables_decl::variables_decl(memory* _mem) {
 	this->mem = _mem;
-	this->vars = std::map<std::string, std::tuple<size_t, size_t>>();
 }
 
 void variables_decl::set(std::string var_name, unsigned char* value, size_t length) {
-	std::map<std::string, std::tuple<size_t, size_t>>::iterator it;
-	it = this->vars.find(var_name);
-	if (it != this->vars.end()) {
+	auto it = this->vars.find(var_name);
+	if (it != this->vars.end())
 		return;
-	}
 
 	size_t addr = this->mem->_SDZTOP();
 	this->mem->_SDZS(value, length);
-	this->vars[var_name] = std::make_tuple<size_t&, size_t&>(addr, length);
+
+	this->vars[var_name] = std::make_tuple(addr, length, nbyte(0));
 }
 void variables_decl::get(std::string var_name, unsigned char** out) {
 	if (!this->vars.count(var_name)) {
 		out = nullptr;
 		return;
 	}
-	size_t addr = std::get<0>(this->vars[var_name]);
-	size_t length = std::get<1>(this->vars[var_name]);
+	const auto [vaddr, vsize, vopt] = this->vars[var_name];
 
-	*out = new unsigned char[length];
-	this->mem->_MG(*out, length, addr);
+	*out = new unsigned char[vsize];
+	this->mem->_MG(*out, vsize, vaddr);
 }
 
 void variables_decl::setVariablesTree(code_file_decl_form branch) {
@@ -97,7 +108,7 @@ std::vector<tag_decl_form> variables_decl::getTagsTree() {
 	return this->tags_vector;
 }
 
-std::tuple<size_t, size_t> variables_decl::getVarInfos(std::string var_name) {
+arg_tuple variables_decl::getVarInfos(std::string var_name) {
 	return this->vars[var_name];
 }
 

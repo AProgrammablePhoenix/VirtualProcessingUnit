@@ -13,7 +13,7 @@ namespace {
 	inline size_t ARGTOULL(const std::shared_ptr<void>& args, memory* const mem) {
 		unsigned char* uc_n = nullptr;
 		try {
-			const auto [vaddr, vsize] = *std::static_pointer_cast<std::tuple<size_t, size_t>>(args);
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args);
 			uc_n = new unsigned char[sizeof(size_t)];
 			mem->_MG(uc_n, sizeof(size_t), vaddr);
 
@@ -176,9 +176,9 @@ void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m) {
 
 // Get immediatly to pointed address (mainly used with tags and procedures)
 void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(value_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(value_ptr);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(uc_n, sizeof(size_t), vaddr);
 
 	*registers->process_call_address = *registers->process_step;
 	*registers->process_step = ATOULL(uc_n);
@@ -187,9 +187,9 @@ void p_call(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
 }
 // Get immediatly to pointed address without saving caller address (mainly used with tags in loops)
 void p_lcall(std::shared_ptr<void> value_ptr, regs* registers, memory* mem) {
-	std::tuple<size_t, size_t> varinfos = *std::static_pointer_cast<std::tuple<size_t, size_t>>(value_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(value_ptr);
 	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
-	mem->_MG(uc_n, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(uc_n, sizeof(size_t), vaddr);
 
 	*registers->process_step = ATOULL(uc_n);
 	delete[] uc_n;
@@ -215,9 +215,9 @@ void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m)
 
 // Start (or resumes a stopped thread) a loaded thread by its id
 void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;
@@ -231,9 +231,9 @@ void p_crtthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* m
 }
 // Pause a loaded and launched thread by its id
 void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;
@@ -247,9 +247,9 @@ void p_rstthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* m
 }
 // Terminates a loaded and launched thread by its id
 void p_endthread(std::shared_ptr<void> thread_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(thread_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t thread_id = ATOULL(temp);
 	delete[] temp;

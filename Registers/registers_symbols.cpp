@@ -109,7 +109,7 @@ void b_setCR(GLOBL_ARGS) {
 DEF_ALL_FPRegs;
 
 
-// get functions are deprecated and will be soon totally removed from codebase
+// get functions are really deprecated (will execute in an undefined behavior) and will be soon totally removed from codebase
 void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m) {
 	*(std::static_pointer_cast<unsigned short>(receiver)) = registers->ax->get();
 }

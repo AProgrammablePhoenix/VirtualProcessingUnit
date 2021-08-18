@@ -18,7 +18,21 @@
 	#endif
 #endif
 
-typedef std::tuple<size_t, size_t> arg_tuple;
+union nbyte {
+	nbyte() {
+		this->raw_byte = 0;
+	}
+	nbyte(unsigned char uc) {
+		this->raw_byte = uc;
+	}
+
+	struct {
+		unsigned int high : 4;
+		unsigned int low : 4;
+	};
+	unsigned char raw_byte;
+};
+typedef std::tuple<size_t, size_t, nbyte> arg_tuple;
 
 #define CUSTOM_STD_ARGS(A, B, C) std::shared_ptr<void> A, regs* B, memory* C
 

@@ -483,116 +483,84 @@ void mem_arrays::makeArray(std::string name, std::string type,  size_t size) {
 }
 void mem_arrays::getArray(std::string arr_name, size_t index) {
 	if (this->arrays_table.count(arr_name)) {
-		if (types_table[arr_name] == STATIC_UNUM_ARRAY) {
+		if (types_table[arr_name] == STATIC_UNUM_ARRAY)
 			(std::static_pointer_cast<mem_array_int<size_t>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_SNUM_ARRAY) {
+		else if (types_table[arr_name] == STATIC_SNUM_ARRAY)
 			(std::static_pointer_cast<mem_array_int<long long>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_STR_ARRAY) {
+		else if (types_table[arr_name] == STATIC_STR_ARRAY)
 			(std::static_pointer_cast<mem_array_int<std::string>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_CHAR_ARRAY) {
+		else if (types_table[arr_name] == STATIC_CHAR_ARRAY)
 			(std::static_pointer_cast<mem_array_int<char>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_DOUBLE_ARRAY) {
+		else if (types_table[arr_name] == STATIC_DOUBLE_ARRAY)
 			(std::static_pointer_cast<mem_array_int<double>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name])->getAt(index));
-		}
-		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->getAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<double>>(this->arrays_table[arr_name]))->getAt(index);
-		}
 	}
 }
 void mem_arrays::setArray(std::string arr_name, size_t index) {
 	if (this->arrays_table.count(arr_name)) {
-		if (types_table[arr_name] == STATIC_UNUM_ARRAY) {
+		if (types_table[arr_name] == STATIC_UNUM_ARRAY)
 			(std::static_pointer_cast<mem_array_int<size_t>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_SNUM_ARRAY) {
+		else if (types_table[arr_name] == STATIC_SNUM_ARRAY)
 			(std::static_pointer_cast<mem_array_int<long long>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_STR_ARRAY) {
+		else if (types_table[arr_name] == STATIC_STR_ARRAY)
 			(std::static_pointer_cast<mem_array_int<std::string>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_CHAR_ARRAY) {
+		else if (types_table[arr_name] == STATIC_CHAR_ARRAY)
 			(std::static_pointer_cast<mem_array_int<char>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == STATIC_DOUBLE_ARRAY) {
+		else if (types_table[arr_name] == STATIC_DOUBLE_ARRAY)
 			(std::static_pointer_cast<mem_array_int<double>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->setAt(index);
-		}
-		else if (types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<double>>(this->arrays_table[arr_name]))->setAt(index);
-		}
 	}
 }
 void mem_arrays::getDynSize(std::string arr_name) {
 	if (this->arrays_table.count(arr_name)) {
-		if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY) {
+		if (types_table[arr_name] == DYNAMIC_UNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<size_t>>(this->arrays_table[arr_name]))->getSize();
-		}
-		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_SNUM_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<long long>>(this->arrays_table[arr_name]))->getSize();
-		}
-		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_STR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<std::string>>(this->arrays_table[arr_name]))->getSize();
-		}
-		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY) {
+		else if (types_table[arr_name] == DYNAMIC_CHAR_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<char>>(this->arrays_table[arr_name]))->getSize();
-		}
-		else if(types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY) {
+		else if(types_table[arr_name] == DYNAMIC_DOUBLE_ARRAY)
 			(std::static_pointer_cast<dyn_array_int<double>>(this->arrays_table[arr_name]))->getSize();
-		}
 	}
 }
 
 std::string mem_arrays::getArrayType(std::string arr_name) {
-	if (this->types_table.count(arr_name)) {
+	if (this->types_table.count(arr_name))
 		return this->types_table[arr_name];
-	}
-	else {
+	else
 		return "UNDEFINED_ARRAY";
-	}
 }
 void mem_arrays::destroy() {
 	for (std::string _array : this->static_arrays) {
-		if (this->types_table[_array] == STATIC_UNUM_ARRAY) {
+		if (this->types_table[_array] == STATIC_UNUM_ARRAY)
 			this->unsigned_number_arrays[_array].destroy();
-		}
-		else if (this->types_table[_array] == STATIC_SNUM_ARRAY) {
+		else if (this->types_table[_array] == STATIC_SNUM_ARRAY)
 			this->signed_numbers_arrays[_array].destroy();
-		}
-		else if (this->types_table[_array] == STATIC_STR_ARRAY) {
+		else if (this->types_table[_array] == STATIC_STR_ARRAY)
 			this->string_arrays[_array].destroy();
-		}
-		else if (this->types_table[_array] == STATIC_CHAR_ARRAY) {
+		else if (this->types_table[_array] == STATIC_CHAR_ARRAY)
 			this->char_arrays[_array].destroy();
-		}
-		else if (this->types_table[_array] == STATIC_DOUBLE_ARRAY) {
+		else if (this->types_table[_array] == STATIC_DOUBLE_ARRAY)
 			this->double_arrays[_array].destroy();
-		}
 	}
 }

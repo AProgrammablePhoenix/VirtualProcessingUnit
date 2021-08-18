@@ -36,7 +36,7 @@ namespace {
 	inline void ASMBL_FP_NMATHS(std::vector<byte>& out, const std::map<virtual_actions, byte>& map2ndOPC,
 			action& _action, memory* const& mem) {
 		out.push_back(map2ndOPC.at(_action.getAction()));
-		const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
 		mem->_MG(uc_n, sizeof(size_t), vaddr);
@@ -57,7 +57,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		return out;
 	}
 	else if (uint64_args_opcodes.find(out[0]) != uint64_args_opcodes.end()) {
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
 		mem->_MG(uc_n, vsize, vaddr);
@@ -70,7 +70,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setSR]) {
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		const size_t& str_size = vsize;
 
 		byte* b_str_size = nullptr;
@@ -92,7 +92,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		return out;
 	}
 	else if (out[0] == ops[virtual_actions::setCR]) {
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 		byte* uc_c = new byte[1];
 
 		mem->_MG(uc_c, 1, vaddr);
@@ -102,7 +102,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		return out;
 	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
-		const auto[vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 		byte* uc_n = new byte[sizeof(size_t)];
 		mem->_MG(uc_n, sizeof(size_t), vaddr);
@@ -122,7 +122,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		if (out[0] == instructions_set[virtual_actions::setFPR0]) {// All set(E|R|)FPRs have the same first opc
 			out.push_back(map_FPR_set_2nd_opc[_action.getAction()]);
 
-			const auto [vaddr, vsize] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
 			byte* uc_a = new byte[vsize];
 			mem->_MG(uc_a, vsize, vaddr);

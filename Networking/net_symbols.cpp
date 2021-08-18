@@ -25,9 +25,9 @@ size_t popMemNum(memory*& mem) {
 // Argument: ID of stream to open
 // Stack: ... recvAddr recvPort thisPort
 void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -53,9 +53,9 @@ void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 // Close a network stream
 // Argument: ID of stream to close
 void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -66,9 +66,9 @@ void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 // Argument: stream id
 // Stack: ... Output/Input addr (in memory ; length: 256)
 void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -98,9 +98,9 @@ void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) 
 	delete[] temp;
 }
 void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -144,9 +144,9 @@ void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 // Argument: stream id
 // Output in stack: 1 (has received) | 0 (hasn't received anything)
 void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -179,9 +179,9 @@ void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 // Argument: stream id
 // Stack ... recvAddr(string) recvPort(unsigned number) endpoint_id
 void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
@@ -232,9 +232,9 @@ void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 // Argument: stream id
 // Stack: ... endpoint_id
 void net_selep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
-	arg_tuple varinfos = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
+	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(varinfos));
+	mem->_MG(temp, sizeof(size_t), vaddr);
 
 	size_t stream_id = ATOULL(temp);
 	
