@@ -1,5 +1,6 @@
 engine.vasm 
 out/
 .vs/
+.vscode/
 build/
 Samples/*.ve
