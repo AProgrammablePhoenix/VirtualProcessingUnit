@@ -2011,11 +2011,11 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 
 			out_bytes.push_back(map_FPR_set_2nd_opc[raw_action.getAction()]);
 
-			auto uc_a = std::make_unique<unsigned char[]>(sizeof(double));
-			double d = std::stod(v_raw);
-			mp_memcpy(&d, uc_a.get(), sizeof(double));
+			auto uc_a = std::make_unique<unsigned char[]>(sizeof(long double));
+			long double d = std::stold(v_raw);
+			mp_memcpy(&d, uc_a.get(), sizeof(long double));
 
-			for (size_t i = 0; i < sizeof(double); i++)
+			for (size_t i = 0; i < sizeof(long double); i++)
 				out_bytes.push_back(uc_a[i]);
 		}
 		else if (comp_action == instructions_set[virtual_actions::movFPR0]) // All mov(E|R|)FPRs have the same first opc
