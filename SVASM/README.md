@@ -1,5 +1,5 @@
 # SVASM
-- SVASM stands for SimplifiedVASM, indeed this new version of the language VASM
+- SVASM stands for SimplifiedVASM, thus this new version of the language VASM
 allows you to make cleaner code and, especially, shorter code with a reduced instructions set
 compared to the previous version.
 
