@@ -561,3 +561,11 @@ std::unordered_set<byte> parted_opcodes = {
 	addFPRs_opcode,
 	subFPRs_opcode
 };
+
+std::unordered_set<byte> opt_arg_ops = {
+	ops[virtual_actions::push],
+	ops[virtual_actions::pop],
+
+	ops[virtual_actions::movsm],
+	ops[virtual_actions::movgm]
+};

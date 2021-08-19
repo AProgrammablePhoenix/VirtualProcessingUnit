@@ -83,29 +83,40 @@ void sdzsMem(GLOBL_ARGS) {
 
 // Memory stack symbols
 void pushMem(GLOBL_ARGS) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* regptr = ptr_table.access(reg_id);
+	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg));
+	void* regptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
 	size_t value = ((reg_int<size_t>*)regptr)->get();
 
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(&value, temp);
+	size_t temp_sz = 0;
+	uint8_t qt_det = VOPTTOTQ(vopt);
+	if (!qt_det)
+		temp_sz = sizeof(size_t);
+	else
+		temp_sz = qt_det;
 
-	mem->push(temp, sizeof(size_t));
-	delete[] temp;
+	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+
+	mp_memcpy(&value, temp.get());
+	mem->push(temp.get(), temp_sz);
 }
 void popMem(GLOBL_ARGS) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
+	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg));
+	void* regptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
+	
+	size_t temp_sz = 0;
+	uint8_t qt_det = VOPTTOTQ(vopt);
+	if (!qt_det)
+		temp_sz = sizeof(size_t);
+	else
+		temp_sz = qt_det;
 
-	mem->pop(temp, sizeof(size_t));
+	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+
+	mem->pop(temp.get(), temp_sz);
 	size_t value = 0;
 
-	mp_memcpy(temp, &value);
-	((reg_int<size_t>*)ptr_table.access(reg_id))->set(value);
-
-	delete[] temp;
+	mp_memcpy(temp.get(), &value);
+	((reg_int<size_t>*)regptr)->set(value);
 }
 
 void pushMemSR(GLOBL_ARGS_D1) {
@@ -196,28 +207,39 @@ void popMemFPR(GLOBL_ARGS) {
 }
 
 void movsm(GLOBL_ARGS_D2) {
+	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg_addr));
 	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	void* ptr = registries_ptr_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->pop(temp, sizeof(size_t));
-	mem->_MS(temp, sizeof(size_t), _addr);
-	delete[] temp;
+	size_t temp_sz = 0;
+	uint8_t qt_det = VOPTTOTQ(vopt);
+	if (!qt_det)
+		temp_sz = sizeof(size_t);
+	else
+		temp_sz = qt_det;
+
+	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+	mem->pop(temp.get(), temp_sz);
+	mem->_MS(temp.get(), temp_sz, _addr);
 }
 void movgm(GLOBL_ARGS_D2) {
+	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg_addr));
 	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	void* ptr = registries_ptr_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
+	size_t temp_sz = 0;
+	uint8_t qt_det = VOPTTOTQ(vopt);
+	if (!qt_det)
+		temp_sz = sizeof(size_t);
+	else
+		temp_sz = qt_det;
 
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), _addr);	
-	mem->push(temp, sizeof(size_t));
-	delete[] temp;
+	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+	mem->_MG(temp.get(), temp_sz, _addr);
+	mem->push(temp.get(), temp_sz);
 }
 
 void movsmSR(GLOBL_ARGS_D2) {

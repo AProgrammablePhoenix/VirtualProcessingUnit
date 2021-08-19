@@ -53,6 +53,9 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 	std::vector<byte> out;
 	out.push_back(instructions_set[_action.getAction()]);
 
+	if (opt_arg_ops.find(out[0]) != opt_arg_ops.end())
+		out.push_back(std::get<2>(*std::static_pointer_cast<arg_tuple>(_action.getValuePtr())).raw_byte);
+
 	if (zero_args_opcodes.find(out[0]) != zero_args_opcodes.end()) {
 		return out;
 	}

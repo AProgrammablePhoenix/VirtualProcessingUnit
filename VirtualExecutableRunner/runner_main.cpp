@@ -17,13 +17,16 @@
 
 namespace {
 	inline void DCODE_FP_NMATHS(std::vector<action>& actions, const std::map<virtual_actions, byte>& map2ndOPC, 
-			const std::vector<byte>& exe_code, size_t& iterator, memory* const& mem) {
+			const std::vector<byte>& exe_code, size_t& iterator, const bool& has_op_arg, const nbyte& vopt, memory* const& mem) {
 		size_t& i = iterator;
-		i++;
+		++i;
+
+		if (has_op_arg)
+			++i;
 
 		byte _fpr_opc = exe_code[i];
 		virtual_actions real_op = findKeyByValue(map2ndOPC, _fpr_opc);
-		i++;
+		++i;
 
 		byte _reg = exe_code[i];
 		size_t real_reg = (size_t)(findKeyByValue(fp_registers_set, _reg));
@@ -37,18 +40,28 @@ namespace {
 
 		delete[] uc_n;
 
-		action _action{ real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, nbyte(0)))};
+		action _action{ real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, vopt)) };
 		actions.push_back(_action);
 	}
 }
 
-std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memory*& mem) {
+std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& mem) {
 	std::vector<action> actions;
+	const std::vector<uint8_t>& data = *byteArray;
 
-	for (size_t i = 0; i < byteArray->size(); i++) {
-		if (zero_args_opcodes.find((*byteArray)[i]) != zero_args_opcodes.end()) {
+	for (size_t i = 0; i < byteArray->size(); ++i) {
+		nbyte opt_arg;
+		bool has_opt_arg = true;
 
-			byte _op = (*byteArray)[i];
+		if (opt_arg_ops.find(data[i]) != opt_arg_ops.end())
+			opt_arg.raw_byte = data[i + 1];
+		else
+			has_opt_arg = false;
+
+		if (zero_args_opcodes.find(data[i]) != zero_args_opcodes.end()) {
+			byte _op = data[i];
+			if (has_opt_arg)
+				++i;
 
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
@@ -57,27 +70,29 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			continue;
 		}
-		else if (uint64_args_opcodes.find((*byteArray)[i]) != uint64_args_opcodes.end()) {
-			byte _op = (*byteArray)[i];
+		else if (uint64_args_opcodes.find(data[i]) != uint64_args_opcodes.end()) {
+			byte _op = data[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
-			i++;
+			++i;
+
+			if (has_opt_arg)
+				++i;
 
 			byte* b_value = new byte[sizeof(size_t) + 1];
-			b_value[0] = (*byteArray)[i];
-			i++;
+			b_value[0] = data[i];
+			++i;;
 
 			size_t reallen;
 
 			if ((size_t)b_value[0] < sizeof(size_t)) {
-				for (size_t j = 0; j < sizeof(size_t) - b_value[0]; j++, i++) {
-					b_value[j + 1] = (*byteArray)[i];
-				}
-				i--;
+				for (size_t j = 0; j < sizeof(size_t) - b_value[0]; ++j, ++i)
+					b_value[j + 1] = data[i];
+				--i;
 
 				reallen = EXTDBA(b_value, sizeof(size_t) - b_value[0] + 1);
 			}
 			else {
-				b_value[1] = (*byteArray)[i];
+				b_value[1] = data[i];
 				reallen = EXTDBA(b_value, 2);
 			}
 
@@ -86,31 +101,33 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			delete[] b_value;
 
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, reallen, nbyte(0))));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, reallen, opt_arg)));
 			actions.push_back(_action);
 
 			continue;
 		}
-		else if ((*byteArray)[i] == ops[virtual_actions::setSR]) {
-			byte _op = (*byteArray)[i];
+		else if (data[i] == ops[virtual_actions::setSR]) {
+			byte _op = data[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
-			i++;
+			++i;
+
+			if (has_opt_arg)
+				++i;
 
 			byte* b_str_size = new byte[sizeof(size_t) + 1];
-			b_str_size[0] = (*byteArray)[i];
-			i++;
+			b_str_size[0] = data[i];
+			++i;
 
 			size_t complen;
 
 			if ((size_t)b_str_size[0] < sizeof(size_t)) {
-				for (size_t j = 0; j < sizeof(size_t) - b_str_size[0]; j++, i++) {
-					b_str_size[j + 1] = (*byteArray)[i];
-				}
+				for (size_t j = 0; j < sizeof(size_t) - b_str_size[0]; ++j, ++i)
+					b_str_size[j + 1] = data[i];
 
 				complen = EXTDBA(b_str_size, sizeof(size_t) - b_str_size[0] + 1);
 			}
 			else {
-				b_str_size[1] = (*byteArray)[i];
+				b_str_size[1] = data[i];
 				complen = EXTDBA(b_str_size, 2);
 			}
 
@@ -118,10 +135,9 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 			delete[] b_str_size;
 
 			byte* b_str = new byte[str_size];
-			for (size_t j = 0; j < str_size; i++, j++) {
-				b_str[j] = (*byteArray)[i];
-			}
-			i--;
+			for (size_t j = 0; j < str_size; ++i, ++j)
+				b_str[j] = data[i];
+			--i;
 
 			size_t addr = mem->_SDZTOP();
 			size_t& len = str_size;
@@ -129,16 +145,20 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			delete[] b_str;
 
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, nbyte(0))));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 
 			actions.push_back(_action);
 
 			continue;
 		}
-		else if ((*byteArray)[i] == ops[virtual_actions::setCR]) {
-			byte _op = (*byteArray)[i];
+		else if (data[i] == ops[virtual_actions::setCR]) {
+			byte _op = data[i];
 			++i;
-			byte _arg = (*byteArray)[i];
+
+			if (has_opt_arg)
+				++i;
+
+			byte _arg = data[i];
 
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
 
@@ -151,17 +171,20 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			delete[] uc_c;
 
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, nbyte(0))));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 			actions.push_back(_action);
 
 			continue;
 		}
 		else if (reg_args_opcodes.find((*byteArray)[i]) != reg_args_opcodes.end()) {
-			byte _op = (*byteArray)[i];
+			byte _op = data[i];
 			virtual_actions real_op = findKeyByValue(instructions_set, _op);
-			i++;
+			++i;
 
-			byte _reg = (*byteArray)[i];
+			if (has_opt_arg)
+				++i;
+
+			byte _reg = data[i];
 			size_t real_reg = 0;
 
 			if (_reg <= registers_set[registries_def::RSP])
@@ -178,42 +201,45 @@ std::vector<action> decodeByteArray(std::vector<unsigned char>* byteArray, memor
 
 			delete[] uc_n;
 
-			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, nbyte(0))));
+			action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 			actions.push_back(_action);
 
 			continue;
 		}
 		else if (parted_opcodes.find((*byteArray)[i]) != parted_opcodes.end()) {
-			if ((*byteArray)[i] == instructions_set[virtual_actions::setFPR0]) {
-				i++;
+			if (data[i] == instructions_set[virtual_actions::setFPR0]) {
+				++i;
 
-				byte _fpr_opc = (*byteArray)[i];
+				if (has_opt_arg)
+					++i;
+
+				byte _fpr_opc = data[i];
 				virtual_actions real_op = findKeyByValue(map_FPR_set_2nd_opc, _fpr_opc);
-				i++;
+				++i;
 
 				size_t addr = mem->_SDZTOP();
 				mem->_SDZS(byteArray->data() + i, sizeof(long double));
 				i += sizeof(long double) - 1;
 
-				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, sizeof(long double), nbyte(0))));
+				action _action(real_op, std::make_shared<arg_tuple>(std::make_tuple(addr, sizeof(long double), opt_arg)));
 				actions.push_back(_action);
 
 				continue;
 			}
-			else if ((*byteArray)[i] == instructions_set[virtual_actions::movFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_mov_2nd_opc, *byteArray, i, mem); continue;
+			else if (data[i] == instructions_set[virtual_actions::movFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_mov_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
 			}
-			else if ((*byteArray)[i] == instructions_set[virtual_actions::mulFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_mul_2nd_opc, *byteArray, i, mem); continue;
+			else if (data[i] == instructions_set[virtual_actions::mulFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_mul_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
 			}
-			else if ((*byteArray)[i] == instructions_set[virtual_actions::divFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_div_2nd_opc, *byteArray, i, mem); continue;
+			else if (data[i] == instructions_set[virtual_actions::divFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_div_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
 			}
-			else if ((*byteArray)[i] == instructions_set[virtual_actions::addFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_add_2nd_opc, *byteArray, i, mem); continue;
+			else if (data[i] == instructions_set[virtual_actions::addFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_add_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
 			}
-			else if ((*byteArray)[i] == instructions_set[virtual_actions::subFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_sub_2nd_opc, *byteArray, i, mem); continue;
+			else if (data[i] == instructions_set[virtual_actions::subFPR0]) {
+				DCODE_FP_NMATHS(actions, map_FPR_sub_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
 			}
 		}
 	}
@@ -229,7 +255,7 @@ std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
 	size_t i = 0;
 
 	byte* b_req_mem = new byte[sizeof(size_t)];
-	for (; i < sizeof(size_t); i++)
+	for (; i < sizeof(size_t); ++i)
 		b_req_mem[i] = (*file_content)[i];
 	req_mem = ATOULL(b_req_mem);
 	delete[] b_req_mem;
@@ -237,29 +263,29 @@ std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
 	bool main_found = false;
 
 	// fetch non main code
-	for (i = sizeof(size_t); i < file_content->size(); i++) {
+	for (i = sizeof(size_t); i < file_content->size(); ++i) {
 		if ((*file_content)[i] == 0x00) {
 			main_found = true;
-			i++;
+			++i;
 			break;
 		}
 		else if ((*file_content)[i] == 0x01) {
 			byte* buffer = new byte[sizeof(size_t)];
 			++i;
 
-			for (size_t j = 0; j < sizeof(size_t); i++,j++)
+			for (size_t j = 0; j < sizeof(size_t); ++i,++j)
 				buffer[j] = (*file_content)[i];
 
 			size_t thread_id = ATOULL(buffer);
-			for (size_t j = 0; j < sizeof(size_t); i++, j++)
+			for (size_t j = 0; j < sizeof(size_t); ++i, ++j)
 				buffer[j] = (*file_content)[i];
 
 			size_t code_length = ATOULL(buffer);
 			std::vector<byte> thread_code;
 
-			for (size_t j = 0; j < code_length; i++, j++)
+			for (size_t j = 0; j < code_length; ++i, ++j)
 				thread_code.push_back((*file_content)[i]);
-			i--;
+			--i;
 			delete[] buffer;
 
 			threads_code.push_back(std::make_tuple<std::vector<byte>&, size_t&>(thread_code, thread_id));
@@ -271,13 +297,13 @@ std::vector<byte> decodeFile(const std::vector<byte> *const file_content,
 		byte* buffer = new byte[sizeof(size_t)];
 		i += 8;
 		
-		for (size_t j = 0; j < sizeof(size_t); i++, j++)
+		for (size_t j = 0; j < sizeof(size_t); ++i, ++j)
 			buffer[j] = (*file_content)[i];
 
 		size_t main_len = ATOULL(buffer);
 		delete[] buffer;
 
-		for (size_t j = 0; j < main_len; i++, j++)
+		for (size_t j = 0; j < main_len; ++i, ++j)
 			main_code.push_back((*file_content)[i]);
 	}
 
@@ -299,7 +325,7 @@ void executeFile(const std::vector<byte>& main_code, const std::vector<std::tupl
 	regs* registers = new regs;
 	memory* mem = new memory(registers);
 
-	for (size_t i = 0; i < proc_threads.size(); i++) {
+	for (size_t i = 0; i < proc_threads.size(); ++i) {
 		auto thread_header = std::get<0>(proc_threads[i]);
 		size_t thread_id = std::get<1>(proc_threads[i]);
 
@@ -315,7 +341,7 @@ void executeFile(const std::vector<byte>& main_code, const std::vector<std::tupl
 
 	mem->_MRSZ(req_mem);
 
-	for (size_t i = 0; i < threads_actions.size(); i++)
+	for (size_t i = 0; i < threads_actions.size(); ++i)
 		_proc.addThread(std::get<0>(threads_actions[i]), std::get<1>(threads_actions[i]));
 
 	_proc.updateStackRegs();
