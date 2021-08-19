@@ -22,15 +22,17 @@ union nbyte {
 	nbyte() {
 		this->raw_byte = 0;
 	}
-	nbyte(unsigned char uc) {
+	nbyte(uint8_t uc) {
 		this->raw_byte = uc;
 	}
 
 	struct {
-		unsigned int high : 4;
-		unsigned int low : 4;
-	};
-	unsigned char raw_byte;
+		unsigned high : 4;
+		unsigned low : 4;
+	} nibbles;
+	uint8_t raw_byte;
+
+	operator uint8_t() const { return this->raw_byte; }
 };
 typedef std::tuple<size_t, size_t, nbyte> arg_tuple;
 
@@ -89,6 +91,23 @@ inline long double ATOLD(unsigned char* _array) {
 #endif
 
 	return ret;
+}
+
+// convert optional arg to type quantifier
+inline uint8_t VOPTTOTQ(const nbyte& vopt) {
+	const unsigned lref = vopt.nibbles.low & 0xfff; // Only first 3 bits are used for QT
+	if (lref == 0)
+		return lref;
+	else if (lref == 1)
+		return lref;
+	else if (lref == 2)
+		return lref;
+	else if (lref == 3)
+		return 4;
+	else if (lref == 4)
+		return 8;
+	else
+		return 0;
 }
 
 template<typename Tin, typename Tout> inline void mp_memcpy(Tin* _in, Tout* _out) {

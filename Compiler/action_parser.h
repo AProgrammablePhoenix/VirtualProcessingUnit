@@ -18,7 +18,8 @@ public:
 	void setTags(variables_decl* vars);
 	void setRegisters(variables_decl* vars);
 
-	std::shared_ptr<void> getVarPtr(std::string var_name);
+	std::shared_ptr<void> getVarPtr(const std::string& var_name);
+	void setVarPtr(const std::string& var_name, const std::shared_ptr<arg_tuple>& new_ptr);
 private:
 	std::map<std::string, std::shared_ptr<void>> data_ptrs;
 };
