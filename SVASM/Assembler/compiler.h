@@ -25,7 +25,8 @@ enum class tokenTypes {
 	stored_addr_raw,
 	label,
 	safety_directive,
-	memory_directive
+	memory_directive,
+	type_quantifier
 };
 struct token {
 	token(const std::string& _e, const tokenTypes& _t) {

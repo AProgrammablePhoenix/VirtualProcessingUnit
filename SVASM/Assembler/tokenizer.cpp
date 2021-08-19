@@ -148,6 +148,18 @@ static bool isImmAddr(const std::string& s) {
 
 	return false;
 }
+// check whether s represents a type quantifier or not
+static bool isTQ(const std::string& s) {
+	if (s == "QWORD" || s == "qword")
+		return true;
+	else if (s == "DWORD" || s == "dword")
+		return true;
+	else if (s == "WORD" || s == "word")
+		return true;
+	else if (s == "BYTE" || s == "byte")
+		return true;
+	return false;
+}
 
 
 int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized) {
@@ -175,6 +187,10 @@ int tokenizeArgument(const std::unordered_set<std::string> labels, const std::st
 		}
 		else if (isImmAddr(arg)) {
 			out_tokenized = token(arg, tokenTypes::stored_addr_raw);
+			return OK;
+		}
+		else if (isTQ(arg)) {
+			out_tokenized = token(arg, tokenTypes::type_quantifier);
 			return OK;
 		}
 		else {

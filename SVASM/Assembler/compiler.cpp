@@ -16,6 +16,8 @@
 #include "compiler.h"
 #include "parser.h"
 
+typedef std::tuple <tokenTypes, std::string, uint8_t> svasm_args;
+
 static const std::unordered_set<std::string> num_registers = {
 	"ax",
 	"bx",
@@ -254,15 +256,9 @@ struct {
 } memory_flags;
 
 namespace {
-	inline void pushAction(std::vector<action>& out_actions, const virtual_actions& vaction,
-			const tokenTypes& var_type, const std::string& var_raw) {
-		out_actions.emplace_back(
-			action(vaction,
-				std::make_shared<std::tuple<tokenTypes, std::string>>(
-					std::make_tuple<const tokenTypes&, const std::string&>(var_type, var_raw)
-				)
-			)
-		);
+	void pushAction(std::vector<action>& out_actions, const virtual_actions& vaction,
+			const tokenTypes& var_type, const std::string& var_raw, uint8_t opt_arg = 0) {
+		out_actions.emplace_back(action(vaction, std::make_shared<svasm_args>(var_type, var_raw, opt_arg)));
 	}
 	inline void preprocJmpCmpCalls(std::vector<action>& out_actions, const virtual_actions& vaction,
 			const token& arg) {
@@ -320,6 +316,33 @@ namespace {
 
 		out.push_back(map2ndOPC.at(_action.getAction()));
 		out.push_back(reg_value);
+	}
+
+	// Convert SVOPT to Type Quantifier
+	inline uint8_t SVOPTTOTQ(const std::string& svopt) {
+		if (svopt == "QWORD" || svopt == "qword")
+			return 0b100u;
+		else if (svopt == "DWORD" || svopt == "dword")
+			return 0b011u;
+		else if (svopt == "WORD" || svopt == "word")
+			return 0b010u;
+		else if (svopt == "BYTE" || svopt == "byte")
+			return 0b001u;
+		else
+			return 0b000u;
+	}
+	// Convert SVOPT to Type Size
+	inline size_t SVOPTTOTS(const std::string& svopt) {
+		if (svopt == "QWORD" || svopt == "qword")
+			return 8;
+		else if (svopt == "DWORD" || svopt == "dword")
+			return 4;
+		else if (svopt == "WORD" || svopt == "word")
+			return 2;
+		else if (svopt == "BYTE" || svopt == "byte")
+			return 4;
+		else
+			return sizeof(size_t);
 	}
 }
 
@@ -1084,8 +1107,10 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 }
 
 int preprocStack(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
-	if (args.size() != 1)
-		return WRONGNARGS;
+	if (args.size() != 1 && args.size() != 2) {
+		if (args[0].type != tokenTypes::type_quantifier)
+			return ARGV_ERROR;
+	}
 
 	if (args[0].type == tokenTypes::label || args[0].type == tokenTypes::str) // Str is not enough stable to be processed in this case
 		return ARGV_ERROR;
@@ -1112,7 +1137,8 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[0].element);
 		}
 	}
-	else if (args[0].type != tokenTypes::stored_addr_raw && args[0].type != tokenTypes::stored_addr_reg) {
+	else if (args[0].type != tokenTypes::type_quantifier && args[0].type != tokenTypes::stored_addr_raw 
+			&& args[0].type != tokenTypes::stored_addr_reg) {
 		if (inst == "push") {
 			if (args[0].type == tokenTypes::unsigned_n || args[0].type == tokenTypes::signed_n) { // Assuming x is 1*sizeof(size_t)
 				if (!unsafe_flag) {
@@ -1149,9 +1175,64 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 			return ARGV_ERROR;
 		}
 	}
-	else {
-		// Needs presence of type quantifiers to know much data to push/pop from/to the specified address
+	else if (args[0].type == tokenTypes::type_quantifier) {
+		if (args[1].type != tokenTypes::reg && args[1].type != tokenTypes::stored_addr_raw && args[1].type != tokenTypes::stored_addr_reg)
+			return ARGV_ERROR;
+
+		if (inst == "push") {
+			if (args[1].type == tokenTypes::reg)
+				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element, SVOPTTOTQ(args[0].element));
+			else if (args[1].type == tokenTypes::stored_addr_raw) {
+				// Using this syntax shoudl be avoided, unless you are in unsafe mode, because that could generate a lot of instructions
+				// So if you could move the address into a register before, do it then
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(SVOPTTOTS(args[0].element)));
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, 
+						std::to_string(sizeof(size_t) + SVOPTTOTS(args[0].element)));
+				}
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax", SVOPTTOTQ(args[0].element));
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, std::to_string(sizeof(size_t)));
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+				}
+			}
+			else if (args[1].type == tokenTypes::stored_addr_reg) {
+				const std::string reg_addr = args[1].element.substr(1, args[1].element.size() - 2);
+				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, reg_addr, SVOPTTOTQ(args[0].element));
+			}
+		}
+		else if (inst == "pop") {
+			if (args[1].type == tokenTypes::reg)
+				pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, args[1].element, SVOPTTOTQ(args[0].element));
+			else if (args[1].type == tokenTypes::stored_addr_raw) {
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(sizeof(size_t)));
+				}
+
+				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax", SVOPTTOTQ(args[1].element));
+
+				if (!unsafe_flag) {
+					pushAction(out_actions, virtual_actions::subRSP, tokenTypes::unsigned_n, 
+						std::to_string(SVOPTTOTS(args[0].element) + sizeof(size_t)));
+					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
+					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(SVOPTTOTS(args[0].element)));
+				}
+			}
+			else if (args[1].type == tokenTypes::stored_addr_reg) {
+				const std::string reg_addr = args[1].element.substr(1, args[1].element.size() - 2);
+				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, reg_addr, SVOPTTOTQ(args[1].element));
+			}
+		}
 	}
+	else
+		return ARGV_ERROR;
 
 	return OK;
 }
@@ -1948,11 +2029,11 @@ int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& o
 			return ret;
 	}
 	for (action& _a : out_actions) {
-		auto tpl = std::static_pointer_cast<std::tuple<tokenTypes, std::string>>(_a.getValuePtr());
-		auto[vtype, vval] = *tpl;
+		auto tpl = std::static_pointer_cast<svasm_args>(_a.getValuePtr());
+		auto[vtype, vval, vopt] = *tpl;
 		if (vtype == tokenTypes::label) {
 			vval = std::to_string(preprocLabels[vval]);
-			*tpl = std::make_tuple<const tokenTypes&, const std::string&>(tokenTypes::unsigned_n, vval);
+			*tpl = std::make_tuple(tokenTypes::unsigned_n, vval, vopt);
 		}
 	}
 
@@ -1960,7 +2041,6 @@ int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& o
 
 	return OK;
 }
-
 
 int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 	static const std::unordered_map<std::string, registries_def> storeg = {
@@ -1999,15 +2079,16 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 	};
 
 	const byte comp_action = instructions_set[raw_action.getAction()];
-	const auto v_ptr = *std::static_pointer_cast<std::tuple<tokenTypes, std::string>>(raw_action.getValuePtr());
-	
-	const tokenTypes v_type = std::get<0>(v_ptr);
-	std::string v_raw = std::get<1>(v_ptr);
+	const auto v_ptr = *std::static_pointer_cast<svasm_args>(raw_action.getValuePtr());
 
-	if (zero_args_opcodes.find(comp_action) != zero_args_opcodes.end()) {
-		out_bytes.push_back(comp_action);
+	auto [v_type, v_raw, v_opt] = *std::static_pointer_cast<svasm_args>(raw_action.getValuePtr());
+	out_bytes.push_back(comp_action);
+
+	if (opt_arg_ops.find(comp_action) != opt_arg_ops.end())
+		out_bytes.push_back(v_opt);
+
+	if (zero_args_opcodes.find(comp_action) != zero_args_opcodes.end())		
 		return OK;
-	}
 	else if (uint64_args_opcodes.find(comp_action) != uint64_args_opcodes.end()) {
 		if (v_type != tokenTypes::signed_n && v_type != tokenTypes::unsigned_n)
 			return ARGV_ERROR;
@@ -2019,8 +2100,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 			ULLTOA(value, &uc_n);
 			const size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
 
-			out_bytes.push_back(comp_action);
-			for (byte i = 0; i < compressed_len; i++)
+			for (byte i = 0; i < compressed_len; ++i)
 				out_bytes.push_back(uc_n[i]);
 
 			delete[] uc_n;
@@ -2033,8 +2113,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 			ULLTOA((size_t)value, &uc_n);
 			const size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
 
-			out_bytes.push_back(comp_action);
-			for (byte i = 0; i < compressed_len; i++)
+			for (byte i = 0; i < compressed_len; ++i)
 				out_bytes.push_back(uc_n[i]);
 
 			delete[] uc_n;
@@ -2045,8 +2124,6 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 		if (v_type != tokenTypes::str)
 			return ARGV_ERROR;
 
-		out_bytes.push_back(comp_action);
-
 		v_raw = v_raw.substr(1, v_raw.size() - 2);
 		size_t str_size = v_raw.size() + 1;
 
@@ -2055,7 +2132,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 
 		size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
 
-		for (byte i = 0; i < compressed_len; i++)
+		for (byte i = 0; i < compressed_len; ++i)
 			out_bytes.push_back(b_str_size[i]);
 		delete[] b_str_size;
 
@@ -2066,7 +2143,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 		std::memcpy(b_str, v_raw.c_str(), str_size);
 #endif
 
-		for (size_t i = 0; i < str_size; i++)
+		for (size_t i = 0; i < str_size; ++i)
 			out_bytes.push_back(b_str[i]);
 		delete[] b_str;
 
@@ -2082,7 +2159,6 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 
 		byte c = (byte)v_raw[0];
 
-		out_bytes.push_back(comp_action);
 		out_bytes.push_back(c);
 
 		return OK;
@@ -2098,20 +2174,17 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 		else
 			comp_reg = fp_registers_set[xstoreg.at(v_raw)];
 
-		out_bytes.push_back(comp_action);
 		out_bytes.push_back(comp_reg);
 		return OK;
 	}
 	else if (parted_opcodes.find(comp_action) != parted_opcodes.end()) {
-		out_bytes.push_back(comp_action);
-
 		if (comp_action == instructions_set[virtual_actions::setFPR0]) {// All set(E|R|)FPRs have the same first opc
 			if (v_type != tokenTypes::double_n)
 				return ARGV_ERROR;
 
 			out_bytes.push_back(map_FPR_set_2nd_opc[raw_action.getAction()]);
 
-			auto uc_a = std::make_unique<unsigned char[]>(sizeof(long double));
+			auto uc_a = std::make_unique<uint8_t[]>(sizeof(long double));
 			long double d = std::stold(v_raw);
 			mp_memcpy(&d, uc_a.get(), sizeof(long double));
 
