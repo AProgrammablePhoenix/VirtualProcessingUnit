@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "compiler.h"
+#include "util.h"
 
 static const std::unordered_set<std::string> registers = {
 	"ax",
@@ -161,7 +162,6 @@ static bool isTQ(const std::string& s) {
 	return false;
 }
 
-
 int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized) {
 	if (registers.find(arg) != registers.end()) {
 		out_tokenized = token(arg, tokenTypes::reg);
@@ -200,7 +200,7 @@ int tokenizeArgument(const std::unordered_set<std::string> labels, const std::st
 			}
 		}
 
-		return ERROR_TYPE;
+		assert_err("Variable type of: " + arg + " cannot be determined", ERROR_TYPE);
 	}
 }
 int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeline& parsed, tokenized& out_tokenized) {
@@ -219,9 +219,9 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 		size_t new_size = 0;
 
 		if (!isNum(parsed.arguments[0], arg_type))
-			return ARGV_ERROR;
+			assert_err("Argument is not a number: " + parsed.arguments[0] + " on: ", "#resmem", parsed.arguments, ARGV_ERROR);
 		else if (arg_type != tokenTypes::unsigned_n && arg_type != tokenTypes::hex_n)
-			return ARGV_ERROR;
+			assert_err("Argument is not an unsigned number: " + parsed.arguments[0] + "on: ", "#resmem", parsed.arguments, ARGV_ERROR);
 		else if (arg_type == tokenTypes::hex_n)
 			new_size = std::stoull(parsed.arguments[0], 0, 0x10);
 		else
@@ -233,8 +233,7 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 
 	for (const std::string arg : parsed.arguments) {
 		token targ;
-		if (tokenizeArgument(labels, arg, targ))
-			return ERROR_TYPE;
+		tokenizeArgument(labels, arg, targ);
 
 		if (targ.type == tokenTypes::hex_n) {
 			targ.element = std::to_string(std::stoull(targ.element, 0, 0x10));
@@ -262,8 +261,7 @@ int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<c
 	for (size_t i = 0; i < parsed.size(); i++) {
 		tokenized temp;
 
-		if (tokenizeCodeline(labels, parsed[i], temp))
-			return ERROR_TYPE;
+		tokenizeCodeline(labels, parsed[i], temp);
 
 		out_tokenized.emplace_back(temp);
 	}

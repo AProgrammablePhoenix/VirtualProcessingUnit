@@ -12,6 +12,7 @@
 #endif
 
 #include "parser.h"
+#include "util.h"
 
 int fetch_file(const std::string& filename, std::string& out_read) {
 	std::ifstream file(filename);
@@ -25,14 +26,14 @@ int fetch_file(const std::string& filename, std::string& out_read) {
 		return OK;
 	}
 
-	return FILE_ERROR;
+	assert_err("Error while opening file", FILE_ERROR);
 }
 int fetch_lines(const std::string& content, std::vector<std::string>& lines) {
 	std::stringstream ss(content);
 	std::string line;
 
 	if (content.empty()) {
-		return EMPTY_FILE;
+		assert_err("Trying to assemble an empty file", EMPTY_FILE);
 	}
 
 	while (std::getline(ss, line)) {
@@ -91,7 +92,7 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 			temp = "";
 
 			if (i + 1 >= line.size())
-				return EXTRACOMMA;
+				assert_err("Found an extra comma", EXTRACOMMA);
 			else if (line[i + 1] == ' ')
 				for (size_t j = i + 1; j < line.size() && line[j] == ' '; i++, j++);
 
@@ -109,20 +110,17 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, std::unordered_set<std::string>& labels) {
 	std::string file_content;
 
-	if (fetch_file(filename, file_content))
-		return FILE_ERROR;
+	fetch_file(filename, file_content);
 	std::vector<std::string> lines;
 
-	if (fetch_lines(file_content, lines))
-		return EMPTY_FILE;
+	fetch_lines(file_content, lines);
 	
 	out_parsed.reserve(lines.size());
 	labels.reserve(lines.size() / 2);
 
 	for (size_t i = 0; i < lines.size(); i++) {
 		codeline parsed;
-		if (parse_line(lines[i], parsed))
-			return EXTRACOMMA;
+		parse_line(lines[i], parsed);
 
 		if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
 			labels.insert(parsed.instruction.substr(0, parsed.instruction.size() - 1));
