@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "../../utility.h"
 #include "compiler.h"
 
 extern std::map<uint64_t, uint64_t> vline_rline;
@@ -11,7 +12,16 @@ extern std::string source_file;
 
 // used to force exit if std::exit(int ec) failed
 #define __CEXIT(...) throw std::runtime_error("Program exited due to compilation error(s)\n");
-#define __CFMT(nline) std::format("({})", nline)
+
+// forced to do that since g++ and clang don't support c++ std::format feature yet
+#if defined(ISWIN)
+	#include <format>
+	#define __CFMT(nline) std::format("({})", nline)
+#else
+	#include <cstdio>
+	#define __CFMT(nline) "(" + std::to_string(nline) + ")"
+
+#endif
 #define __CASRTHDR(nline) source_file << __CFMT(nline) << " => "
 
 // General asserts
