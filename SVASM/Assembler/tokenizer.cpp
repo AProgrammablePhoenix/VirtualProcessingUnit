@@ -162,7 +162,7 @@ static bool isTQ(const std::string& s) {
 	return false;
 }
 
-int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized) {
+int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized, uint64_t nline) {
 	if (registers.find(arg) != registers.end()) {
 		out_tokenized = token(arg, tokenTypes::reg);
 		return OK;
@@ -200,10 +200,10 @@ int tokenizeArgument(const std::unordered_set<std::string> labels, const std::st
 			}
 		}
 
-		assert_err("Variable type of: " + arg + " cannot be determined", ERROR_TYPE);
+		assert_err("Type of variable: " + arg + " cannot be determined", nline, ERROR_TYPE);
 	}
 }
-int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeline& parsed, tokenized& out_tokenized) {
+int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeline& parsed, tokenized& out_tokenized, uint64_t nline) {
 	if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
 		out_tokenized.instruction = "[labeldef]";
 		out_tokenized.arguments.emplace_back(parsed.instruction.substr(0, parsed.instruction.size() - 1), tokenTypes::label);
@@ -219,9 +219,9 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 		size_t new_size = 0;
 
 		if (!isNum(parsed.arguments[0], arg_type))
-			assert_err("Argument is not a number: " + parsed.arguments[0] + " on: ", "#resmem", parsed.arguments, ARGV_ERROR);
+			assert_err("Argument is not a number: " + parsed.arguments[0] + " on: ", "#resmem", parsed.arguments, nline, ARGV_ERROR);
 		else if (arg_type != tokenTypes::unsigned_n && arg_type != tokenTypes::hex_n)
-			assert_err("Argument is not an unsigned number: " + parsed.arguments[0] + "on: ", "#resmem", parsed.arguments, ARGV_ERROR);
+			assert_err("Argument is not an unsigned number: " + parsed.arguments[0] + "on: ", "#resmem", parsed.arguments, nline, ARGV_ERROR);
 		else if (arg_type == tokenTypes::hex_n)
 			new_size = std::stoull(parsed.arguments[0], 0, 0x10);
 		else
@@ -233,7 +233,7 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 
 	for (const std::string arg : parsed.arguments) {
 		token targ;
-		tokenizeArgument(labels, arg, targ);
+		tokenizeArgument(labels, arg, targ, nline);
 
 		if (targ.type == tokenTypes::hex_n) {
 			targ.element = std::to_string(std::stoull(targ.element, 0, 0x10));
@@ -261,7 +261,7 @@ int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<c
 	for (size_t i = 0; i < parsed.size(); i++) {
 		tokenized temp;
 
-		tokenizeCodeline(labels, parsed[i], temp);
+		tokenizeCodeline(labels, parsed[i], temp, vline_rline[i]);
 
 		out_tokenized.emplace_back(temp);
 	}

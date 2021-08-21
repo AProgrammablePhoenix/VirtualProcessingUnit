@@ -13,6 +13,10 @@
 #include "compiler.h"
 #include "parser.h"
 
+// Used to map virtual line to real line number
+std::map<uint64_t, uint64_t> vline_rline;
+std::string source_file = "";
+
 void test_exit(const int& ret_code) {
 	if (ret_code) {
 		std::cerr << "SVAS returned with code: " << ret_code << std::endl;
@@ -28,7 +32,7 @@ int main(int argc, char* argv[]) {
 
 	int exit_code = false;
 
-	std::string inputFile = argv[1];
+	std::string inputFile = source_file = argv[1];
 	std::string outputFile = argv[2];
 
 	std::vector<codeline> parsed;

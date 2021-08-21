@@ -14,6 +14,10 @@
 #include "parser.h"
 #include "util.h"
 
+namespace {
+	uint64_t n_emlines = 1; // line counter in a file starts at 1
+}
+
 int fetch_file(const std::string& filename, std::string& out_read) {
 	std::ifstream file(filename);
 
@@ -26,26 +30,28 @@ int fetch_file(const std::string& filename, std::string& out_read) {
 		return OK;
 	}
 
-	assert_err("Error while opening file", FILE_ERROR);
+	assert_err("Error while opening file", 0, FILE_ERROR);
 }
 int fetch_lines(const std::string& content, std::vector<std::string>& lines) {
 	std::stringstream ss(content);
 	std::string line;
 
-	if (content.empty()) {
-		assert_err("Trying to assemble an empty file", EMPTY_FILE);
-	}
+	if (content.empty())
+		assert_err("Trying to assemble an empty file", 0, EMPTY_FILE);
 
 	while (std::getline(ss, line)) {
-		if (line.empty() || line.size() < 1)
+		if (line.empty() || line.size() < 1) {
+			++n_emlines;
 			continue;
+		}
 
+		vline_rline[lines.size()] = lines.size() + n_emlines;
 		lines.push_back(line);
 	}
 
 	return OK;
 }
-int parse_line(const std::string& line, codeline& out_parsed) {
+int parse_line(const std::string& line, codeline& out_parsed, uint64_t nline) {
 	bool found = false;
 	std::string temp = "";
 
@@ -92,7 +98,7 @@ int parse_line(const std::string& line, codeline& out_parsed) {
 			temp = "";
 
 			if (i + 1 >= line.size())
-				assert_err("Found an extra comma", EXTRACOMMA);
+				assert_err("Found an extra comma", nline, EXTRACOMMA);
 			else if (line[i + 1] == ' ')
 				for (size_t j = i + 1; j < line.size() && line[j] == ' '; i++, j++);
 
@@ -120,11 +126,10 @@ int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, s
 
 	for (size_t i = 0; i < lines.size(); i++) {
 		codeline parsed;
-		parse_line(lines[i], parsed);
+		parse_line(lines[i], parsed, vline_rline[i]);
 
-		if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
+		if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0)
 			labels.insert(parsed.instruction.substr(0, parsed.instruction.size() - 1));
-		}
 
 		out_parsed.emplace_back(parsed);
 	}
