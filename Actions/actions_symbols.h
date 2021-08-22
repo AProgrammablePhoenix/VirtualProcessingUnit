@@ -320,7 +320,6 @@ public:
 		this->self_ints = interrupts(this->self_mem, this->self_regs);
 		this->init();
 	}
-
 	actions_engine(memory*& memory, regs*& registers) {
 		this->self_mem = memory;
 		this->self_regs = registers;
@@ -352,16 +351,22 @@ public:
 		return *this->self_regs->stopRequested;
 	}
 
+	inline static void has_been_destoryed() {
+		actions_engine::pre_destroyed = true;
+	}
 	void destroy() {
-		if (this->self_mem)
-			delete this->self_mem;
-		if (this->self_regs)
-			delete this->self_regs;
+		if (!actions_engine::pre_destroyed) {
+			if (this->self_mem)
+				delete this->self_mem;
+			if (this->self_regs)
+				delete this->self_regs;
+		}
 	}
 private:
 	memory* self_mem;
 	regs* self_regs;
 	interrupts self_ints;
+	inline static bool pre_destroyed = false;
 
 	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m);
 

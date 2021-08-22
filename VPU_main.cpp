@@ -57,18 +57,26 @@ namespace {
 	}
 	void clearMemory(engine& threadin_engine) {
 		for (size_t i = 0; i < registers.size(); i++) {
-			delete registers[i];
+			if (registers[i])
+				delete registers[i];
 
-			memory_table[i]->destroy();
-			delete memory_table[i];
+			if (memory_table[i]) {
+				memory_table[i]->destroy();
+				delete memory_table[i];
+			}
 
-			delete processes_mem[i];
+			actions_engine::has_been_destoryed();
+
+			if (processes[i])
+				delete processes_mem[i];
 		}
 		for (size_t i = 0; i < a_engines.size(); i++) {
-			delete a_engines[i];
+			if (a_engines[i])
+				delete a_engines[i];
 		}
 		for (size_t i = 0; i < processes.size(); i++) {
-			delete processes[i];
+			if (processes[i])
+				delete processes[i];
 		}
 
 		threadin_engine.destroy();
@@ -107,9 +115,8 @@ namespace {
 			if (status == 1) {
 				threading_engine = engine(*processes[0]);
 
-				for (size_t i = 1; i < processes.size(); i++) {
+				for (size_t i = 1; i < processes.size(); i++)
 					threading_engine.pushProcess(*processes[i]);
-				}
 
 				threading_engine.setThreading(true);
 				threading_engine.start();
@@ -168,12 +175,10 @@ int main(int argc, char* argv[])
 			std::getline(std::cin, input);
 
 			ret_code = processInput(input, threading_engine, status);
-			if (ret_code == 0) {
+			if (ret_code == 0)
 				continue;
-			}
-			else if (ret_code == 1) {
+			else if (ret_code == 1)
 				break;
-			}
 			else if (ret_code == 2) {
 				status = 1;
 				continue;

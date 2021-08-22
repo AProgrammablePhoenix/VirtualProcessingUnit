@@ -757,9 +757,7 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 			converted.emplace_back(virtual_actions::gmov, (uint8_t)STOREGID(dest));
 		}
 		else
-			converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));
-
-		
+			converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));		
 	}
 
 	return converted;
