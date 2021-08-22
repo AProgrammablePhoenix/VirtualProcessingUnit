@@ -109,9 +109,8 @@ void process::execute() {
 		terminated = true;
 	}
 	else {
-		while (!this->isTerminated()) {
+		while (!this->isTerminated())
 			this->execute1();
-		}
 	}
 }
 void process::start() {

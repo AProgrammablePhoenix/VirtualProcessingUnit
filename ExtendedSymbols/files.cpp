@@ -112,7 +112,11 @@ void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 }
 
 void ex_rflen(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	void* ptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+
+	void* ptr = comn_registers_table(registers).access(reg_id);
 
 	std::error_code ec;
 	((reg_int<size_t>*)ptr)->set(std::filesystem::file_size(registers->sr->get(), ec));

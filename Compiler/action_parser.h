@@ -6,6 +6,7 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <unordered_set>
 
 #include "../Actions/actions_symbols.h"
 #include "../Actions/threading.h"

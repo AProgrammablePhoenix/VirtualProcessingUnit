@@ -14,9 +14,8 @@ engine::engine(const process& proc) {
 	this->threading = true;
 }
 engine::engine(std::vector<process> procs) {
-	for (size_t i = 0; i < procs.size(); i++) {
+	for (size_t i = 0; i < procs.size(); i++)
 		this->processes.push_back(procs[i]);
-	}
 	this->threading = true;
 }
 
@@ -39,9 +38,8 @@ int engine::getProcessById(size_t id, process* out_proc) {
 	}
 }
 void engine::deleteProcessById(size_t id) {
-	if (id < this->processes.size()) {
+	if (id < this->processes.size())
 		this->processes.erase(this->processes.begin() + id);
-	}
 }
 
 void engine::setThreading(bool state) {
@@ -52,9 +50,8 @@ void engine::start() {
 		bool allTerminated = false;
 
 		while (!allTerminated) {
-			if (this->processes.empty() || this->processes.size() < 1) {
+			if (this->processes.empty() || this->processes.size() < 1)
 				return;
-			}
 
 			for (int i = 0; i < this->processes.size(); i++) {
 				this->processes[i].execute1();
@@ -67,14 +64,12 @@ void engine::start() {
 		}
 	}
 	else {
-		for (size_t i = 0; i < this->processes.size(); i++) {
+		for (size_t i = 0; i < this->processes.size(); i++)
 			this->processes[i].start();
-		}
 	}
 }
 
 void engine::destroy() {
-	for (size_t i = 0; i < this->processes.size(); i++) {
+	for (size_t i = 0; i < this->processes.size(); i++)
 		this->processes[i].destroy();
-	}
 }

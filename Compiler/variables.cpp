@@ -35,7 +35,9 @@ std::unordered_set<std::string> regs_names = {
 	"RDX",
 
 	"RBP",
-	"RSP"
+	"RSP",
+	"RDI",
+	"RSI",
 
 	"SR",
 	"CR",
@@ -263,10 +265,8 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 
 	for (size_t i = 0; i < parsed.size(); i++) {
 		if (parsed[i].decl_attr == "defined") {
-			if (parsed[i].decl_type == "undefined" || parsed[i].decl_name == "<parsing-error>" ||
-				parsed[i].decl_value == "<parsing-error>") {
+			if (parsed[i].decl_type == "undefined" || parsed[i].decl_name == "<parsing-error>" || parsed[i].decl_value == "<parsing-error>")
 				continue;
-			}
 			else {
 				if (parsed[i].decl_type == "string") {
 					unsigned char* uc_s = new unsigned char[parsed[i].decl_value.size() + 1];
@@ -341,9 +341,8 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 		}
 	}
 	for (size_t i = 0; i < tagsvec.size(); i++) {
-		if (tagsvec[i].tagname == "undefined") {
+		if (tagsvec[i].tagname == "undefined")
 			continue;
-		}
 		storage.setTag(tagsvec[i].tagname, tagsvec[i].value);
 	}
 

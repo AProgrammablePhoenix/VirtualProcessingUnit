@@ -8,7 +8,7 @@
 
 #ifndef INST_Set_PREPROCESS
 	#define PREFIX_1 virtual_actions
-	#define PREFIX_2 extra_registries
+	#define PREFIX_2 comn_registers
 
 	#define MConcat(a,b) a ## b
 
@@ -86,67 +86,57 @@ namespace {
 	constexpr byte subFPRs_opcode = 0xA5;
 }
 
-std::map<registries_def, byte> registers_set = {
-	{registries_def::AH,  0x01},
-	{registries_def::AL,  0x02},
-	{registries_def::AX,  0x03},
+std::map<comn_registers, byte> registers_set = {
+	{comn_registers::AH,  (byte)comn_registers::AH},
+	{comn_registers::AL,  (byte)comn_registers::AL},
+	{comn_registers::AX,  (byte)comn_registers::AX},
 
-	{registries_def::BH,  0x04},
-	{registries_def::BL,  0x05},
-	{registries_def::BX,  0x06},
+	{comn_registers::BH,  (byte)comn_registers::BH},
+	{comn_registers::BL,  (byte)comn_registers::BL},
+	{comn_registers::BX,  (byte)comn_registers::BX},
 
-	{registries_def::CH,  0x07},
-	{registries_def::CL,  0x08},
-	{registries_def::CX,  0x09},
+	{comn_registers::CH,  (byte)comn_registers::CH},
+	{comn_registers::CL,  (byte)comn_registers::CL},
+	{comn_registers::CX,  (byte)comn_registers::CX},
 
-	{registries_def::DH,  0x0A},
-	{registries_def::DL,  0x0B},
-	{registries_def::DX,  0x0C},
+	{comn_registers::DH,  (byte)comn_registers::DH},
+	{comn_registers::DL,  (byte)comn_registers::DL},
+	{comn_registers::DX,  (byte)comn_registers::DX},
 
-	{registries_def::EAX, 0x0D},
-	{registries_def::EBX, 0x0E},
-	{registries_def::ECX, 0x0F},
-	{registries_def::EDX, 0x10},
+	{comn_registers::EAX, (byte)comn_registers::EAX},
+	{comn_registers::EBX, (byte)comn_registers::EBX},
+	{comn_registers::ECX, (byte)comn_registers::ECX},
+	{comn_registers::EDX, (byte)comn_registers::EDX},
 
-	{registries_def::RAX, 0x11},
-	{registries_def::RBX, 0x12},
-	{registries_def::RCX, 0x13},
-	{registries_def::RDX, 0x14},
+	{comn_registers::RAX, (byte)comn_registers::RAX},
+	{comn_registers::RBX, (byte)comn_registers::RBX},
+	{comn_registers::RCX, (byte)comn_registers::RCX},
+	{comn_registers::RDX, (byte)comn_registers::RDX},
 
-	{registries_def::RBP, 0x15},
-	{registries_def::RSP, 0x16}
+	{comn_registers::RBP, (byte)comn_registers::RBP},
+	{comn_registers::RSP, (byte)comn_registers::RSP},
+
+	{comn_registers::RDI, (byte)comn_registers::RDI},
+	{comn_registers::RSI, (byte)comn_registers::RSI}
 };
-std::map<extra_registries, byte> fp_registers_set = {
-	{extra_registries::FPR0, 0x17},
-	{extra_registries::FPR1, 0x18},
-	{extra_registries::FPR2, 0x19},
-	{extra_registries::FPR3, 0x1A},
+std::map<comn_registers, byte> fp_registers_set = {
+	{comn_registers::FPR0, (byte)comn_registers::FPR0},
+	{comn_registers::FPR1, (byte)comn_registers::FPR1},
+	{comn_registers::FPR2, (byte)comn_registers::FPR2},
+	{comn_registers::FPR3, (byte)comn_registers::FPR3},
 
-	{extra_registries::EFPR0, 0x1B},
-	{extra_registries::EFPR1, 0x1C},
-	{extra_registries::EFPR2, 0x1D},
-	{extra_registries::EFPR3, 0x1E},
+	{comn_registers::EFPR0, (byte)comn_registers::EFPR0},
+	{comn_registers::EFPR1, (byte)comn_registers::EFPR1},
+	{comn_registers::EFPR2, (byte)comn_registers::EFPR2},
+	{comn_registers::EFPR3, (byte)comn_registers::EFPR3},
 
-	{extra_registries::RFPR0, 0x1F},
-	{extra_registries::RFPR1, 0x20},
-	{extra_registries::RFPR2, 0x21},
-	{extra_registries::RFPR3, 0x22}
+	{comn_registers::RFPR0, (byte)comn_registers::RFPR0},
+	{comn_registers::RFPR1, (byte)comn_registers::RFPR1},
+	{comn_registers::RFPR2, (byte)comn_registers::RFPR2},
+	{comn_registers::RFPR3, (byte)comn_registers::RFPR3}
 };
 std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::_int,   0x00},
-
-	{virtual_actions::getAX,  0x01},
-	{virtual_actions::getBX,  0x02},
-	{virtual_actions::getCX,  0x03},
-	{virtual_actions::getDX,  0x04},
-	{virtual_actions::getEAX, 0x05},
-	{virtual_actions::getEBX, 0x06},
-	{virtual_actions::getECX, 0x07},
-	{virtual_actions::getEDX, 0x08},
-	{virtual_actions::getRAX, 0x09},
-	{virtual_actions::getRBX, 0x0A},
-	{virtual_actions::getRCX, 0x0B},
-	{virtual_actions::getRDX, 0x0C},
 
 	{virtual_actions::setAX,  0x0D},
 	{virtual_actions::setBX,  0x0E},
@@ -162,10 +152,8 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::setRDX, 0x18},
 
 	{virtual_actions::setSR,  0x19},
-	{virtual_actions::getSR,  0x1A},
 
 	{virtual_actions::setCR,  0x1B},
-	{virtual_actions::getCR,  0x1C},
 
 	{virtual_actions::movAX,  0x1F},
 	{virtual_actions::movBX,  0x20},
@@ -358,22 +346,6 @@ std::map<virtual_actions, byte> map_FPR_sub_2nd_opc = {
 std::map<virtual_actions, byte>& ops = instructions_set;
 
 std::unordered_set<byte> zero_args_opcodes = {
-	ops[virtual_actions::getAX],
-	ops[virtual_actions::getBX],
-	ops[virtual_actions::getCX],
-	ops[virtual_actions::getDX],
-	ops[virtual_actions::getEAX],
-	ops[virtual_actions::getEBX],
-	ops[virtual_actions::getECX],
-	ops[virtual_actions::getEDX],
-	ops[virtual_actions::getRAX],
-	ops[virtual_actions::getRBX],
-	ops[virtual_actions::getRCX],
-	ops[virtual_actions::getRDX],
-
-	ops[virtual_actions::getSR],
-	ops[virtual_actions::getCR],
-
 	ops[virtual_actions::pushSR],
 	ops[virtual_actions::popSR],
 	ops[virtual_actions::pushCR],

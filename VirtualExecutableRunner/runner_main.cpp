@@ -187,7 +187,7 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 			byte _reg = data[i];
 			size_t real_reg = 0;
 
-			if (_reg <= registers_set[registries_def::RSP])
+			if (_reg < registers_set[comn_registers::SR])
 				real_reg = (size_t)(findKeyByValue(registers_set, _reg));
 			else
 				real_reg = (size_t)(findKeyByValue(fp_registers_set, _reg));

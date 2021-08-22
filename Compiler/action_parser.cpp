@@ -22,20 +22,111 @@
 #include "action_parser.h"
 #include "variables.h"
 
-inline void SETREG(registries_def reg, std::string str_reg, unsigned char*& buffer, 
-		variables_decl*& vars, std::map<std::string, std::shared_ptr<void>>& ptr_table) {
-	ULLTOA((size_t)reg, &buffer);
-	vars->set(str_reg, buffer, sizeof(size_t));
-	delete[] buffer;
-	ptr_table[str_reg] = std::make_shared<arg_tuple>(vars->getVarInfos(str_reg));
-}
+extern std::unordered_set<std::string> regs_names;
 
-inline void SETXREG(extra_registries xreg, std::string str_xreg, unsigned char*& buffer,
+namespace {
+	std::unordered_set<std::string> num_registers = {
+		"AX",
+		"BX",
+		"CX",
+		"DX",
+
+		"EAX",
+		"EBX",
+		"ECX",
+		"EDX",
+
+		"RAX",
+		"RBX",
+		"RCX",
+		"RDX",
+
+		"RBP",
+		"RSP",
+		"RDI",
+		"RSI"
+	};
+	std::unordered_set<std::string> fp_registers = {
+		"FPR0",
+		"FPR1",
+		"FPR2",
+		"FPR3",
+
+		"EFPR0",
+		"EFPR1",
+		"EFPR2",
+		"EFPR3",
+
+		"RFPR0",
+		"RFPR1",
+		"RFPR2",
+		"RFPR3",
+	};
+	std::unordered_map<std::string, comn_registers> str_to_reg_table = {
+		{"AX", comn_registers::AX},
+		{"BX", comn_registers::BX},
+		{"CX", comn_registers::CX},
+		{"DX", comn_registers::DX},
+
+		{"EAX", comn_registers::EAX},
+		{"EBX", comn_registers::EBX},
+		{"ECX", comn_registers::ECX},
+		{"EDX", comn_registers::EDX},
+
+		{"RAX", comn_registers::RAX},
+		{"RBX", comn_registers::RBX},
+		{"RCX", comn_registers::RCX},
+		{"RDX", comn_registers::RDX},
+
+		{"RBP", comn_registers::RBP},
+		{"RSP", comn_registers::RSP},
+		{"RDI", comn_registers::RDI},
+		{"RSI", comn_registers::RSI},
+
+		{"FPR0", comn_registers::FPR0},
+		{"FPR1", comn_registers::FPR1},
+		{"FPR2", comn_registers::FPR2},
+		{"FPR3", comn_registers::FPR3},
+
+		{"EFPR0", comn_registers::EFPR0},
+		{"EFPR1", comn_registers::EFPR1},
+		{"EFPR2", comn_registers::EFPR2},
+		{"EFPR3", comn_registers::EFPR3},
+
+		{"RFPR0", comn_registers::RFPR0},
+		{"RFPR1", comn_registers::RFPR1},
+		{"RFPR2", comn_registers::RFPR2},
+		{"RFPR3", comn_registers::RFPR3}
+	};
+	std::array<std::string, 2> multi_args_ops = {
+		"set",
+		"mov"
+	};
+
+	inline void SETREG(comn_registers reg, std::string str_reg, unsigned char*& buffer,
 		variables_decl*& vars, std::map<std::string, std::shared_ptr<void>>& ptr_table) {
-	ULLTOA((size_t)xreg, &buffer);
-	vars->set(str_xreg, buffer, sizeof(size_t));
-	delete[] buffer;
-	ptr_table[str_xreg] = std::make_shared<arg_tuple>(vars->getVarInfos(str_xreg));
+		ULLTOA((size_t)reg, &buffer);
+		vars->set(str_reg, buffer, sizeof(size_t));
+		delete[] buffer;
+		ptr_table[str_reg] = std::make_shared<arg_tuple>(vars->getVarInfos(str_reg));
+	}
+	comn_registers STOREGID(const std::string& str) {
+		if (num_registers.find(str) == num_registers.end() && fp_registers.find(str) == fp_registers.end()) {
+			std::cerr << "Can't use special register on an operation that requires a real register" << std::endl;
+			std::exit(1);
+			return (comn_registers)0; // Disables warnings
+		}
+
+		return str_to_reg_table[str];
+	}
+	
+	bool is_margs_op(std::string op) {
+		for (std::string s : multi_args_ops) {
+			if (op.starts_with(s))
+				return true;
+		}
+		return false;
+	}
 }
 
 void process_memory::set(variables_decl* var) {
@@ -66,41 +157,44 @@ void process_memory::setTags(variables_decl* vars) {
 void process_memory::setRegisters(variables_decl* vars) {
 	unsigned char* uc_r = nullptr;
 
-	SETREG(registries_def::AX, "AX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::BX, "BX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::CX, "CX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::DX, "DX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::AX, "AX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::BX, "BX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::CX, "CX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::DX, "DX", uc_r, vars, this->data_ptrs);
 
-	SETREG(registries_def::EAX, "EAX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::EBX, "EBX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::ECX, "ECX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::EDX, "EDX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EAX, "EAX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EBX, "EBX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::ECX, "ECX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EDX, "EDX", uc_r, vars, this->data_ptrs);
 
-	SETREG(registries_def::RAX, "RAX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::RBX, "RBX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::RCX, "RCX", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::RDX, "RDX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RAX, "RAX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RBX, "RBX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RCX, "RCX", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RDX, "RDX", uc_r, vars, this->data_ptrs);
 
-	SETREG(registries_def::RBP, "RBP", uc_r, vars, this->data_ptrs);
-	SETREG(registries_def::RSP, "RSP", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RBP, "RBP", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RSP, "RSP", uc_r, vars, this->data_ptrs);
 
-	SETXREG(extra_registries::SR, "SR", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::CR, "CR", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RDI, "RDI", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RSI, "RSI", uc_r, vars, this->data_ptrs);
 
-	SETXREG(extra_registries::FPR0, "FPR0", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::FPR1, "FPR1", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::FPR2, "FPR2", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::FPR3, "FPR3", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::SR, "SR", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::CR, "CR", uc_r, vars, this->data_ptrs);
 
-	SETXREG(extra_registries::EFPR0, "EFPR0", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::EFPR1, "EFPR1", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::EFPR2, "EFPR2", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::EFPR3, "EFPR3", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::FPR0, "FPR0", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::FPR1, "FPR1", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::FPR2, "FPR2", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::FPR3, "FPR3", uc_r, vars, this->data_ptrs);
 
-	SETXREG(extra_registries::RFPR0, "RFPR0", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::RFPR1, "RFPR1", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::RFPR2, "RFPR2", uc_r, vars, this->data_ptrs);
-	SETXREG(extra_registries::RFPR3, "RFPR3", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EFPR0, "EFPR0", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EFPR1, "EFPR1", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EFPR2, "EFPR2", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::EFPR3, "EFPR3", uc_r, vars, this->data_ptrs);
+
+	SETREG(comn_registers::RFPR0, "RFPR0", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RFPR1, "RFPR1", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RFPR2, "RFPR2", uc_r, vars, this->data_ptrs);
+	SETREG(comn_registers::RFPR3, "RFPR3", uc_r, vars, this->data_ptrs);
 }
 
 std::shared_ptr<void> process_memory::getVarPtr(const std::string& var_name) {
@@ -119,89 +213,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 {
 #pragma region map_decl
 	{"int", virtual_actions::_int},
-
-	{"getAX", virtual_actions::getAX},
-	{"getBX", virtual_actions::getBX},
-	{"getCX", virtual_actions::getCX},
-	{"getDX", virtual_actions::getDX},
-
-	{"setAX", virtual_actions::setAX},
-	{"setBX", virtual_actions::setBX},
-	{"setCX", virtual_actions::setCX},
-	{"setDX", virtual_actions::setDX},
-
-	{"getEAX", virtual_actions::getEAX},
-	{"getEBX", virtual_actions::getEBX},
-	{"getECX", virtual_actions::getECX},
-	{"getEDX", virtual_actions::getEDX},
-
-	{"setEAX", virtual_actions::setEAX},
-	{"setEBX", virtual_actions::setEBX},
-	{"setECX", virtual_actions::setECX},
-	{"setEDX", virtual_actions::setEDX},
-
-	{"getRAX", virtual_actions::getRAX},
-	{"getRBX", virtual_actions::getRBX},
-	{"getRCX", virtual_actions::getRCX},
-	{"getRDX", virtual_actions::getRDX},
-
-	{"setRAX", virtual_actions::setRAX},
-	{"setRBX", virtual_actions::setRBX},
-	{"setRCX", virtual_actions::setRCX},
-	{"setRDX", virtual_actions::setRDX},
-
-	{"setFPR0", virtual_actions::setFPR0},
-	{"setFPR1", virtual_actions::setFPR1},
-	{"setFPR2", virtual_actions::setFPR2},
-	{"setFPR3", virtual_actions::setFPR3},
-
-	{"setEFPR0", virtual_actions::setEFPR0},
-	{"setEFPR1", virtual_actions::setEFPR1},
-	{"setEFPR2", virtual_actions::setEFPR2},
-	{"setEFPR3", virtual_actions::setEFPR3},
-
-	{"setRFPR0", virtual_actions::setRFPR0},
-	{"setRFPR1", virtual_actions::setRFPR1},
-	{"setRFPR2", virtual_actions::setRFPR2},
-	{"setRFPR3", virtual_actions::setRFPR3},
-
-	{"setSR", virtual_actions::setSR},
-	{"getSR", virtual_actions::getSR},
-
-	{"setCR", virtual_actions::setCR},
-	{"getCR", virtual_actions::getCR},
-
-	{"movAX", virtual_actions::movAX},
-	{"movBX", virtual_actions::movBX},
-	{"movCX", virtual_actions::movCX},
-	{"movDX", virtual_actions::movDX},
-
-	{"movEAX", virtual_actions::movEAX},
-	{"movEBX", virtual_actions::movEBX},
-	{"movECX", virtual_actions::movECX},
-	{"movEDX", virtual_actions::movEDX},
-
-	{"movRAX", virtual_actions::movRAX},
-	{"movRBX", virtual_actions::movRBX},
-	{"movRCX", virtual_actions::movRCX},
-	{"movRDX", virtual_actions::movRDX},
-	{"movRBP", virtual_actions::movRBP},
-	{"movRSP", virtual_actions::movRSP},
-
-	{"movFPR0", virtual_actions::movFPR0},
-	{"movFPR1", virtual_actions::movFPR1},
-	{"movFPR2", virtual_actions::movFPR2},
-	{"movFPR3", virtual_actions::movFPR3},
-
-	{"movEFPR0", virtual_actions::movEFPR0},
-	{"movEFPR1", virtual_actions::movEFPR1},
-	{"movEFPR2", virtual_actions::movEFPR2},
-	{"movEFPR3", virtual_actions::movEFPR3},
-
-	{"movRFPR0", virtual_actions::movRFPR0},
-	{"movRFPR1", virtual_actions::movRFPR1},
-	{"movRFPR2", virtual_actions::movRFPR2},
-	{"movRFPR3", virtual_actions::movRFPR3},
 
 	{"inc", virtual_actions::inc},
 	{"dec", virtual_actions::dec},
@@ -618,7 +629,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 
 			if (!line.rfind("decltag ", 0)) {
 				std::string tagname = line.substr(8);
-				parsed.push_back(std::vector<std::string>({ "decltag", tagname }));
+				parsed.push_back(std::vector<std::string>({ "decltag", tagname, "0"}));
 				continue;
 			}
 			else if (!line.rfind("[include] ", 0)) {
@@ -667,7 +678,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 			std::stringstream ss(line);
 			std::string action, argument;
 			ss >> action >> std::ws >> argument;
-			argument =  line.substr(action.size() + 1);
+			argument = line.substr(action.size() + 1);
 
 			if (!argument.find("${{", 0) && argument.find("}}", argument.size() - 2) > 2
 				&& argument.find("}}", argument.size() - 2 < argument.size())) {
@@ -711,8 +722,45 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 	std::vector<std::tuple<virtual_actions, uint8_t>> converted;
 	converted.reserve(parsed.size());
 
-	for (size_t i = 0; i < parsed.size(); i++)
-		converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));
+	for (size_t i = 0; i < parsed.size(); i++) {
+		if (parsed[i][0].starts_with("set")) {
+			std::stringstream ss(parsed[i][0].substr(3));
+			std::string dest, src;
+			ss >> dest >> std::ws >> src;
+
+			if (regs_names.find(dest) == regs_names.end()) {
+				std::cerr << "set: unknown operands: " << dest << ", " << parsed[i][1] << std::endl;
+				std::exit(1);
+				return converted; // won't be executed, used to disable warnings on some compilers
+			}
+
+			uint8_t sec_opr;
+			if (dest == "CR")
+				sec_opr = (uint8_t)comn_registers::CR;
+			else if (dest == "SR")
+				sec_opr = (uint8_t)comn_registers::SR;
+			else
+				sec_opr = (uint8_t)STOREGID(dest);
+			converted.emplace_back(virtual_actions::gset, sec_opr);
+		}
+		else if (parsed[i][0].starts_with("mov")) {
+			std::stringstream ss(parsed[i][0].substr(3));
+			std::string dest, src;
+			ss >> dest >> std::ws >> src;
+
+			if (regs_names.find(dest) == regs_names.end()) {
+				std::cerr << "mov: unknown operands: " << dest << ", " << parsed[i][1] << std::endl;
+				std::exit(1);
+				return converted; // won't be executed, used to disable warnings on some compilers
+			}
+
+			converted.emplace_back(virtual_actions::gmov, (uint8_t)STOREGID(dest));
+		}
+		else
+			converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));
+
+		
+	}
 
 	return converted;
 }
@@ -790,8 +838,8 @@ void finalizeTags(std::vector<std::vector<std::string>> cleaned_parsed, variable
 				break;
 			}
 		}
-		if ((size_t)(symbols_converter[cleaned_parsed[i][0]]) == 0 ||
-				symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::_int) {
+		if (((size_t)(symbols_converter[cleaned_parsed[i][0]]) == 0 || symbols_converter[cleaned_parsed[i][0]]  < virtual_actions::_int) &&
+				!is_margs_op(cleaned_parsed[i][0])) {
 			cleaned_parsed.erase(cleaned_parsed.begin() + i);
 			i--;
 		}

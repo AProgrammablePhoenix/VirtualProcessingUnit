@@ -74,17 +74,21 @@ namespace {
 }
 
 void sdzsMem(GLOBL_ARGS) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* regptr = ptr_table.access(reg_id);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
-	((reg_int<size_t>*)regptr)->set(mem->_SDZS());
+	((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->set(mem->_SDZS());
 }
 
 // Memory stack symbols
 void pushMem(GLOBL_ARGS) {
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+
 	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg));
-	void* regptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(reg_id);
 	size_t value = ((reg_int<size_t>*)regptr)->get();
 
 	size_t temp_sz = 0;
@@ -100,8 +104,12 @@ void pushMem(GLOBL_ARGS) {
 	mem->push(temp.get(), temp_sz);
 }
 void popMem(GLOBL_ARGS) {
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+
 	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg));
-	void* regptr = registries_ptr_table(registers).access(ATTOREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(reg_id);
 	
 	size_t temp_sz = 0;
 	uint8_t qt_det = VOPTTOTQ(vopt);
@@ -120,19 +128,18 @@ void popMem(GLOBL_ARGS) {
 }
 
 void pushMemSR(GLOBL_ARGS_D1) {
-	std::shared_ptr<std::string> value = std::make_shared<std::string>("");
-	b_getSR(value, registers, mem);
+	std::string value = registers->sr->get();
 
-	size_t rssize = value->size() + 1;
+	size_t rssize = value.size() + 1;
 
 	unsigned char* ssize = new unsigned char[sizeof(size_t)];
-	unsigned char *uc_s = new unsigned char[rssize];
+	unsigned char* uc_s = new unsigned char[rssize];
 	mp_memcpy(&rssize, ssize);
 
 #if defined(ISWIN)
-	memcpy_s(uc_s, rssize, value->c_str(), rssize);
+	memcpy_s(uc_s, rssize, value.c_str(), rssize);
 #else
-	std::memcpy(uc_s, value->c_str(), value->size() + 1);
+	std::memcpy(uc_s, value.c_str(), value.size() + 1);
 #endif
 
 	mem->push(uc_s, rssize);
@@ -152,19 +159,15 @@ void popMemSR(GLOBL_ARGS_D1) {
 	value = new unsigned char[rssize];
 	mem->pop(value, rssize);
 
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	((reg_int<std::string>*)ptr_table.access(extra_registries::SR))->set(std::string((const char*)value));
+	registers->sr->set(std::string((const char*)value));
 
 	delete[] value;
 	delete[] ssize;
 }
 
 void pushMemCR(GLOBL_ARGS_D1) {
-	std::shared_ptr<char> value = std::make_shared<char>('\0');
-	b_getCR(value, registers, mem);
-
 	unsigned char* cptr = new unsigned char[1];
-	cptr[0] = *value;
+	cptr[0] = registers->cr->get();
 
 	mem->push(cptr, 1);
 	delete[] cptr;
@@ -173,16 +176,13 @@ void popMemCR(GLOBL_ARGS_D1) {
 	unsigned char* cptr = new unsigned char[1];
 	mem->pop(cptr, 1);
 
-	char c = cptr[0];
-
-	extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);
-	((reg_int<char>*)ptr_table.access(extra_registries::CR))->set(c);
+	registers->cr->set(cptr[0]);
 
 	delete[] cptr;
 }
 
 void pushMemFPR(GLOBL_ARGS) {
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
 		FPR_push_helper((long double)((OrphanReg<float>*)regptr)->get(),mem);
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
@@ -191,7 +191,7 @@ void pushMemFPR(GLOBL_ARGS) {
 		FPR_push_helper(((OrphanReg<long double>*)regptr)->get(), mem);
 }
 void popMemFPR(GLOBL_ARGS) {
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	long double ld = 0;
 
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {
@@ -208,8 +208,11 @@ void popMemFPR(GLOBL_ARGS) {
 
 void movsm(GLOBL_ARGS_D2) {
 	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg_addr));
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	void* ptr = registries_ptr_table(registers).access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
+
+	void* ptr = comn_registers_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
@@ -226,8 +229,11 @@ void movsm(GLOBL_ARGS_D2) {
 }
 void movgm(GLOBL_ARGS_D2) {
 	nbyte vopt = std::get<2>(*std::static_pointer_cast<arg_tuple>(reg_addr));
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	void* ptr = registries_ptr_table(registers).access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
+
+	void* ptr = comn_registers_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	size_t temp_sz = 0;
@@ -243,10 +249,11 @@ void movgm(GLOBL_ARGS_D2) {
 }
 
 void movsmSR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
 
+	void* ptr = comn_registers_table(registers).access(_reg);
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 
 	std::string value = registers->sr->get();
@@ -267,10 +274,11 @@ void movsmSR(GLOBL_ARGS_D2) {
 	delete[] temp;
 }
 void movgmSR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
 
+	void* ptr = comn_registers_table(registers).access(_reg);
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	size_t rt_size = 0;
 
@@ -288,9 +296,11 @@ void movgmSR(GLOBL_ARGS_D2) {
 }
 
 void movsmCR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
+
+	void* ptr = comn_registers_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	unsigned char* temp = new unsigned char[1];
@@ -299,9 +309,11 @@ void movsmCR(GLOBL_ARGS_D2) {
 	delete[] temp;
 }
 void movgmCR(GLOBL_ARGS_D2) {
-	registries_def _reg = ATTOREGID(reg_addr, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	void* ptr = ptr_table.access(_reg);
+	comn_registers _reg = ATTOREGID(reg_addr, mem);
+	if (!comn_registers_table::is_num_reg(_reg))
+		return;
+
+	void* ptr = comn_registers_table(registers).access(_reg);
 
 	size_t _addr = ((reg_int<size_t>*)ptr)->get();
 	unsigned char* temp = new unsigned char[1];
@@ -313,7 +325,7 @@ void movgmCR(GLOBL_ARGS_D2) {
 void movsmFPR(GLOBL_ARGS) {
 	size_t addr = registers->rax->get();
 
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
 		FPR_mem_set((long double)((OrphanReg<float>*)regptr)->get(), addr, mem);
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
@@ -323,7 +335,7 @@ void movsmFPR(GLOBL_ARGS) {
 }
 void movgmFPR(GLOBL_ARGS) {
 	size_t addr = registers->rax->get();
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	long double ld = 0;
 
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {

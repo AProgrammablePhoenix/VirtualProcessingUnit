@@ -44,7 +44,7 @@ namespace {
 		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
 		delete[] uc_n;
 
-		reg_value = fp_registers_set[(extra_registries)reg_value];
+		reg_value = fp_registers_set[(comn_registers)reg_value];
 		out.push_back(reg_value);
 	}
 }
@@ -113,10 +113,10 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
 		delete[] uc_n;
 
-		if (reg_value <= (byte)registries_def::RSP)
-			reg_value = registers_set[(registries_def)reg_value];
+		if (reg_value < (byte)comn_registers::SR)
+			reg_value = registers_set[(comn_registers)reg_value];
 		else
-			reg_value = fp_registers_set[(extra_registries)reg_value];
+			reg_value = fp_registers_set[(comn_registers)reg_value];
 
 		out.push_back(reg_value);
 		return out;

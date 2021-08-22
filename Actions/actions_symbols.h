@@ -16,41 +16,26 @@ enum class virtual_actions {
 	_int = 1,
 
 	// Registers
-	getAX,
-	getBX,
-	getCX,
-	getDX,
-
 	setAX,
 	setBX,
 	setCX,
 	setDX,
-
-	getEAX,
-	getEBX,
-	getECX,
-	getEDX,
 
 	setEAX,
 	setEBX,
 	setECX,
 	setEDX,
 
-	getRAX,
-	getRBX,
-	getRCX,
-	getRDX,
-
 	setRAX,
 	setRBX,
 	setRCX,
 	setRDX,
 
+	gset,
+
 	setSR,
-	getSR,
 
 	setCR,
-	getCR,
 
 	setFPR0,
 	setFPR1,
@@ -83,6 +68,8 @@ enum class virtual_actions {
 	movRDX,
 	movRBP,
 	movRSP,
+
+	gmov,
 
 	movFPR0,
 	movFPR1,
@@ -398,6 +385,8 @@ private:
 		a_db[(size_t)virtual_actions::setSR] = b_setSR;
 		a_db[(size_t)virtual_actions::setCR] = b_setCR;
 
+		a_db[(size_t)virtual_actions::gset] = b_setGP;
+
 		a_db[(size_t)virtual_actions::setFPR0] = b_setFPR0;
 		a_db[(size_t)virtual_actions::setFPR1] = b_setFPR1;
 		a_db[(size_t)virtual_actions::setFPR2] = b_setFPR2;
@@ -412,25 +401,6 @@ private:
 		a_db[(size_t)virtual_actions::setRFPR1] = b_setRFPR1;
 		a_db[(size_t)virtual_actions::setRFPR2] = b_setRFPR2;
 		a_db[(size_t)virtual_actions::setRFPR3] = b_setRFPR3;
-#pragma endregion
-#pragma region b_get
-		a_db[(size_t)virtual_actions::getAX] = b_get16AX;
-		a_db[(size_t)virtual_actions::getBX] = b_get16BX;
-		a_db[(size_t)virtual_actions::getCX] = b_get16CX;
-		a_db[(size_t)virtual_actions::getDX] = b_get16DX;
-
-		a_db[(size_t)virtual_actions::getEAX] = b_get32EAX;
-		a_db[(size_t)virtual_actions::getEBX] = b_get32EBX;
-		a_db[(size_t)virtual_actions::getECX] = b_get32ECX;
-		a_db[(size_t)virtual_actions::getEDX] = b_get32EDX;
-
-		a_db[(size_t)virtual_actions::getRAX] = b_get64RAX;
-		a_db[(size_t)virtual_actions::getRBX] = b_get64RBX;
-		a_db[(size_t)virtual_actions::getRCX] = b_get64RCX;
-		a_db[(size_t)virtual_actions::getRDX] = b_get64RDX;
-
-		a_db[(size_t)virtual_actions::getSR] = b_getSR;
-		a_db[(size_t)virtual_actions::getCR] = b_getCR;
 #pragma endregion
 #pragma region b_mov
 		a_db[(size_t)virtual_actions::movAX] = b_mov16AX;
@@ -450,6 +420,8 @@ private:
 
 		a_db[(size_t)virtual_actions::movRBP] = b_mov64RBP;
 		a_db[(size_t)virtual_actions::movRSP] = b_mov64RSP;
+
+		a_db[(size_t)virtual_actions::gmov] = b_movGP;
 
 		a_db[(size_t)virtual_actions::movFPR0] = b_movFPR0;
 		a_db[(size_t)virtual_actions::movFPR1] = b_movFPR1;
