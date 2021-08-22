@@ -27,9 +27,12 @@ void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(saved_sr);
 }
 void b_toString(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
-	size_t value = ((reg_int<size_t>*)ptr_table.access(reg_id))->get();
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+
+	comn_registers_table ptr_table = comn_registers_table(registers);
+	size_t value = ((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->get();
 
 	std::stringstream ss;
 	ss << value;
@@ -44,14 +47,7 @@ void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem)
 	registers->sr->set(base + pushed);
 }
 void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	std::string sr = registers->sr->get();
-	std::shared_ptr<unsigned short> ax = std::make_shared<unsigned short>(0);
-	std::shared_ptr<unsigned short> bx = std::make_shared<unsigned short>(0);
-
-	b_get16AX(ax, registers, unused_m);
-	b_get16BX(bx, registers, unused_m);
-
-	registers->sr->set(sr.substr(*ax, *bx));
+	registers->sr->set(registers->sr->get().substr(registers->rax->get(), registers->rbx->get()));
 }
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
@@ -78,7 +74,7 @@ void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m
 }
 
 void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
-	registries_def recv_id = ATTOREGID(receiver, mem);
+	comn_registers recv_id = ATTOREGID(receiver, mem);
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -87,17 +83,14 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 	mp_memcpy(temp, &value);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 
-	if (recv_id >= registries_def::AX && recv_id <= registries_def::DX) {
+	if (recv_id >= comn_registers::AX && recv_id <= comn_registers::DX)
 		((reg_int<unsigned short>*)ptr_table.access(recv_id))->set((unsigned short)value);
-	}
-	else if (recv_id >= registries_def::EAX && recv_id <= registries_def::EDX) {
+	else if (recv_id >= comn_registers::EAX && recv_id <= comn_registers::EDX)
 		((reg_int<unsigned int>*)ptr_table.access(recv_id))->set((unsigned int)value);
-	}
-	else {
+	else
 		((reg_int<size_t>*)ptr_table.access(recv_id))->set((size_t)value);
-	}
 }
 
 /* STACK before calling:

@@ -10,31 +10,34 @@
 	#define GLOBL_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
 	#define GLOBL_ARGS_D1 CUSTOM_STD_ARGS(unused_p, registers, mem)
 	
-	#define NATIVE_INCDEC(opsign)																						\
-		registries_def reg_id = ATTOREGID(reg, mem);																	\
-		registries_ptr_table ptr_table = registries_ptr_table(registers);												\
+	#define NATIVE_INCDEC(opsign)																									\
+		comn_registers reg_id = ATTOREGID(reg, mem);																				\
+		if (!comn_registers_table::is_num_reg(reg_id)) {																			\
+			return;																													\
+		}																															\
+		comn_registers_table ptr_table = comn_registers_table(registers);															\
 		((reg_int<size_t>*)ptr_table.access(reg_id))->set(((reg_int<size_t>*)ptr_table.access(reg_id))->get() opsign 1)
 
-	#define FP_INCDEC(opsign)																							\
-		extra_registries xreg_id = ATTOXREGID(reg, mem);																\
-		if (is_reg_fpreg(xreg_id)) {																					\
-			void* regptr = extra_registries_ptr_table(registers).access(xreg_id);										\
-			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {												\
-				*((OrphanReg<float>*)regptr) = (*((OrphanReg<float>*)regptr)) opsign 1;									\
-			}																											\
-			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr)) {										\
-				*((OrphanReg<double>*)regptr) = (*((OrphanReg<double>*)regptr)) opsign 1;								\
-			}																											\
-			else {																										\
-				*((OrphanReg<long double>*)regptr)  = (*((OrphanReg<long double>*)regptr)) opsign 1;					\
-			}																											\
+	#define FP_INCDEC(opsign)																						\
+		comn_registers reg_id = ATTOREGID(reg, mem);																\
+		if (comn_registers_table::is_fp_reg(reg_id)) {																\
+			void* regptr = comn_registers_table(registers).access(reg_id);									\
+			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr)) {											\
+				*((OrphanReg<float>*)regptr) = (*((OrphanReg<float>*)regptr)) opsign 1;								\
+			}																										\
+			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr)) {									\
+				*((OrphanReg<double>*)regptr) = (*((OrphanReg<double>*)regptr)) opsign 1;							\
+			}																										\
+			else {																									\
+				*((OrphanReg<long double>*)regptr)  = (*((OrphanReg<long double>*)regptr)) opsign 1;				\
+			}																										\
 		}
 		
 
-	#define NATIVE_OP(opreg, opsign, opsize)								\
-		registries_def reg_id = ATTOREGID(reg, mem);						\
-		registries_ptr_table ptr_table = registries_ptr_table(registers);	\
-		opsize value = ((reg_int<opsize>*)ptr_table.access(reg_id))->get(); \
+	#define NATIVE_OP(opreg, opsign, opsize)										\
+		comn_registers reg_id = ATTOREGID(reg, mem);								\
+		comn_registers_table ptr_table = comn_registers_table(registers);			\
+		opsize value = ((reg_int<opsize>*)ptr_table.access(reg_id))->get();	\
 		registers->opreg->set(registers->opreg->get() opsign value);
 
 	#define FP_OP_SUB(opreg, opsign, dttype, basetype)										\
@@ -42,9 +45,9 @@
 		registers->opreg->set(registers->opreg->get() opsign value)
 
 	#define FP_OP(opreg, opsign, dttype)														\
-		extra_registries xreg_id = ATTOXREGID(reg, mem);										\
-		void* ptr = extra_registries_ptr_table(registers).access(xreg_id);						\
-		if (is_reg_fpreg(xreg_id)) {															\
+		comn_registers reg_id = ATTOREGID(reg, mem);											\
+		void* ptr = comn_registers_table(registers).access(reg_id);						\
+		if (comn_registers_table::is_fp_reg(reg_id)) {											\
 			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)ptr)) {						\
 				FP_OP_SUB(opreg, opsign, float, dttype);										\
 			}																					\

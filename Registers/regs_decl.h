@@ -279,7 +279,9 @@ public:
 		*rbp = &_rbp,
 		*rsp = &_rsp,
 		*rsbgn = &_rsbgn,
-		*rsend = &_rsend;
+		*rsend = &_rsend,
+		*rdi = &_rdi,
+		*rsi = &_rsi;
 
 	OrphanReg<float>
 		*fpr0 = &_fpr0,
@@ -347,7 +349,9 @@ private:
 		_rbp = 0,
 		_rsp = 0,
 		_rsbgn = 0,
-		_rsend = 0;
+		_rsend = 0,
+		_rdi = 0,
+		_rsi = 0;
 
 	OrphanReg<float>
 		_fpr0 = 0,

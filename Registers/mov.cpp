@@ -13,29 +13,32 @@
 	#define HIDDN_BODY(reg, reg_ptr, opsize) \
 		registers->reg->set(*std::static_pointer_cast<opsize>(reg_ptr))
 
-	#define GLOBL_BODY(opname, opsize)																\
-		registries_def reg_id = ATTOREGID(reg, mem);												\
-		registries_ptr_table ptr_table = registries_ptr_table(registers);							\
-		void* ptr = ptr_table.access(reg_id);														\
-		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get());	\
+	#define GLOBL_BODY(opname, opsize)																	\
+		comn_registers reg_id = ATTOREGID(reg, mem);													\
+		if (!comn_registers_table::is_num_reg(reg_id)) {													\
+			return;																						\
+		}																								\
+		comn_registers_table ptr_table = comn_registers_table(registers);								\
+		void* ptr = ptr_table.access(reg_id);																\
+		std::shared_ptr<opsize> value = std::make_shared<opsize>(((reg_int<opsize>*)ptr)->get());		\
 		c_b_mov##opname(value, registers)
 
 	#define FP_GLOBL_SUB(regname, dttype, basetype) *registers->regname = (basetype)((OrphanReg<dttype>*)ptr)->get()
 	
-	#define FP_GLOBL_BODY(regname, dttype)																				\
-		extra_registries xreg_id = ATTOXREGID(reg, mem);																\
-		if (is_reg_fpreg(xreg_id)) {																					\
-			extra_registries_ptr_table ptr_table = extra_registries_ptr_table(registers);								\
-			void* ptr = ptr_table.access(xreg_id);																		\
-			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)ptr)) {												\
-				FP_GLOBL_SUB(regname, float, dttype);																	\
-			}																											\
-			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)ptr)) {											\
-				FP_GLOBL_SUB(regname, double, dttype);																	\
-			}																											\
-			else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)ptr)) {								\
-				FP_GLOBL_SUB(regname, long double, dttype);																\
-			}																											\
+	#define FP_GLOBL_BODY(regname, dttype)																\
+		comn_registers reg_id = ATTOREGID(reg, mem);													\
+		if (comn_registers_table::is_fp_reg(reg_id)) {													\
+			comn_registers_table ptr_table = comn_registers_table(registers);							\
+			void* ptr = ptr_table.access(reg_id);														\
+			if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)ptr)) {								\
+				FP_GLOBL_SUB(regname, float, dttype);													\
+			}																							\
+			else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)ptr)) {							\
+				FP_GLOBL_SUB(regname, double, dttype);													\
+			}																							\
+			else if (dynamic_cast<OrphanReg<long double>*>((reg_int<long double>*)ptr)) {				\
+				FP_GLOBL_SUB(regname, long double, dttype);												\
+			}																							\
 		}
 	
 	#define FP_MOV_DEF(func_suffix, regname, dttype)				\
@@ -138,6 +141,43 @@ void b_mov64RBP(GLOBL_ARGS) {
 }
 void b_mov64RSP(GLOBL_ARGS) {
 	GLOBL_BODY(64RSP, size_t);
+}
+
+void b_movGP(GLOBL_ARGS) {
+	const comn_registers& dest_reg = (comn_registers)std::get<2>(*std::static_pointer_cast<arg_tuple>(reg)).raw_byte;
+
+	if (comn_registers_table::is_num_reg(dest_reg)) {
+		comn_registers src_reg = ATTOREGID(reg, mem);
+		if (!comn_registers_table::is_num_reg(src_reg))
+			return;
+
+		comn_registers_table ptr_table(registers);
+		void *src_ptr = ptr_table.access(src_reg), *dest_ptr = ptr_table.access(dest_reg);
+		((reg_int<size_t>*)dest_ptr)->set(((reg_int<size_t>*)src_ptr)->get());
+	}
+	else if (comn_registers_table::is_fp_reg(dest_reg)) {
+		comn_registers src_reg = ATTOREGID(reg, mem);
+		if (!comn_registers_table::is_fp_reg(src_reg))
+			return;
+
+		comn_registers_table ptr_table(registers);
+		void *src_ptr = ptr_table.access(src_reg), *dest_ptr = ptr_table.access(dest_reg);
+
+		long double ld = 0;
+		if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)src_ptr))
+			ld = (long double)((OrphanReg<float>*)src_ptr)->get();
+		else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)src_ptr))
+			ld = (long double)((OrphanReg<double>*)src_ptr)->get();
+		else
+			ld = ((OrphanReg<long double>*)src_ptr)->get();
+
+		if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)dest_ptr))
+			*((OrphanReg<float>*)dest_ptr) = (float)ld;
+		else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)src_ptr))
+			*((OrphanReg<double>*)dest_ptr) = (double)ld;
+		else
+			*((OrphanReg<long double>*)dest_ptr) = ld;
+	}
 }
 
 FP_MOV_DEF(FPR0, fpr0, float)

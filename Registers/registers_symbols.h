@@ -35,7 +35,7 @@
 	#define RPH(...) (void)0
 #endif
 
-enum class registries_def {
+enum class comn_registers {
 	AL = 0x01,
 	AH,
 	BL,
@@ -61,11 +61,12 @@ enum class registries_def {
 	RDX,
 
 	RBP,
-	RSP
-};
+	RSP,
 
-enum class extra_registries {
-	SR = 0x17,
+	RDI,
+	RSI,
+
+	SR,
 	CR,
 
 	FPR0,
@@ -84,35 +85,15 @@ enum class extra_registries {
 	RFPR3
 };
 
-// Arg_Tuple to reg id
-inline registries_def ATTOREGID(arg_tuple& at, memory* const& mem) {
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->_MG(temp, sizeof(size_t), std::get<0>(at));
-	registries_def reg_id = (registries_def)(ATOULL(temp));
-
-	delete[] temp;
+inline comn_registers ATTOREGID(arg_tuple& at, memory* const& mem) {
+	std::unique_ptr<uint8_t[]> temp = std::make_unique<uint8_t[]>(sizeof(size_t));
+	mem->_MG(temp.get(), sizeof(size_t), std::get<0>(at));
+	comn_registers reg_id = (comn_registers)(ATOULL(temp.get()));
+	
 	return reg_id;
 }
-inline registries_def ATTOREGID(std::shared_ptr<void>& at_ptr, memory* const& mem) {
+inline comn_registers ATTOREGID(std::shared_ptr<void>& at_ptr, memory* const& mem) {
 	return ATTOREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
-}
-inline extra_registries ATTOXREGID(arg_tuple& at, memory* const& mem) {
-	unsigned char* temp = new unsigned char[sizeof(size_t)]; 
-	mem->_MG(temp, sizeof(size_t), std::get<0>(at));
-	extra_registries xreg_id = (extra_registries)(ATOULL(temp));
-
-	delete[] temp;
-	return xreg_id;
-}
-inline extra_registries ATTOXREGID(std::shared_ptr<void>& at_ptr, memory* const& mem) {
-	return ATTOXREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
-}
-
-inline bool is_reg_fpreg(const extra_registries& regid) {
-	if (regid >= extra_registries::FPR0 && regid <= extra_registries::RFPR3)
-		return true;
-	else
-		return false;
 }
 
 // Native registers ops
@@ -135,6 +116,8 @@ void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem);
 
+void b_setGP(std::shared_ptr<void> a, regs* registers, memory* mem);
+
 RPH_FPR_PROTO(set, FPR0);
 RPH_FPR_PROTO(set, FPR1);
 RPH_FPR_PROTO(set, FPR2);
@@ -147,26 +130,6 @@ RPH_FPR_PROTO(set, RFPR0);
 RPH_FPR_PROTO(set, RFPR1);
 RPH_FPR_PROTO(set, RFPR2);
 RPH_FPR_PROTO(set, RFPR3);
-
-void b_get16AX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get16BX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get16CX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get16DX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-
-void b_get32EAX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get32EBX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get32ECX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get32EDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-
-void b_get64RAX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get64RBX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get64RCX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_get64RDX(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-
-void b_getSR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_getCR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-void b_getDR(std::shared_ptr<void> receiver, regs* registers, memory* unused_m);
-
 #pragma endregion
 
 // Mov ops
@@ -188,6 +151,8 @@ void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 void b_mov64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_mov64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
+
+void b_movGP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 RPH_FPR_MOV_PROTO(FPR0);
 RPH_FPR_MOV_PROTO(FPR1);
@@ -340,92 +305,86 @@ void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem);
 #pragma endregion
 
-struct registries_ptr_table {
+struct comn_registers_table {
 public:
-	registries_ptr_table(regs*& _registers) {
+	comn_registers_table(regs* const& _registers) {
 		this->registers = _registers;
 		this->init();
 	}
 
-#pragma warning (push)
-#pragma warning (disable:26812)
-	void* access(registries_def reg_id) {
+	void* access(comn_registers reg_id) {
 		return this->table[(size_t)reg_id];
 	}
-#pragma warning (pop)
 
+	static bool is_num_reg(comn_registers reg_id) {
+		if ((size_t)reg_id < (size_t)comn_registers::SR)
+			return true;
+		else
+			return false;
+	}
+	static bool is_fp_reg(comn_registers reg_id) {
+		if ((size_t)reg_id >= (size_t)comn_registers::FPR0 && (size_t)reg_id <= (size_t)comn_registers::RFPR3)
+			return true;
+		else
+			return false;
+	}
 private:
 	regs* registers;
-	void* table[0x16 + 1];
-
+	void* table[(size_t)comn_registers::RFPR3 + 1];
+	
 	void init() {
-		table[(size_t)registries_def::AX] = registers->ax;
-		table[(size_t)registries_def::BX] = registers->bx;
-		table[(size_t)registries_def::CX] = registers->cx;
-		table[(size_t)registries_def::DX] = registers->dx;
+		table[(size_t)comn_registers::AX] = registers->ax;
+		table[(size_t)comn_registers::BX] = registers->bx;
+		table[(size_t)comn_registers::CX] = registers->cx;
+		table[(size_t)comn_registers::DX] = registers->dx;
 
-		table[(size_t)registries_def::EAX] = registers->eax;
-		table[(size_t)registries_def::EBX] = registers->ebx;
-		table[(size_t)registries_def::ECX] = registers->ecx;
-		table[(size_t)registries_def::EDX] = registers->edx;
+		table[(size_t)comn_registers::EAX] = registers->eax;
+		table[(size_t)comn_registers::EBX] = registers->ebx;
+		table[(size_t)comn_registers::ECX] = registers->ecx;
+		table[(size_t)comn_registers::EDX] = registers->edx;
 
-		table[(size_t)registries_def::RAX] = registers->rax;
-		table[(size_t)registries_def::RBX] = registers->rbx;
-		table[(size_t)registries_def::RCX] = registers->rcx;
-		table[(size_t)registries_def::RDX] = registers->rdx;
+		table[(size_t)comn_registers::RAX] = registers->rax;
+		table[(size_t)comn_registers::RBX] = registers->rbx;
+		table[(size_t)comn_registers::RCX] = registers->rcx;
+		table[(size_t)comn_registers::RDX] = registers->rdx;
 
-		table[(size_t)registries_def::RBP] = registers->rbp;
-		table[(size_t)registries_def::RSP] = registers->rsp;
-	}
-};
+		table[(size_t)comn_registers::RBP] = registers->rbp;
+		table[(size_t)comn_registers::RSP] = registers->rsp;
+		table[(size_t)comn_registers::RDI] = registers->rdi;
+		table[(size_t)comn_registers::RSI] = registers->rsi;
 
-struct extra_registries_ptr_table {
-public:
-	extra_registries_ptr_table(regs* _registers) {
-		this->registers = _registers;
-		this->init();
-	}
-#pragma warning (push)
-#pragma warning (disable : 26812)
-	void* access(const extra_registries& reg_id) {
-		return this->table[(size_t)reg_id];
-	}
-#pragma warning (pop)
-private:
-	regs* registers;
-	void* table[(size_t)extra_registries::RFPR3 + 1];
+		table[(size_t)comn_registers::SR] = registers->sr;
+		table[(size_t)comn_registers::CR] = registers->cr;
 
-	void init() {
-		table[(size_t)extra_registries::SR] = registers->sr;
-		table[(size_t)extra_registries::CR] = registers->cr;
+		table[(size_t)comn_registers::FPR0] = registers->fpr0;
+		table[(size_t)comn_registers::FPR1] = registers->fpr1;
+		table[(size_t)comn_registers::FPR2] = registers->fpr2;
+		table[(size_t)comn_registers::FPR3] = registers->fpr3;
 
-		table[(size_t)extra_registries::FPR0] = registers->fpr0;
-		table[(size_t)extra_registries::FPR1] = registers->fpr1;
-		table[(size_t)extra_registries::FPR2] = registers->fpr2;
-		table[(size_t)extra_registries::FPR3] = registers->fpr3;
+		table[(size_t)comn_registers::EFPR0] = registers->efpr0;
+		table[(size_t)comn_registers::EFPR1] = registers->efpr1;
+		table[(size_t)comn_registers::EFPR2] = registers->efpr2;
+		table[(size_t)comn_registers::EFPR3] = registers->efpr3;
 
-		table[(size_t)extra_registries::EFPR0] = registers->efpr0;
-		table[(size_t)extra_registries::EFPR1] = registers->efpr1;
-		table[(size_t)extra_registries::EFPR2] = registers->efpr2;
-		table[(size_t)extra_registries::EFPR3] = registers->efpr3;
-
-		table[(size_t)extra_registries::RFPR0] = registers->rfpr0;
-		table[(size_t)extra_registries::RFPR1] = registers->rfpr1;
-		table[(size_t)extra_registries::RFPR2] = registers->rfpr2;
-		table[(size_t)extra_registries::RFPR3] = registers->rfpr3;
+		table[(size_t)comn_registers::RFPR0] = registers->rfpr0;
+		table[(size_t)comn_registers::RFPR1] = registers->rfpr1;
+		table[(size_t)comn_registers::RFPR2] = registers->rfpr2;
+		table[(size_t)comn_registers::RFPR3] = registers->rfpr3;
 	}
 };
 
 template<typename T>
-inline void b_set_num(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem, registries_def reg_id) {
+inline void b_set_num(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem, comn_registers reg_id) {
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+
 	unsigned char* uc_n = nullptr;
 	try {
 		const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_ptr);
 		uc_n = new unsigned char[sizeof(size_t)];
 		mem->_MG(uc_n, sizeof(size_t), vaddr);
 
-		registries_ptr_table ptr_table = registries_ptr_table(registers);
-		((reg_int<size_t>*)ptr_table.access(reg_id))->set((T)ATOULL(uc_n));
+		((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->set((T)ATOULL(uc_n));
 
 		delete[] uc_n;
 	}
@@ -466,7 +425,7 @@ inline void b_set_chr(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	}
 }
 
-inline long double b_fetch_dbl_args(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem, bool& exitcode) {
+inline long double b_fetch_dbl_args(const std::shared_ptr<void>& args_ptr, memory* const& mem, bool& exitcode) {
 	unsigned char* uc_d = nullptr;
 	try {
 		const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_ptr);

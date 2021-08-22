@@ -14,25 +14,33 @@
 *	Output in specified register
 */
 void b_not(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(~(((reg_int<size_t>*)ptr_table.access(reg_id)))->get());
 }
 void b_log2(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)log2l((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
 }
 void b_log10(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)log10l((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
 }
 void b_log(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)logbl((long double)((((reg_int<size_t>*)ptr_table.access(reg_id)))->get())));
 }
@@ -41,7 +49,7 @@ void b_log(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 * [Same as above, but for FP registers (FP manipulations)]
 */
 void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
 		*((OrphanReg<float>*)regptr) = log2(*((OrphanReg<float>*)regptr));
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
@@ -50,7 +58,7 @@ void b_dlog2(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 		*((OrphanReg<long double>*)regptr) = log2(*((OrphanReg<long double>*)regptr));
 }
 void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
 		*((OrphanReg<float>*)regptr) = log10(*((OrphanReg<float>*)regptr));
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
@@ -59,7 +67,7 @@ void b_dlog10(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 		*((OrphanReg<long double>*)regptr) = log10(*((OrphanReg<long double>*)regptr));
 }
 void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	void* regptr = extra_registries_ptr_table(registers).access(ATTOXREGID(reg, mem));
+	void* regptr = comn_registers_table(registers).access(ATTOREGID(reg, mem));
 	if (dynamic_cast<OrphanReg<float>*>((reg_int<float>*)regptr))
 		*((OrphanReg<float>*)regptr) = logb(*((OrphanReg<float>*)regptr));
 	else if (dynamic_cast<OrphanReg<double>*>((reg_int<double>*)regptr))
@@ -74,7 +82,9 @@ void b_dlog(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 *	Output in specified register
 */
 void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -82,11 +92,13 @@ void b_and(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &left);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left & (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -94,11 +106,13 @@ void b_or(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &left);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left | (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -106,11 +120,13 @@ void b_xor(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &left);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left ^ (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -118,11 +134,13 @@ void b_shl(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &left);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left << (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -130,12 +148,14 @@ void b_shr(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &left);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(left >> (((reg_int<size_t>*)ptr_table.access(reg_id))->get()));
 }
 
 void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	registries_def reg_id = ATTOREGID(reg, mem);
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_num_reg(reg_id))
+		return;
 
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
 	mem->pop(temp, sizeof(size_t));
@@ -143,7 +163,7 @@ void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mp_memcpy(temp, &_pow);
 	delete[] temp;
 
-	registries_ptr_table ptr_table = registries_ptr_table(registers);
+	comn_registers_table ptr_table = comn_registers_table(registers);
 	((reg_int<size_t>*)ptr_table.access(reg_id))->set(
 		(size_t)powl((long double)(((reg_int<size_t>*)ptr_table.access(reg_id))->get()), (long double)_pow));
 }
@@ -152,11 +172,11 @@ void b_pow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 * [Same as above, but for FP registers (FP manipulations) ; Output in specified register]
 */
 void b_dpow(std::shared_ptr<void> reg, regs* registers, memory* mem) {
-	extra_registries xreg_id = ATTOXREGID(reg, mem);
-
-	void* regptr = extra_registries_ptr_table(registers).access(xreg_id);
-	if (!is_reg_fpreg(xreg_id))
+	comn_registers reg_id = ATTOREGID(reg, mem);
+	if (!comn_registers_table::is_fp_reg(reg_id))
 		return;
+
+	void* regptr = comn_registers_table(registers).access(reg_id);
 
 	auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
 
