@@ -351,7 +351,7 @@ public:
 		return *this->self_regs->stopRequested;
 	}
 
-	inline static void has_been_destoryed() {
+	inline static void has_been_destroyed() {
 		actions_engine::pre_destroyed = true;
 	}
 	void destroy() {

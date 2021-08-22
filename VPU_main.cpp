@@ -65,7 +65,7 @@ namespace {
 				delete memory_table[i];
 			}
 
-			actions_engine::has_been_destoryed();
+			actions_engine::has_been_destroyed();
 
 			if (processes[i])
 				delete processes_mem[i];
