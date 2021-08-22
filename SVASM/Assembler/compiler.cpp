@@ -2059,39 +2059,39 @@ int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& o
 }
 
 int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
-	static const std::unordered_map<std::string, registries_def> storeg = {
-		{"ax", registries_def::AX},
-		{"bx", registries_def::BX},
-		{"cx", registries_def::CX},
-		{"dx", registries_def::DX},
+	static const std::unordered_map<std::string, comn_registers> storeg = {
+		{"ax", comn_registers::AX},
+		{"bx", comn_registers::BX},
+		{"cx", comn_registers::CX},
+		{"dx", comn_registers::DX},
 
-		{"eax", registries_def::EAX},
-		{"ebx", registries_def::EBX},
-		{"ecx", registries_def::ECX},
-		{"edx", registries_def::EDX},
+		{"eax", comn_registers::EAX},
+		{"ebx", comn_registers::EBX},
+		{"ecx", comn_registers::ECX},
+		{"edx", comn_registers::EDX},
 
-		{"rax", registries_def::RAX},
-		{"rbx", registries_def::RBX},
-		{"rcx", registries_def::RCX},
-		{"rdx", registries_def::RDX},
-		{"rbp", registries_def::RBP},
-		{"rsp", registries_def::RSP}
+		{"rax", comn_registers::RAX},
+		{"rbx", comn_registers::RBX},
+		{"rcx", comn_registers::RCX},
+		{"rdx", comn_registers::RDX},
+		{"rbp", comn_registers::RBP},
+		{"rsp", comn_registers::RSP},
 	};
-	static const std::unordered_map<std::string, extra_registries> xstoreg = {
-		{"fpr0", extra_registries::FPR0},
-		{"fpr1", extra_registries::FPR1},
-		{"fpr2", extra_registries::FPR2},
-		{"fpr3", extra_registries::FPR3},
+	static const std::unordered_map<std::string, comn_registers> xstoreg = {
+		{"fpr0", comn_registers::FPR0},
+		{"fpr1", comn_registers::FPR1},
+		{"fpr2", comn_registers::FPR2},
+		{"fpr3", comn_registers::FPR3},
 
-		{"efpr0", extra_registries::EFPR0},
-		{"efpr1", extra_registries::EFPR1},
-		{"efpr2", extra_registries::EFPR2},
-		{"efpr3", extra_registries::EFPR3},
+		{"efpr0", comn_registers::EFPR0},
+		{"efpr1", comn_registers::EFPR1},
+		{"efpr2", comn_registers::EFPR2},
+		{"efpr3", comn_registers::EFPR3},
 
-		{"rfpr0", extra_registries::RFPR0},
-		{"rfpr1", extra_registries::RFPR1},
-		{"rfpr2", extra_registries::RFPR2},
-		{"rfpr3", extra_registries::RFPR3},
+		{"rfpr0", comn_registers::RFPR0},
+		{"rfpr1", comn_registers::RFPR1},
+		{"rfpr2", comn_registers::RFPR2},
+		{"rfpr3", comn_registers::RFPR3},
 	};
 
 	const byte comp_action = instructions_set[raw_action.getAction()];
