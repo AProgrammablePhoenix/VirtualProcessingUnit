@@ -13,24 +13,9 @@
 
 //RPH: Regs Preproc Header
 #ifndef RPH
-	#define RPH_BIO_ARGS CUSTOM_STD_ARGS(a, registers, mem)
 	#define RPH_MOV_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
 	#define RPH_NMATHS_ARGS RPH_MOV_ARGS
-
-	#define RPH_FPR_PROTO(io_type, regname)	void b_##io_type##regname(RPH_BIO_ARGS)
-
-	#define RPH_FPR_MOV_PROTO(regname) void b_mov##regname(RPH_MOV_ARGS)
-
-	#define RPH_FPR_NMATHS_PROTO(optype, regname) void b_##optype##regname(RPH_NMATHS_ARGS)
-	#define RPH_FPR_NMATHS_MUL_PROTO(regname) RPH_FPR_NMATHS_PROTO(mul, regname)
-	#define RPH_FPR_NMATHS_DIV_PROTO(regname) RPH_FPR_NMATHS_PROTO(div, regname)
-	#define RPH_FPR_NMATHS_ADD_PROTO(regname) RPH_FPR_NMATHS_PROTO(add, regname)
-	#define RPH_FPR_NMATHS_SUB_PROTO(regname) RPH_FPR_NMATHS_PROTO(sub, regname)
-	#define RPH_FPR_NMATHS_ALL_PROTO(regname)	\
-		RPH_FPR_NMATHS_MUL_PROTO(regname);		\
-		RPH_FPR_NMATHS_DIV_PROTO(regname);		\
-		RPH_FPR_NMATHS_ADD_PROTO(regname);		\
-		RPH_FPR_NMATHS_SUB_PROTO(regname)
+	#define COMN_NMATHS_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
 
 	#define RPH(...) (void)0
 #endif
@@ -100,95 +85,15 @@ void b_setGP(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_movGP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 // Native maths ops
-#pragma region native_maths_ops
 void b_inc(std::shared_ptr<void> reg, regs* registers, memory* mem);
 void b_dec(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_incDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_decDR(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_incFP(RPH_NMATHS_ARGS);
 void b_decFP(RPH_NMATHS_ARGS);
 
-void b_mul16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul16DX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_mul32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_mul64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mul64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_div16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div16DX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_div32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_div64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_div64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_add16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add16DX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_add32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_add64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_add64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_add64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_sub16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub16DX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_sub32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_sub64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_sub64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_sub64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-RPH_FPR_NMATHS_ALL_PROTO(FPR0);
-RPH_FPR_NMATHS_ALL_PROTO(FPR1);
-RPH_FPR_NMATHS_ALL_PROTO(FPR2);
-RPH_FPR_NMATHS_ALL_PROTO(FPR3);
-
-RPH_FPR_NMATHS_ALL_PROTO(EFPR0);
-RPH_FPR_NMATHS_ALL_PROTO(EFPR1);
-RPH_FPR_NMATHS_ALL_PROTO(EFPR2);
-RPH_FPR_NMATHS_ALL_PROTO(EFPR3);
-
-RPH_FPR_NMATHS_ALL_PROTO(RFPR0);
-RPH_FPR_NMATHS_ALL_PROTO(RFPR1);
-RPH_FPR_NMATHS_ALL_PROTO(RFPR2);
-RPH_FPR_NMATHS_ALL_PROTO(RFPR3);
-#pragma endregion
+void b_mulGP(COMN_NMATHS_ARGS);
+void b_divGP(COMN_NMATHS_ARGS);
+void b_addGP(COMN_NMATHS_ARGS);
+void b_subGP(COMN_NMATHS_ARGS);
 
 //extended ops
 #pragma region extended_ops

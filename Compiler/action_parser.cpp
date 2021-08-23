@@ -98,9 +98,13 @@ namespace {
 		{"RFPR2", comn_registers::RFPR2},
 		{"RFPR3", comn_registers::RFPR3}
 	};
-	std::array<std::string, 2> multi_args_ops = {
+	std::array<std::string, 6> multi_args_ops = {
 		"set",
-		"mov"
+		"mov",
+		"add",
+		"sub",
+		"mul",
+		"div"
 	};
 
 	inline void SETREG(comn_registers reg, std::string str_reg, unsigned char*& buffer,
@@ -118,6 +122,21 @@ namespace {
 		}
 
 		return str_to_reg_table[str];
+	}
+
+	inline void std_margs_operations(const std::vector<std::string>& line, const virtual_actions& vaction,
+			std::vector<std::tuple<virtual_actions, uint8_t>>& converted) {
+		std::stringstream ss(line[0].substr(3));
+		std::string dest, src;
+		ss >> dest >> std::ws >> src;
+
+		if (regs_names.find(dest) == regs_names.end()) {
+			std::cerr << "(" << line[1] << ") unknown operands : " << dest << ", " << line[1] << std::endl;
+			std::exit(1);
+			return;
+		}
+
+		converted.emplace_back(vaction, (uint8_t)STOREGID(dest));
 	}
 	
 	bool is_margs_op(std::string op) {
@@ -218,130 +237,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"dec", virtual_actions::dec},
 	{"incFP", virtual_actions::incFP},
 	{"decFP", virtual_actions::decFP},
-
-	{"mulAX", virtual_actions::mulAX},
-	{"mulBX", virtual_actions::mulBX},
-	{"mulCX", virtual_actions::mulCX},
-	{"mulDX", virtual_actions::mulDX},
-
-	{"mulEAX", virtual_actions::mulEAX},
-	{"mulEBX", virtual_actions::mulEBX},
-	{"mulECX", virtual_actions::mulECX},
-	{"mulEDX", virtual_actions::mulEDX},
-
-	{"mulRAX", virtual_actions::mulRAX},
-	{"mulRBX", virtual_actions::mulRBX},
-	{"mulRCX", virtual_actions::mulRCX},
-	{"mulRDX", virtual_actions::mulRDX},
-
-	{"mulFPR0", virtual_actions::mulFPR0},
-	{"mulFPR1", virtual_actions::mulFPR1},
-	{"mulFPR2", virtual_actions::mulFPR2},
-	{"mulFPR3", virtual_actions::mulFPR3},
-
-	{"mulEFPR0", virtual_actions::mulEFPR0},
-	{"mulEFPR1", virtual_actions::mulEFPR1},
-	{"mulEFPR2", virtual_actions::mulEFPR2},
-	{"mulEFPR3", virtual_actions::mulEFPR3},
-
-	{"mulRFPR0", virtual_actions::mulRFPR0},
-	{"mulRFPR1", virtual_actions::mulRFPR1},
-	{"mulRFPR2", virtual_actions::mulRFPR2},
-	{"mulRFPR3", virtual_actions::mulRFPR3},
-
-	{"divAX", virtual_actions::divAX},
-	{"divBX", virtual_actions::divBX},
-	{"divCX", virtual_actions::divCX},
-	{"divDX", virtual_actions::divDX},
-
-	{"divEAX", virtual_actions::divEAX},
-	{"divEBX", virtual_actions::divEBX},
-	{"divECX", virtual_actions::divECX},
-	{"divEDX", virtual_actions::divEDX},
-
-	{"divRAX", virtual_actions::divRAX},
-	{"divRBX", virtual_actions::divRBX},
-	{"divRCX", virtual_actions::divRCX},
-	{"divRDX", virtual_actions::divRDX},
-
-	{"divFPR0", virtual_actions::divFPR0},
-	{"divFPR1", virtual_actions::divFPR1},
-	{"divFPR2", virtual_actions::divFPR2},
-	{"divFPR3", virtual_actions::divFPR3},
-
-	{"divEFPR0", virtual_actions::divEFPR0},
-	{"divEFPR1", virtual_actions::divEFPR1},
-	{"divEFPR2", virtual_actions::divEFPR2},
-	{"divEFPR3", virtual_actions::divEFPR3},
-
-	{"divRFPR0", virtual_actions::divRFPR0},
-	{"divRFPR1", virtual_actions::divRFPR1},
-	{"divRFPR2", virtual_actions::divRFPR2},
-	{"divRFPR3", virtual_actions::divRFPR3},
-
-	{"addAX", virtual_actions::addAX},
-	{"addBX", virtual_actions::addBX},
-	{"addCX", virtual_actions::addCX},
-	{"addDX", virtual_actions::addDX},
-
-	{"addEAX", virtual_actions::addEAX},
-	{"addEBX", virtual_actions::addEBX},
-	{"addECX", virtual_actions::addECX},
-	{"addEDX", virtual_actions::addEDX},
-
-	{"addRAX", virtual_actions::addRAX},
-	{"addRBX", virtual_actions::addRBX},
-	{"addRCX", virtual_actions::addRCX},
-	{"addRDX", virtual_actions::addRDX},
-	{"addRBP", virtual_actions::addRBP},
-	{"addRSP", virtual_actions::addRSP},
-
-	{"addFPR0", virtual_actions::addFPR0},
-	{"addFPR1", virtual_actions::addFPR1},
-	{"addFPR2", virtual_actions::addFPR2},
-	{"addFPR3", virtual_actions::addFPR3},
-
-	{"addEFPR0", virtual_actions::addEFPR0},
-	{"addEFPR1", virtual_actions::addEFPR1},
-	{"addEFPR2", virtual_actions::addEFPR2},
-	{"addEFPR3", virtual_actions::addEFPR3},
-
-	{"addRFPR0", virtual_actions::addRFPR0},
-	{"addRFPR1", virtual_actions::addRFPR1},
-	{"addRFPR2", virtual_actions::addRFPR2},
-	{"addRFPR3", virtual_actions::addRFPR3},
-
-	{"subAX", virtual_actions::subAX},
-	{"subBX", virtual_actions::subBX},
-	{"subCX", virtual_actions::subCX},
-	{"subDX", virtual_actions::subDX},
-
-	{"subEAX", virtual_actions::subEAX},
-	{"subEBX", virtual_actions::subEBX},
-	{"subECX", virtual_actions::subECX},
-	{"subEDX", virtual_actions::subEDX},
-
-	{"subRAX", virtual_actions::subRAX},
-	{"subRBX", virtual_actions::subRBX},
-	{"subRCX", virtual_actions::subRCX},
-	{"subRDX", virtual_actions::subRDX},
-	{"subRBP", virtual_actions::subRBP},
-	{"subRSP", virtual_actions::subRSP},
-
-	{"subFPR0", virtual_actions::subFPR0},
-	{"subFPR1", virtual_actions::subFPR1},
-	{"subFPR2", virtual_actions::subFPR2},
-	{"subFPR3", virtual_actions::subFPR3},
-
-	{"subEFPR0", virtual_actions::subEFPR0},
-	{"subEFPR1", virtual_actions::subEFPR1},
-	{"subEFPR2", virtual_actions::subEFPR2},
-	{"subEFPR3", virtual_actions::subEFPR3},
-
-	{"subRFPR0", virtual_actions::subRFPR0},
-	{"subRFPR1", virtual_actions::subRFPR1},
-	{"subRFPR2", virtual_actions::subRFPR2},
-	{"subRFPR3", virtual_actions::subRFPR3},
 
 	{"toString", virtual_actions::toString},
 	{"castreg", virtual_actions::castreg},
@@ -743,19 +638,16 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 				sec_opr = (uint8_t)STOREGID(dest);
 			converted.emplace_back(virtual_actions::gset, sec_opr);
 		}
-		else if (parsed[i][0].starts_with("mov")) {
-			std::stringstream ss(parsed[i][0].substr(3));
-			std::string dest, src;
-			ss >> dest >> std::ws >> src;
-
-			if (regs_names.find(dest) == regs_names.end()) {
-				std::cerr << "mov: unknown operands: " << dest << ", " << parsed[i][1] << std::endl;
-				std::exit(1);
-				return converted; // won't be executed, used to disable warnings on some compilers
-			}
-
-			converted.emplace_back(virtual_actions::gmov, (uint8_t)STOREGID(dest));
-		}
+		else if (parsed[i][0].starts_with("mov"))
+			std_margs_operations(parsed[i], virtual_actions::gmov, converted);
+		else if (parsed[i][0].starts_with("mul"))
+			std_margs_operations(parsed[i], virtual_actions::gmul, converted);
+		else if (parsed[i][0].starts_with("div"))
+			std_margs_operations(parsed[i], virtual_actions::gdiv, converted);
+		else if (parsed[i][0].starts_with("add"))
+			std_margs_operations(parsed[i], virtual_actions::gadd, converted);
+		else if (parsed[i][0].starts_with("sub"))
+			std_margs_operations(parsed[i], virtual_actions::gsub, converted);
 		else
 			converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));		
 	}

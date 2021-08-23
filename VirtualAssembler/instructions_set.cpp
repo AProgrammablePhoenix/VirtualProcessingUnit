@@ -6,64 +6,6 @@
 
 #include "../Compiler/action_parser.h" 
 
-#ifndef INST_Set_PREPROCESS
-	#define PREFIX_1 virtual_actions
-	#define PREFIX_2 comn_registers
-
-	#define MConcat(a,b) a ## b
-
-	#define FPROPC_PROTO(prefix, regname, opcode) \
-		{PREFIX_1::prefix##regname, opcode}
-	#define ALL_FPRs_PROTO(constructor, opcode) \
-		constructor(FPR0, opcode),				\
-		constructor(FPR1, opcode), 				\
-		constructor(FPR2, opcode), 				\
-		constructor(FPR3, opcode), 				\
-		constructor(EFPR0, opcode), 			\
-		constructor(EFPR1, opcode), 			\
-		constructor(EFPR2, opcode), 			\
-		constructor(EFPR3, opcode),				\
-		constructor(RFPR0, opcode), 			\
-		constructor(RFPR1, opcode), 			\
-		constructor(RFPR2, opcode), 			\
-		constructor(RFPR3, opcode)
-	#define FPR2ndOPCSingle_PROTO(prefix, regname) \
-		{PREFIX_1::prefix##regname, fp_registers_set[PREFIX_2::regname]}
-	#define ALL_FPRs2ndOPC_PROTO(constructor)	\
-		constructor(FPR0),						\
-		constructor(FPR1),						\
-		constructor(FPR2),						\
-		constructor(FPR3),						\
-		constructor(EFPR0),						\
-		constructor(EFPR1),						\
-		constructor(EFPR2),						\
-		constructor(EFPR3),						\
-		constructor(RFPR0),						\
-		constructor(RFPR1),						\
-		constructor(RFPR2),						\
-		constructor(RFPR3)
-	
-	#define mulFPROPC(regname, opcode) FPROPC_PROTO(mul, regname, opcode)
-	#define mulFPRs(opcode) ALL_FPRs_PROTO(mulFPROPC, opcode)
-	#define mulFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(mul, regname)
-	#define mulFPRs2nd() ALL_FPRs2ndOPC_PROTO(mulFPR_2ndSingle)
-
-	#define divFPROPC(regname, opcode) FPROPC_PROTO(div, regname, opcode)
-	#define divFPRs(opcode) ALL_FPRs_PROTO(divFPROPC, opcode)
-	#define divFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(div, regname)
-	#define divFPRs2nd() ALL_FPRs2ndOPC_PROTO(divFPR_2ndSingle)
-
-	#define addFPROPC(regname, opcode) FPROPC_PROTO(add, regname, opcode)
-	#define addFPRs(opcode) ALL_FPRs_PROTO(addFPROPC, opcode)
-	#define addFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(add, regname)
-	#define addFPRs2nd() ALL_FPRs2ndOPC_PROTO(addFPR_2ndSingle)
-
-	#define subFPROPC(regname, opcode) FPROPC_PROTO(sub, regname, opcode)
-	#define subFPRs(opcode) ALL_FPRs_PROTO(subFPROPC, opcode)
-	#define subFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(sub, regname)
-	#define subFPRs2nd() ALL_FPRs2ndOPC_PROTO(subFPR_2ndSingle)
-#endif
-
 typedef unsigned char byte;
 
 namespace {
@@ -134,61 +76,10 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::inc,	  0x2D},
 	{virtual_actions::dec,	  0x2E},
 
-	{virtual_actions::mulAX,  0x31},
-	{virtual_actions::mulBX,  0x32},
-	{virtual_actions::mulCX,  0x33},
-	{virtual_actions::mulDX,  0x34},
-	{virtual_actions::mulEAX, 0x35},
-	{virtual_actions::mulEBX, 0x36},
-	{virtual_actions::mulECX, 0x37},
-	{virtual_actions::mulEDX, 0x38},
-	{virtual_actions::mulRAX, 0x39},
-	{virtual_actions::mulRBX, 0x3A},
-	{virtual_actions::mulRCX, 0x3B},
-	{virtual_actions::mulRDX, 0x3C},
-	
-	{virtual_actions::divAX,  0x3D},
-	{virtual_actions::divBX,  0x3E},
-	{virtual_actions::divCX,  0x3F},
-	{virtual_actions::divDX,  0x40},
-	{virtual_actions::divEAX, 0x41},
-	{virtual_actions::divEBX, 0x42},
-	{virtual_actions::divECX, 0x43},
-	{virtual_actions::divEDX, 0x44},
-	{virtual_actions::divRAX, 0x45},
-	{virtual_actions::divRBX, 0x46},
-	{virtual_actions::divRCX, 0x47},
-	{virtual_actions::divRDX, 0x48},
-
-	{virtual_actions::addAX,  0x49},
-	{virtual_actions::addBX,  0x4A},
-	{virtual_actions::addCX,  0x4B},
-	{virtual_actions::addDX,  0x4C},
-	{virtual_actions::addEAX, 0x4D},
-	{virtual_actions::addEBX, 0x4E},
-	{virtual_actions::addECX, 0x4F},
-	{virtual_actions::addEDX, 0x50},
-	{virtual_actions::addRAX, 0x51},
-	{virtual_actions::addRBX, 0x52},
-	{virtual_actions::addRCX, 0x53},
-	{virtual_actions::addRDX, 0x54},
-	{virtual_actions::addRBP, 0x55},
-	{virtual_actions::addRSP, 0x56},
-
-	{virtual_actions::subAX,  0x57},
-	{virtual_actions::subBX,  0x58},
-	{virtual_actions::subCX,  0x59},
-	{virtual_actions::subDX,  0x5A},
-	{virtual_actions::subEAX, 0x5B},
-	{virtual_actions::subEBX, 0x5C},
-	{virtual_actions::subECX, 0x5D},
-	{virtual_actions::subEDX, 0x5E},
-	{virtual_actions::subRAX, 0x5F},
-	{virtual_actions::subRBX, 0x60},
-	{virtual_actions::subRCX, 0x61},
-	{virtual_actions::subRDX, 0x62},
-	{virtual_actions::subRBP, 0x63},
-	{virtual_actions::subRSP, 0x64},
+	{virtual_actions::gmul,	  0x2F},
+	{virtual_actions::gdiv,	  0x30},
+	{virtual_actions::gadd,   0x31},
+	{virtual_actions::gsub,   0x32},
 
 	{virtual_actions::toString,	0x65},
 	{virtual_actions::castreg,  0x66},
@@ -260,11 +151,6 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::sdzs, 0x9F},
 
-	mulFPRs(mulFPRs_opcode),
-	divFPRs(divFPRs_opcode),
-	addFPRs(addFPRs_opcode),
-	subFPRs(subFPRs_opcode),
-
 	{virtual_actions::pushFP, subFPRs_opcode + 1},
 	{virtual_actions::popFP, subFPRs_opcode + 2},
 
@@ -279,19 +165,6 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::rfread, subFPRs_opcode + 8},
 	{virtual_actions::rfwrite, subFPRs_opcode + 9},
 	{virtual_actions::rflen, subFPRs_opcode + 10}
-};
-
-std::map<virtual_actions, byte> map_FPR_mul_2nd_opc = {
-	mulFPRs2nd()
-};
-std::map<virtual_actions, byte> map_FPR_div_2nd_opc = {
-	divFPRs2nd()
-};
-std::map<virtual_actions, byte> map_FPR_add_2nd_opc = {
-	addFPRs2nd()
-};
-std::map<virtual_actions, byte> map_FPR_sub_2nd_opc = {
-	subFPRs2nd()
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -354,61 +227,10 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::incFP],
 	ops[virtual_actions::decFP],
 
-	ops[virtual_actions::mulAX],
-	ops[virtual_actions::mulBX],
-	ops[virtual_actions::mulCX],
-	ops[virtual_actions::mulDX],
-	ops[virtual_actions::mulEAX],
-	ops[virtual_actions::mulEBX],
-	ops[virtual_actions::mulECX],
-	ops[virtual_actions::mulEDX],
-	ops[virtual_actions::mulRAX],
-	ops[virtual_actions::mulRBX],
-	ops[virtual_actions::mulRCX],
-	ops[virtual_actions::mulRDX],
-
-	ops[virtual_actions::divAX],
-	ops[virtual_actions::divBX],
-	ops[virtual_actions::divCX],
-	ops[virtual_actions::divDX],
-	ops[virtual_actions::divEAX],
-	ops[virtual_actions::divEBX],
-	ops[virtual_actions::divECX],
-	ops[virtual_actions::divEDX],
-	ops[virtual_actions::divRAX],
-	ops[virtual_actions::divRBX],
-	ops[virtual_actions::divRCX],
-	ops[virtual_actions::divRDX],
-
-	ops[virtual_actions::addAX],
-	ops[virtual_actions::addBX],
-	ops[virtual_actions::addCX],
-	ops[virtual_actions::addDX],
-	ops[virtual_actions::addEAX],
-	ops[virtual_actions::addEBX],
-	ops[virtual_actions::addECX],
-	ops[virtual_actions::addEDX],
-	ops[virtual_actions::addRAX],
-	ops[virtual_actions::addRBX],
-	ops[virtual_actions::addRCX],
-	ops[virtual_actions::addRDX],
-	ops[virtual_actions::addRBP],
-	ops[virtual_actions::addRSP],
-
-	ops[virtual_actions::subAX],
-	ops[virtual_actions::subBX],
-	ops[virtual_actions::subCX],
-	ops[virtual_actions::subDX],
-	ops[virtual_actions::subEAX],
-	ops[virtual_actions::subEBX],
-	ops[virtual_actions::subECX],
-	ops[virtual_actions::subEDX],
-	ops[virtual_actions::subRAX],
-	ops[virtual_actions::subRBX],
-	ops[virtual_actions::subRCX],
-	ops[virtual_actions::subRDX],
-	ops[virtual_actions::subRBP],
-	ops[virtual_actions::subRSP],
+	ops[virtual_actions::gmul],
+	ops[virtual_actions::gdiv],
+	ops[virtual_actions::gadd],
+	ops[virtual_actions::gsub],
 
 	ops[virtual_actions::sdzs],
 
@@ -450,14 +272,6 @@ std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::_dlog10],
 	ops[virtual_actions::_dpow]
 };
-std::unordered_set<byte> parted_opcodes = {
-	setFPRs_opcode,
-	movFPRs_opcode,
-	mulFPRs_opcode,
-	divFPRs_opcode,
-	addFPRs_opcode,
-	subFPRs_opcode
-};
 
 std::unordered_set<byte> opt_arg_ops = {
 	ops[virtual_actions::push],
@@ -467,5 +281,10 @@ std::unordered_set<byte> opt_arg_ops = {
 	ops[virtual_actions::movgm],
 
 	ops[virtual_actions::gset],
-	ops[virtual_actions::gmov]
+	ops[virtual_actions::gmov],
+
+	ops[virtual_actions::gmul],
+	ops[virtual_actions::gdiv],
+	ops[virtual_actions::gadd],
+	ops[virtual_actions::gsub]
 };

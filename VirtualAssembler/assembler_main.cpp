@@ -142,18 +142,6 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		out.push_back(reg_value);
 		return out;
 	}
-	else if (parted_opcodes.find(out[0]) != parted_opcodes.end()) {
-		if (out[0] == instructions_set[virtual_actions::mulFPR0])
-			ASMBL_FP_NMATHS(out, map_FPR_mul_2nd_opc, _action, mem);
-		else if (out[0] == instructions_set[virtual_actions::divFPR0])
-			ASMBL_FP_NMATHS(out, map_FPR_div_2nd_opc, _action, mem);
-		else if (out[0] == instructions_set[virtual_actions::addFPR0])
-			ASMBL_FP_NMATHS(out, map_FPR_add_2nd_opc, _action, mem);
-		else if (out[0] == instructions_set[virtual_actions::subFPR0])
-			ASMBL_FP_NMATHS(out, map_FPR_sub_2nd_opc, _action, mem);
-
-		return out;
-	}
 	else {
 		return std::vector<byte>({ 0, 0, 0, 0, 0, 0, 0, 0, });
 	}

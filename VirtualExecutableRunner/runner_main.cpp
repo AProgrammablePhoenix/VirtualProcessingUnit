@@ -223,20 +223,6 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 
 			continue;
 		}
-		else if (parted_opcodes.find((*byteArray)[i]) != parted_opcodes.end()) {
-			if (data[i] == instructions_set[virtual_actions::mulFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_mul_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
-			}
-			else if (data[i] == instructions_set[virtual_actions::divFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_div_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
-			}
-			else if (data[i] == instructions_set[virtual_actions::addFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_add_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
-			}
-			else if (data[i] == instructions_set[virtual_actions::subFPR0]) {
-				DCODE_FP_NMATHS(actions, map_FPR_sub_2nd_opc, data, i, has_opt_arg, opt_arg, mem); continue;
-			}
-		}
 	}
 
 	return actions;

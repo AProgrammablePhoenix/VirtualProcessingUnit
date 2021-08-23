@@ -25,7 +25,6 @@ extern std::map<virtual_actions, byte>& ops;
 extern std::unordered_set<byte> zero_args_opcodes;
 extern std::unordered_set<byte> uint64_args_opcodes;
 extern std::unordered_set<byte> reg_args_opcodes;
-extern std::unordered_set<byte> parted_opcodes;
 
 extern std::unordered_set<byte> opt_arg_ops;
 
