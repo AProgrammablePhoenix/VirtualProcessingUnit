@@ -96,79 +96,8 @@ inline comn_registers ATTOREGID(std::shared_ptr<void>& at_ptr, memory* const& me
 	return ATTOREGID(*std::static_pointer_cast<arg_tuple>(at_ptr), mem);
 }
 
-// Native registers ops
-#pragma region native_regs_ops
-void b_set16AX(std::shared_ptr<void> a, regs* regsiters, memory* mem);
-void b_set16BX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set16CX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set16DX(std::shared_ptr<void> a, regs* registers, memory* mem);
-
-void b_set32EAX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set32EBX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set32ECX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set32EDX(std::shared_ptr<void> a, regs* registers, memory* mem);
-
-void b_set64RAX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set64RBX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set64RCX(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_set64RDX(std::shared_ptr<void> a, regs* registers, memory* mem);
-
-void b_setSR(std::shared_ptr<void> a, regs* registers, memory* mem);
-void b_setCR(std::shared_ptr<void> a, regs* registers, memory* mem);
-
 void b_setGP(std::shared_ptr<void> a, regs* registers, memory* mem);
-
-RPH_FPR_PROTO(set, FPR0);
-RPH_FPR_PROTO(set, FPR1);
-RPH_FPR_PROTO(set, FPR2);
-RPH_FPR_PROTO(set, FPR3);
-RPH_FPR_PROTO(set, EFPR0);
-RPH_FPR_PROTO(set, EFPR1);
-RPH_FPR_PROTO(set, EFPR2);
-RPH_FPR_PROTO(set, EFPR3);
-RPH_FPR_PROTO(set, RFPR0);
-RPH_FPR_PROTO(set, RFPR1);
-RPH_FPR_PROTO(set, RFPR2);
-RPH_FPR_PROTO(set, RFPR3);
-#pragma endregion
-
-// Mov ops
-#pragma region mov_ops
-void b_mov16AX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov16BX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov16CX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov16DX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_mov32EAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov32EBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov32ECX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov32EDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_mov64RAX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov64RBX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov64RCX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov64RDX(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-void b_mov64RBP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mov64RSP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
 void b_movGP(std::shared_ptr<void> reg, regs* registers, memory* mem);
-
-RPH_FPR_MOV_PROTO(FPR0);
-RPH_FPR_MOV_PROTO(FPR1);
-RPH_FPR_MOV_PROTO(FPR2);
-RPH_FPR_MOV_PROTO(FPR3);
-
-RPH_FPR_MOV_PROTO(EFPR0);
-RPH_FPR_MOV_PROTO(EFPR1);
-RPH_FPR_MOV_PROTO(EFPR2);
-RPH_FPR_MOV_PROTO(EFPR3);
-
-RPH_FPR_MOV_PROTO(RFPR0);
-RPH_FPR_MOV_PROTO(RFPR1);
-RPH_FPR_MOV_PROTO(RFPR2);
-RPH_FPR_MOV_PROTO(RFPR3);
-#pragma endregion
 
 // Native maths ops
 #pragma region native_maths_ops

@@ -15,9 +15,6 @@ extern std::map<comn_registers, byte> registers_set;
 extern std::map<comn_registers, byte> fp_registers_set;
 extern std::map<virtual_actions, byte> instructions_set;
 
-extern std::map<virtual_actions, byte> map_FPR_set_2nd_opc;
-extern std::map<virtual_actions, byte> map_FPR_mov_2nd_opc;
-
 extern std::map<virtual_actions, byte> map_FPR_mul_2nd_opc;
 extern std::map<virtual_actions, byte> map_FPR_div_2nd_opc;
 extern std::map<virtual_actions, byte> map_FPR_add_2nd_opc;

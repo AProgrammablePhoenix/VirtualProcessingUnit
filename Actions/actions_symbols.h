@@ -16,75 +16,8 @@ enum class virtual_actions {
 	_int = 1,
 
 	// Registers
-	setAX,
-	setBX,
-	setCX,
-	setDX,
-
-	setEAX,
-	setEBX,
-	setECX,
-	setEDX,
-
-	setRAX,
-	setRBX,
-	setRCX,
-	setRDX,
-
 	gset,
-
-	setSR,
-
-	setCR,
-
-	setFPR0,
-	setFPR1,
-	setFPR2,
-	setFPR3,
-
-	setEFPR0,
-	setEFPR1,
-	setEFPR2,
-	setEFPR3,
-
-	setRFPR0,
-	setRFPR1,
-	setRFPR2,
-	setRFPR3,
-
-	movAX,
-	movBX,
-	movCX,
-	movDX,
-
-	movEAX,
-	movEBX,
-	movECX,
-	movEDX,
-
-	movRAX,
-	movRBX,
-	movRCX,
-	movRDX,
-	movRBP,
-	movRSP,
-
 	gmov,
-
-	movFPR0,
-	movFPR1,
-	movFPR2,
-	movFPR3,
-
-	movEFPR0,
-	movEFPR1,
-	movEFPR2,
-	movEFPR3,
-
-	movRFPR0,
-	movRFPR1,
-	movRFPR2,
-	movRFPR3,
 
 	inc,
 	dec,
@@ -371,78 +304,9 @@ private:
 	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m);
 
 	void init() {
-#pragma region b_set
-		a_db[(size_t)virtual_actions::setAX] = b_set16AX;
-		a_db[(size_t)virtual_actions::setBX] = b_set16BX;
-		a_db[(size_t)virtual_actions::setCX] = b_set16CX;
-		a_db[(size_t)virtual_actions::setDX] = b_set16DX;
-
-		a_db[(size_t)virtual_actions::setEAX] = b_set32EAX;
-		a_db[(size_t)virtual_actions::setEBX] = b_set32EBX;
-		a_db[(size_t)virtual_actions::setECX] = b_set32ECX;
-		a_db[(size_t)virtual_actions::setEDX] = b_set32EDX;
-
-		a_db[(size_t)virtual_actions::setRAX] = b_set64RAX;
-		a_db[(size_t)virtual_actions::setRBX] = b_set64RBX;
-		a_db[(size_t)virtual_actions::setRCX] = b_set64RCX;
-		a_db[(size_t)virtual_actions::setRDX] = b_set64RDX;
-
-		a_db[(size_t)virtual_actions::setSR] = b_setSR;
-		a_db[(size_t)virtual_actions::setCR] = b_setCR;
-
 		a_db[(size_t)virtual_actions::gset] = b_setGP;
-
-		a_db[(size_t)virtual_actions::setFPR0] = b_setFPR0;
-		a_db[(size_t)virtual_actions::setFPR1] = b_setFPR1;
-		a_db[(size_t)virtual_actions::setFPR2] = b_setFPR2;
-		a_db[(size_t)virtual_actions::setFPR3] = b_setFPR3;
-
-		a_db[(size_t)virtual_actions::setEFPR0] = b_setEFPR0;
-		a_db[(size_t)virtual_actions::setEFPR1] = b_setEFPR1;
-		a_db[(size_t)virtual_actions::setEFPR2] = b_setEFPR2;
-		a_db[(size_t)virtual_actions::setEFPR3] = b_setEFPR3;
-
-		a_db[(size_t)virtual_actions::setRFPR0] = b_setRFPR0;
-		a_db[(size_t)virtual_actions::setRFPR1] = b_setRFPR1;
-		a_db[(size_t)virtual_actions::setRFPR2] = b_setRFPR2;
-		a_db[(size_t)virtual_actions::setRFPR3] = b_setRFPR3;
-#pragma endregion
-#pragma region b_mov
-		a_db[(size_t)virtual_actions::movAX] = b_mov16AX;
-		a_db[(size_t)virtual_actions::movBX] = b_mov16BX;
-		a_db[(size_t)virtual_actions::movCX] = b_mov16CX;
-		a_db[(size_t)virtual_actions::movDX] = b_mov16DX;
-
-		a_db[(size_t)virtual_actions::movEAX] = b_mov32EAX;
-		a_db[(size_t)virtual_actions::movEBX] = b_mov32EBX;
-		a_db[(size_t)virtual_actions::movECX] = b_mov32ECX;
-		a_db[(size_t)virtual_actions::movEDX] = b_mov32EDX;
-
-		a_db[(size_t)virtual_actions::movRAX] = b_mov64RAX;
-		a_db[(size_t)virtual_actions::movRBX] = b_mov64RBX;
-		a_db[(size_t)virtual_actions::movRCX] = b_mov64RCX;
-		a_db[(size_t)virtual_actions::movRDX] = b_mov64RDX;
-
-		a_db[(size_t)virtual_actions::movRBP] = b_mov64RBP;
-		a_db[(size_t)virtual_actions::movRSP] = b_mov64RSP;
-
 		a_db[(size_t)virtual_actions::gmov] = b_movGP;
 
-		a_db[(size_t)virtual_actions::movFPR0] = b_movFPR0;
-		a_db[(size_t)virtual_actions::movFPR1] = b_movFPR1;
-		a_db[(size_t)virtual_actions::movFPR2] = b_movFPR2;
-		a_db[(size_t)virtual_actions::movFPR3] = b_movFPR3;
-
-		a_db[(size_t)virtual_actions::movEFPR0] = b_movEFPR0;
-		a_db[(size_t)virtual_actions::movEFPR1] = b_movEFPR1;
-		a_db[(size_t)virtual_actions::movEFPR2] = b_movEFPR2;
-		a_db[(size_t)virtual_actions::movEFPR3] = b_movEFPR3;
-
-		a_db[(size_t)virtual_actions::movRFPR0] = b_movRFPR0;
-		a_db[(size_t)virtual_actions::movRFPR1] = b_movRFPR1;
-		a_db[(size_t)virtual_actions::movRFPR2] = b_movRFPR2;
-		a_db[(size_t)virtual_actions::movRFPR3] = b_movRFPR3;
-#pragma endregion
 		a_db[(size_t)virtual_actions::inc] = b_inc;
 		a_db[(size_t)virtual_actions::dec] = b_dec;
 		a_db[(size_t)virtual_actions::incFP] = b_incFP;

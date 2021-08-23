@@ -42,16 +42,6 @@
 		constructor(RFPR1),						\
 		constructor(RFPR2),						\
 		constructor(RFPR3)
-
-	#define setFPROPC(regname, opcode) FPROPC_PROTO(set, regname, opcode)
-	#define setFPRs(opcode) ALL_FPRs_PROTO(setFPROPC, opcode)
-	#define setFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(set, regname)
-	#define setFPRs2nd() ALL_FPRs2ndOPC_PROTO(setFPR_2ndSingle)
-
-	#define movFPROPC(regname, opcode) FPROPC_PROTO(mov, regname, opcode)
-	#define movFPRs(opcode)	ALL_FPRs_PROTO(movFPROPC, opcode)
-	#define movFPR_2ndSingle(regname) FPR2ndOPCSingle_PROTO(mov, regname)
-	#define movFPRs2nd() ALL_FPRs2ndOPC_PROTO(movFPR_2ndSingle)
 	
 	#define mulFPROPC(regname, opcode) FPROPC_PROTO(mul, regname, opcode)
 	#define mulFPRs(opcode) ALL_FPRs_PROTO(mulFPROPC, opcode)
@@ -138,37 +128,8 @@ std::map<comn_registers, byte> fp_registers_set = {
 std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::_int,   0x00},
 
-	{virtual_actions::setAX,  0x0D},
-	{virtual_actions::setBX,  0x0E},
-	{virtual_actions::setCX,  0x0F},
-	{virtual_actions::setDX,  0x10},
-	{virtual_actions::setEAX, 0x11},
-	{virtual_actions::setEBX, 0x12},
-	{virtual_actions::setECX, 0x13},
-	{virtual_actions::setEDX, 0x14},
-	{virtual_actions::setRAX, 0x15},
-	{virtual_actions::setRBX, 0x16},
-	{virtual_actions::setRCX, 0x17},
-	{virtual_actions::setRDX, 0x18},
-
-	{virtual_actions::setSR,  0x19},
-
-	{virtual_actions::setCR,  0x1B},
-
-	{virtual_actions::movAX,  0x1F},
-	{virtual_actions::movBX,  0x20},
-	{virtual_actions::movCX,  0x21},
-	{virtual_actions::movDX,  0x22},
-	{virtual_actions::movEAX, 0x23},
-	{virtual_actions::movEBX, 0x24},
-	{virtual_actions::movECX, 0x25},
-	{virtual_actions::movEDX, 0x26},
-	{virtual_actions::movRAX, 0x27},
-	{virtual_actions::movRBX, 0x28},
-	{virtual_actions::movRCX, 0x29},
-	{virtual_actions::movRDX, 0x2A},
-	{virtual_actions::movRBP, 0x2B},
-	{virtual_actions::movRSP, 0x2C},
+	{virtual_actions::gset,	  0x01},
+	{virtual_actions::gmov,	  0x02},
 
 	{virtual_actions::inc,	  0x2D},
 	{virtual_actions::dec,	  0x2E},
@@ -299,9 +260,6 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::sdzs, 0x9F},
 
-	setFPRs(setFPRs_opcode),
-	movFPRs(movFPRs_opcode),
-
 	mulFPRs(mulFPRs_opcode),
 	divFPRs(divFPRs_opcode),
 	addFPRs(addFPRs_opcode),
@@ -321,13 +279,6 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::rfread, subFPRs_opcode + 8},
 	{virtual_actions::rfwrite, subFPRs_opcode + 9},
 	{virtual_actions::rflen, subFPRs_opcode + 10}
-};
-
-std::map<virtual_actions, byte> map_FPR_set_2nd_opc = {
-	setFPRs2nd()
-};
-std::map<virtual_actions, byte> map_FPR_mov_2nd_opc = {
-	movFPRs2nd()
 };
 
 std::map<virtual_actions, byte> map_FPR_mul_2nd_opc = {
@@ -367,19 +318,6 @@ std::unordered_set<byte> zero_args_opcodes = {
 std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::_int],
 
-	ops[virtual_actions::setAX],
-	ops[virtual_actions::setBX],
-	ops[virtual_actions::setCX],
-	ops[virtual_actions::setDX],
-	ops[virtual_actions::setEAX],
-	ops[virtual_actions::setEBX],
-	ops[virtual_actions::setECX],
-	ops[virtual_actions::setEDX],
-	ops[virtual_actions::setRAX],
-	ops[virtual_actions::setRBX],
-	ops[virtual_actions::setRCX],
-	ops[virtual_actions::setRDX],
-
 	ops[virtual_actions::jmp],
 	ops[virtual_actions::je],
 	ops[virtual_actions::jne],
@@ -408,20 +346,7 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::rfwrite]
 };
 std::unordered_set<byte> reg_args_opcodes = {
-	ops[virtual_actions::movAX],
-	ops[virtual_actions::movBX],
-	ops[virtual_actions::movCX],
-	ops[virtual_actions::movDX],
-	ops[virtual_actions::movEAX],
-	ops[virtual_actions::movEBX],
-	ops[virtual_actions::movECX],
-	ops[virtual_actions::movEDX],
-	ops[virtual_actions::movRAX],
-	ops[virtual_actions::movRBX],
-	ops[virtual_actions::movRCX],
-	ops[virtual_actions::movRDX],
-	ops[virtual_actions::movRBP],
-	ops[virtual_actions::movRSP],
+	ops[virtual_actions::gmov],
 
 	ops[virtual_actions::inc],
 	ops[virtual_actions::dec],
@@ -539,5 +464,8 @@ std::unordered_set<byte> opt_arg_ops = {
 	ops[virtual_actions::pop],
 
 	ops[virtual_actions::movsm],
-	ops[virtual_actions::movgm]
+	ops[virtual_actions::movgm],
+
+	ops[virtual_actions::gset],
+	ops[virtual_actions::gmov]
 };

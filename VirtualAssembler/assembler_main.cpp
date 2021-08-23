@@ -56,6 +56,64 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 	if (opt_arg_ops.find(out[0]) != opt_arg_ops.end())
 		out.push_back(std::get<2>(*std::static_pointer_cast<arg_tuple>(_action.getValuePtr())).raw_byte);
 
+	if (_action.getAction() == virtual_actions::gset) {
+		if (comn_registers_table::is_num_reg((comn_registers)out.back())) {
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+
+			byte* uc_n = new byte[sizeof(size_t)];
+			mem->_MG(uc_n, vsize, vaddr);
+
+			size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
+
+			for (byte i = 0; i < compressed_len; i++)
+				out.push_back(uc_n[i]);
+			delete[] uc_n;
+			return out;
+		}
+		else if (comn_registers_table::is_fp_reg((comn_registers)out.back())) {
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+
+			byte* uc_a = new byte[vsize];
+			mem->_MG(uc_a, vsize, vaddr);
+
+			for (size_t i = 0; i < vsize; i++)
+				out.push_back(uc_a[i]);
+			delete[] uc_a;
+		}
+		else if ((comn_registers)out.back() == comn_registers::SR) {
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+			const size_t& str_size = vsize;
+
+			byte* b_str_size = nullptr;
+			ulongToByteArray(str_size, &b_str_size);
+
+			size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
+
+			for (byte i = 0; i < compressed_len; i++)
+				out.push_back(b_str_size[i]);
+			delete[] b_str_size;
+
+			byte* b_str = new byte[str_size];
+			mem->_MG(b_str, str_size, vaddr);
+
+			for (size_t i = 0; i < str_size; i++)
+				out.push_back(b_str[i]);
+
+			delete[] b_str;
+			return out;
+		}
+		else if ((comn_registers)out.back() == comn_registers::CR) {
+			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
+			byte* uc_c = new byte[1];
+
+			mem->_MG(uc_c, 1, vaddr);
+			out.push_back(uc_c[0]);
+
+			delete[] uc_c;
+			return out;
+		}
+	}
+
 	if (zero_args_opcodes.find(out[0]) != zero_args_opcodes.end()) {
 		return out;
 	}
@@ -72,38 +130,6 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		delete[] uc_n;
 		return out;
 	}
-	else if (out[0] == ops[virtual_actions::setSR]) {
-		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
-		const size_t& str_size = vsize;
-
-		byte* b_str_size = nullptr;
-		ulongToByteArray(str_size, &b_str_size);
-
-		size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
-
-		for (byte i = 0; i < compressed_len; i++)
-			out.push_back(b_str_size[i]);
-		delete[] b_str_size;
-
-		byte* b_str = new byte[str_size];
-		mem->_MG(b_str, str_size, vaddr);
-
-		for (size_t i = 0; i < str_size; i++)
-			out.push_back(b_str[i]);
-
-		delete[] b_str;
-		return out;
-	}
-	else if (out[0] == ops[virtual_actions::setCR]) {
-		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
-		byte* uc_c = new byte[1];
-
-		mem->_MG(uc_c, 1, vaddr);
-		out.push_back(uc_c[0]);
-
-		delete[] uc_c;
-		return out;
-	}
 	else if (reg_args_opcodes.find(out[0]) != reg_args_opcodes.end()) {
 		const auto[vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
@@ -113,30 +139,11 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 		byte reg_value = (byte)(ATOULL(uc_n) & 0xff);
 		delete[] uc_n;
 
-		if (reg_value < (byte)comn_registers::SR)
-			reg_value = registers_set[(comn_registers)reg_value];
-		else
-			reg_value = fp_registers_set[(comn_registers)reg_value];
-
 		out.push_back(reg_value);
 		return out;
 	}
 	else if (parted_opcodes.find(out[0]) != parted_opcodes.end()) {
-		if (out[0] == instructions_set[virtual_actions::setFPR0]) {// All set(E|R|)FPRs have the same first opc
-			out.push_back(map_FPR_set_2nd_opc[_action.getAction()]);
-
-			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
-
-			byte* uc_a = new byte[vsize];
-			mem->_MG(uc_a, vsize, vaddr);
-
-			for (size_t i = 0; i < vsize; i++)
-				out.push_back(uc_a[i]);
-			delete[] uc_a;
-		}
-		else if (out[0] == instructions_set[virtual_actions::movFPR0]) // All mov(E|R|)FPRs have the same first opc
-			ASMBL_FP_NMATHS(out, map_FPR_mov_2nd_opc, _action, mem);
-		else if (out[0] == instructions_set[virtual_actions::mulFPR0])
+		if (out[0] == instructions_set[virtual_actions::mulFPR0])
 			ASMBL_FP_NMATHS(out, map_FPR_mul_2nd_opc, _action, mem);
 		else if (out[0] == instructions_set[virtual_actions::divFPR0])
 			ASMBL_FP_NMATHS(out, map_FPR_div_2nd_opc, _action, mem);
