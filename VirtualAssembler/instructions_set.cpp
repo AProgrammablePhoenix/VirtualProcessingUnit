@@ -73,8 +73,8 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::gset,	  0x01},
 	{virtual_actions::gmov,	  0x02},
 
-	{virtual_actions::inc,	  0x2D},
-	{virtual_actions::dec,	  0x2E},
+	{virtual_actions::ginc,	  0x03},
+	{virtual_actions::gdec,	  0x04},
 
 	{virtual_actions::gmul,	  0x2F},
 	{virtual_actions::gdiv,	  0x30},
@@ -159,12 +159,9 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::cmpdbl, subFPRs_opcode + 5},
 
-	{virtual_actions::incFP, subFPRs_opcode + 6},
-	{virtual_actions::decFP, subFPRs_opcode + 7},
-
-	{virtual_actions::rfread, subFPRs_opcode + 8},
-	{virtual_actions::rfwrite, subFPRs_opcode + 9},
-	{virtual_actions::rflen, subFPRs_opcode + 10}
+	{virtual_actions::rfread, subFPRs_opcode + 6},
+	{virtual_actions::rfwrite, subFPRs_opcode + 7},
+	{virtual_actions::rflen, subFPRs_opcode + 8}
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -221,11 +218,8 @@ std::unordered_set<byte> uint64_args_opcodes = {
 std::unordered_set<byte> reg_args_opcodes = {
 	ops[virtual_actions::gmov],
 
-	ops[virtual_actions::inc],
-	ops[virtual_actions::dec],
-
-	ops[virtual_actions::incFP],
-	ops[virtual_actions::decFP],
+	ops[virtual_actions::ginc],
+	ops[virtual_actions::gdec],
 
 	ops[virtual_actions::gmul],
 	ops[virtual_actions::gdiv],

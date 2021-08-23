@@ -85,10 +85,8 @@ void b_setGP(std::shared_ptr<void> a, regs* registers, memory* mem);
 void b_movGP(std::shared_ptr<void> reg, regs* registers, memory* mem);
 
 // Native maths ops
-void b_inc(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_dec(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_incFP(RPH_NMATHS_ARGS);
-void b_decFP(RPH_NMATHS_ARGS);
+void b_incGP(COMN_NMATHS_ARGS);
+void b_decGP(COMN_NMATHS_ARGS);
 
 void b_mulGP(COMN_NMATHS_ARGS);
 void b_divGP(COMN_NMATHS_ARGS);

@@ -19,10 +19,8 @@ enum class virtual_actions {
 	gset,
 	gmov,
 
-	inc,
-	dec,
-	incFP,
-	decFP,
+	ginc,
+	gdec,
 
 	gmul,
 	gdiv,
@@ -187,10 +185,8 @@ private:
 		a_db[(size_t)virtual_actions::gset] = b_setGP;
 		a_db[(size_t)virtual_actions::gmov] = b_movGP;
 
-		a_db[(size_t)virtual_actions::inc] = b_inc;
-		a_db[(size_t)virtual_actions::dec] = b_dec;
-		a_db[(size_t)virtual_actions::incFP] = b_incFP;
-		a_db[(size_t)virtual_actions::decFP] = b_decFP;
+		a_db[(size_t)virtual_actions::ginc] = b_incGP;
+		a_db[(size_t)virtual_actions::gdec] = b_decGP;
 
 		a_db[(size_t)virtual_actions::gmul] = b_mulGP;
 		a_db[(size_t)virtual_actions::gdiv] = b_divGP;

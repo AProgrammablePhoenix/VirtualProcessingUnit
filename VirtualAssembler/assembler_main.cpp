@@ -79,6 +79,8 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 			for (size_t i = 0; i < vsize; i++)
 				out.push_back(uc_a[i]);
 			delete[] uc_a;
+
+			return out;
 		}
 		else if ((comn_registers)out.back() == comn_registers::SR) {
 			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());

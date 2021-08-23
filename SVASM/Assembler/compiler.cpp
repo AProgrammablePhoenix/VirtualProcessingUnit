@@ -256,9 +256,9 @@ int preprocInc(const std::vector<token>& args, std::vector<action>& out_actions)
 	if (args[0].element == "cr")
 		assert_err_nonimpl("inc", args, cur_line);
 	else if (args[0].type == tokenTypes::fp_reg)
-		pushAction(out_actions, virtual_actions::incFP, tokenTypes::fp_reg, args[0].element);
+		pushAction(out_actions, virtual_actions::ginc, tokenTypes::fp_reg, args[0].element);
 	else
-		pushAction(out_actions, virtual_actions::inc, tokenTypes::reg, args[0].element);
+		pushAction(out_actions, virtual_actions::ginc, tokenTypes::reg, args[0].element);
 	
 	return OK;
 }
@@ -276,9 +276,9 @@ int preprocDec(const std::vector<token>& args, std::vector<action>& out_actions)
 	if (args[0].element == "cr")
 		assert_err_nonimpl("dec", args, cur_line);
 	else if (args[0].type == tokenTypes::fp_reg)
-		pushAction(out_actions, virtual_actions::decFP, tokenTypes::fp_reg, args[0].element);
+		pushAction(out_actions, virtual_actions::gdec, tokenTypes::fp_reg, args[0].element);
 	else
-		pushAction(out_actions, virtual_actions::dec, tokenTypes::reg, args[0].element);
+		pushAction(out_actions, virtual_actions::gdec, tokenTypes::reg, args[0].element);
 
 	return OK;
 }

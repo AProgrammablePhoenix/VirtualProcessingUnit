@@ -18,7 +18,7 @@ toString RAX
 int ${{N6}}
 
 setRFPR0 ${{D1}}
-incFP RFPR0
+inc RFPR0
 pushFP RFPR0
 
 int ${{N12}}

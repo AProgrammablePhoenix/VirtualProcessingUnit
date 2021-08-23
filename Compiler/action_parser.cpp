@@ -101,6 +101,7 @@ namespace {
 	std::array<std::string, 6> multi_args_ops = {
 		"set",
 		"mov",
+
 		"add",
 		"sub",
 		"mul",
@@ -233,10 +234,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 #pragma region map_decl
 	{"int", virtual_actions::_int},
 
-	{"inc", virtual_actions::inc},
-	{"dec", virtual_actions::dec},
-	{"incFP", virtual_actions::incFP},
-	{"decFP", virtual_actions::decFP},
+	{"inc", virtual_actions::ginc},
+	{"dec", virtual_actions::gdec},
 
 	{"toString", virtual_actions::toString},
 	{"castreg", virtual_actions::castreg},
