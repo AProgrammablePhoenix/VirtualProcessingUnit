@@ -1,3 +1,5 @@
+#unsafe
+
 mov sr, "Testing comparison system..."
 int 0x6
 int 0x7

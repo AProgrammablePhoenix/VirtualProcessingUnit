@@ -50,75 +50,46 @@ static const std::unordered_set<std::string> fp_registers = {
 	"rfpr2",
 	"rfpr3"
 };
+static const std::unordered_map<std::string, comn_registers> strreg_to_reg = {
+	{"ax", comn_registers::AX},
+	{"bx", comn_registers::BX},
+	{"cx", comn_registers::CX},
+	{"dx", comn_registers::DX},
 
-static const std::unordered_map<std::string, virtual_actions> fetch_set_input = {
-	{"ax", virtual_actions::setAX},
-	{"bx", virtual_actions::setBX},
-	{"cx", virtual_actions::setCX},
-	{"dx", virtual_actions::setDX},
+	{"eax", comn_registers::EAX},
+	{"ebx", comn_registers::EBX},
+	{"ecx", comn_registers::ECX},
+	{"edx", comn_registers::EDX},
 
-	{"eax", virtual_actions::setEAX},
-	{"ebx", virtual_actions::setEBX},
-	{"ecx", virtual_actions::setECX},
-	{"edx", virtual_actions::setEDX},
+	{"rax", comn_registers::RAX},
+	{"rbx", comn_registers::RBX},
+	{"rcx", comn_registers::RCX},
+	{"rdx", comn_registers::RDX},
 
-	{"rax", virtual_actions::setRAX},
-	{"rbx", virtual_actions::setRBX},
-	{"rcx", virtual_actions::setRCX},
-	{"rdx", virtual_actions::setRDX},
+	{"rbp", comn_registers::RBP},
+	{"rsp", comn_registers::RSP},
+	{"rdi", comn_registers::RDI},
+	{"rsi", comn_registers::RSI},
 
-	{"sr", virtual_actions::setSR},
-	{"cr", virtual_actions::setCR},
+	{"sr", comn_registers::SR},
+	{"cr", comn_registers::CR},
 
-	{"fpr0", virtual_actions::setFPR0},
-	{"fpr1", virtual_actions::setFPR1},
-	{"fpr2", virtual_actions::setFPR2},
-	{"fpr3", virtual_actions::setFPR3},
+	{"fpr0", comn_registers::FPR0},
+	{"fpr1", comn_registers::FPR1},
+	{"fpr2", comn_registers::FPR2},
+	{"fpr3", comn_registers::FPR3},
 
-	{"efpr0", virtual_actions::setEFPR0},
-	{"efpr1", virtual_actions::setEFPR1},
-	{"efpr2", virtual_actions::setEFPR2},
-	{"efpr3", virtual_actions::setEFPR3},
+	{"efpr0", comn_registers::EFPR0},
+	{"efpr1", comn_registers::EFPR1},
+	{"efpr2", comn_registers::EFPR2},
+	{"efpr3", comn_registers::EFPR3},
 
-	{"rfpr0", virtual_actions::setRFPR0},
-	{"rfpr1", virtual_actions::setRFPR1},
-	{"rfpr2", virtual_actions::setRFPR2},
-	{"rfpr3", virtual_actions::setRFPR3}
+	{"rfpr0", comn_registers::RFPR0},
+	{"rfpr1", comn_registers::RFPR1},
+	{"rfpr2", comn_registers::RFPR2},
+	{"rfpr3", comn_registers::RFPR3}
 };
-static const std::unordered_map<std::string, virtual_actions> fetch_mov_input = {
-	{"ax", virtual_actions::movAX},
-	{"bx", virtual_actions::movBX},
-	{"cx", virtual_actions::movCX},
-	{"dx", virtual_actions::movDX},
 
-	{"eax", virtual_actions::movEAX},
-	{"ebx", virtual_actions::movEBX},
-	{"ecx", virtual_actions::movECX},
-	{"edx", virtual_actions::movEDX},
-
-	{"rax", virtual_actions::movRAX},
-	{"rbx", virtual_actions::movRBX},
-	{"rcx", virtual_actions::movRCX},
-	{"rdx", virtual_actions::movRDX},
-
-	{"rbp", virtual_actions::movRBP},
-	{"rsp", virtual_actions::movRSP},
-
-	{"fpr0", virtual_actions::movFPR0},
-	{"fpr1", virtual_actions::movFPR1},
-	{"fpr2", virtual_actions::movFPR2},
-	{"fpr3", virtual_actions::movFPR3},
-
-	{"efpr0", virtual_actions::movEFPR0},
-	{"efpr1", virtual_actions::movEFPR1},
-	{"efpr2", virtual_actions::movEFPR2},
-	{"efpr3", virtual_actions::movEFPR3},
-
-	{"rfpr0", virtual_actions::movRFPR0},
-	{"rfpr1", virtual_actions::movRFPR1},
-	{"rfpr2", virtual_actions::movRFPR2},
-	{"rfpr3", virtual_actions::movRFPR3}
-};
 static const std::unordered_map<std::string, virtual_actions> fetch_mul_input = {
 	{"ax", virtual_actions::mulAX},
 	{"bx", virtual_actions::mulBX},
@@ -277,32 +248,32 @@ namespace {
 	inline void CRToNum(std::vector<action>& out_actions, const bool useRAX) {
 		if (useRAX) {
 			// Set first 8 bytes of memory to 0
-			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
 			// Set value of CR (1 byte) into 7th of memory
-			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "7");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "7", (uint8_t)comn_registers::RAX);
 			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
 			// Fetch first 8 bytes of memory and leave them on stack
-			pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
 		}
 		else { // Use rbx instead
 			// Set first 8 bytes of memory to 0
-			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RBX);
 			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 			pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rbx");
 			// Set value of CR (1 byte) into 7th of memory
-			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "7");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "7", (uint8_t)comn_registers::RBX);
 			pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rbx");
 			// Fetch first 8 bytes of memory and leave them on stack
-			pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, "0");
+			pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RBX);
 			pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rbx");
 		}
 	}
 	inline void getFirstCharSR(std::vector<action>& out_actions) {
 		// Get first char of SR
-		pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+		pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "2", (uint8_t)comn_registers::RAX);
 		// Prepare recast arguments
 		pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 		pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -365,15 +336,15 @@ int preprocMov(const std::vector<token>& args, std::vector<action>& out_actions)
 
 	if (args[0].type == tokenTypes::reg) {
 		if (args[1].type != tokenTypes::reg)
-			pushAction(out_actions, fetch_set_input.at(args[0].element), args[1].type, args[1].element);
+			pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		else
-			pushAction(out_actions, fetch_mov_input.at(args[0].element), tokenTypes::reg, args[1].element);
+			pushAction(out_actions, virtual_actions::gmov, tokenTypes::reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 	}
 	else if (args[0].type == tokenTypes::fp_reg) {
 		if (args[1].type != tokenTypes::fp_reg)
-			pushAction(out_actions, fetch_set_input.at(args[0].element), args[1].type, args[1].element);
+			pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		else
-			pushAction(out_actions, fetch_mov_input.at(args[0].element), tokenTypes::fp_reg, args[1].element);
+			pushAction(out_actions, virtual_actions::gmov, tokenTypes::fp_reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 	}
 	else
 		assert_err_argv({ "reg|fp_reg", "any" }, "mov", args, cur_line);
@@ -461,7 +432,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, fetch_mul_input.at(args[0].element), tokenTypes::reg, "rax");
 
 					if (!unsafe_flag)
@@ -471,7 +442,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, fetch_mul_input.at(args[0].element), tokenTypes::reg, "rbx");
 
 					if (!unsafe_flag)
@@ -483,7 +454,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, fetch_mul_input.at(args[0].element), tokenTypes::fp_reg, "rfpr3");
 
 					if (!unsafe_flag)
@@ -493,7 +464,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-					pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 					pushAction(out_actions, fetch_mul_input.at(args[0].element), tokenTypes::fp_reg, "rfpr2");
 
 					if (!unsafe_flag)
@@ -525,7 +496,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, fetch_div_input.at(args[0].element), tokenTypes::reg, "rax");
 
 					if (!unsafe_flag)
@@ -535,7 +506,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, fetch_div_input.at(args[0].element), tokenTypes::reg, "rbx");
 
 					if (!unsafe_flag)
@@ -547,7 +518,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, fetch_div_input.at(args[0].element), tokenTypes::fp_reg, "rfpr3");
 
 					if (!unsafe_flag)
@@ -557,7 +528,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-					pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 					pushAction(out_actions, fetch_div_input.at(args[0].element), tokenTypes::fp_reg, "rfpr2");
 
 					if (!unsafe_flag)
@@ -589,7 +560,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, fetch_add_input.at(args[0].element), tokenTypes::reg, "rax");
 
 					if (!unsafe_flag)
@@ -599,7 +570,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, fetch_add_input.at(args[0].element), tokenTypes::reg, "rbx");
 
 					if (!unsafe_flag)
@@ -611,7 +582,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, fetch_add_input.at(args[0].element), tokenTypes::fp_reg, "rfpr3");
 
 					if (!unsafe_flag)
@@ -621,7 +592,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-					pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 					pushAction(out_actions, fetch_add_input.at(args[0].element), tokenTypes::fp_reg, "rfpr2");
 
 					if (!unsafe_flag)
@@ -653,7 +624,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, fetch_sub_input.at(args[0].element), tokenTypes::reg, "rax");
 
 					if (!unsafe_flag)
@@ -663,7 +634,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, fetch_sub_input.at(args[0].element), tokenTypes::reg, "rbx");
 
 					if (!unsafe_flag)
@@ -675,7 +646,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, fetch_sub_input.at(args[0].element), tokenTypes::fp_reg, "rfpr3");
 
 					if (!unsafe_flag)
@@ -685,7 +656,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-					pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 					pushAction(out_actions, fetch_sub_input.at(args[0].element), tokenTypes::fp_reg, "rfpr2");
 
 					if (!unsafe_flag)
@@ -744,7 +715,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 				pushAction(out_actions, virtual_actions::_and, tokenTypes::reg, "rax");
 
@@ -755,7 +726,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::_and, tokenTypes::reg, args[0].element);
 
@@ -789,7 +760,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 				pushAction(out_actions, virtual_actions::_xor, tokenTypes::reg, "rax");
 
@@ -800,7 +771,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::_xor, tokenTypes::reg, args[0].element);
 
@@ -834,7 +805,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 				pushAction(out_actions, virtual_actions::_or, tokenTypes::reg, "rax");
 
@@ -845,7 +816,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::_or, tokenTypes::reg, args[0].element);
 
@@ -879,7 +850,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 				pushAction(out_actions, virtual_actions::_shr, tokenTypes::reg, "rax");
 
@@ -890,7 +861,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::_shr, tokenTypes::reg, args[0].element);
 
@@ -924,7 +895,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-				pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 				pushAction(out_actions, virtual_actions::_shl, tokenTypes::reg, "rax");
 
@@ -935,7 +906,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::_shl, tokenTypes::reg, args[0].element);
 
@@ -1022,7 +993,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 					pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, args[0].element);
 
@@ -1033,7 +1004,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-					pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 					pushAction(out_actions, virtual_actions::_dpow, tokenTypes::fp_reg, "rfpr3");
 
@@ -1060,7 +1031,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-						pushAction(out_actions, virtual_actions::movRFPR3, tokenTypes::fp_reg, args[1].element);
+						pushAction(out_actions, virtual_actions::gset, tokenTypes::fp_reg, args[1].element, (uint8_t)comn_registers::RFPR3);
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 						pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
 						pushAction(out_actions, virtual_actions::_pow, tokenTypes::reg, args[0].element);
@@ -1075,7 +1046,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 					pushAction(out_actions, virtual_actions::_pow, tokenTypes::reg, args[0].element);
 
@@ -1086,7 +1057,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 					pushAction(out_actions, virtual_actions::_pow, tokenTypes::reg, args[0].element);
 
@@ -1149,7 +1120,7 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(2 * sizeof(size_t))); // RSP
 				}
 
-				pushAction(out_actions, virtual_actions::setRAX, args[0].type, args[0].element);
+				pushAction(out_actions, virtual_actions::gset, args[0].type, args[0].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // RSP - x
 
 				if (!unsafe_flag) {
@@ -1164,7 +1135,7 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(2 * sizeof(long double))); // RSP
 				}
 
-				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[0].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[0].element, (uint8_t)comn_registers::RFPR3);
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
 				if (!unsafe_flag) {
@@ -1195,7 +1166,7 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 						std::to_string(sizeof(size_t) + SVOPTTOTS(args[0].element)));
 				}
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax", SVOPTTOTQ(args[0].element));
 
 				if (!unsafe_flag) {
@@ -1217,7 +1188,7 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 					pushAction(out_actions, virtual_actions::addRSP, tokenTypes::unsigned_n, std::to_string(sizeof(size_t)));
 				}
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax", SVOPTTOTQ(args[1].element));
 
 				if (!unsafe_flag) {
@@ -1267,7 +1238,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 							if (!unsafe_flag)
 								pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-							pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
+							pushAction(out_actions, virtual_actions::gmov, tokenTypes::reg, reg_addr, (uint8_t)comn_registers::RAX);
 							pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, args[1].element);
 
 							if (!unsafe_flag)
@@ -1283,7 +1254,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 					if (args[1].element != "rax") {
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-						pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
+						pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[0].element, (uint8_t)comn_registers::RAX);
 
 						if (args[1].element == "sr")
 							pushAction(out_actions, virtual_actions::movsmSR, tokenTypes::reg, "rax");
@@ -1302,7 +1273,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 					else {
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
-						pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[0].element);
+						pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[0].element, (uint8_t)comn_registers::RBX);
 
 						// If args[1].element == "rax" then the only possibility of movsm is that one
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
@@ -1318,7 +1289,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 					if (args[0].element == "[rax]") {
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
-						pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+						pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
@@ -1329,7 +1300,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 					else {
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-						pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+						pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 						pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
@@ -1343,8 +1314,8 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 					}
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[0].element, (uint8_t)comn_registers::RAX);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 					pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
@@ -1361,7 +1332,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-						pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+						pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 						pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
 
 						if (!unsafe_flag)
@@ -1373,8 +1344,8 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 						}
 
-						pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2));
-						pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+						pushAction(out_actions, virtual_actions::gmov, tokenTypes::reg, args[0].element.substr(1, args[0].element.size() - 2), (uint8_t)comn_registers::RAX);
+						pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 						pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
 
 						if (!unsafe_flag) {
@@ -1389,8 +1360,8 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 					}
 
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[0].element);
-					pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[0].element, (uint8_t)comn_registers::RAX);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 					pushAction(out_actions, virtual_actions::movsmFP, tokenTypes::fp_reg, "rfpr3");
 
 					if (!unsafe_flag) {
@@ -1415,7 +1386,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 						if (!unsafe_flag)
 							pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-						pushAction(out_actions, virtual_actions::movRAX, tokenTypes::reg, reg_addr);
+						pushAction(out_actions, virtual_actions::gmov, tokenTypes::reg, reg_addr, (uint8_t)comn_registers::RAX);
 						pushAction(out_actions, virtual_actions::movgmFP, tokenTypes::fp_reg, args[0].element);
 
 						if (!unsafe_flag)
@@ -1431,7 +1402,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 				if (args[0].element != "rax") {
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
-					pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 
 					if (args[0].element == "sr")
 						pushAction(out_actions, virtual_actions::movgmSR, tokenTypes::reg, "rax");
@@ -1450,7 +1421,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 				else {
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
-					pushAction(out_actions, virtual_actions::setRBX, tokenTypes::unsigned_n, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RBX);
 
 					pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rbx");
 					pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rax");
@@ -1572,7 +1543,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::str, args[1].element, (uint8_t)comn_registers::SR);
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
@@ -1622,7 +1593,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 			else {
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
@@ -1639,7 +1610,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 
-					pushAction(out_actions, virtual_actions::setRBX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RBX);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rbx");
 					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
@@ -1651,7 +1622,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					if (!unsafe_flag)
 						pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-					pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+					pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 					pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
@@ -1693,7 +1664,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
 				}
 
-				pushAction(out_actions, virtual_actions::setCR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::str, args[1].element, (uint8_t)comn_registers::CR);
 				CRToNum(out_actions, true);
 				getFirstCharSR(out_actions);
 
@@ -1728,7 +1699,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 				}
 				
-				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rpfr3");
 				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -1757,7 +1728,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
-				pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, "rax"); // Cast value of GP register
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
@@ -1793,7 +1764,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
 
 				// Get first char of SR
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "2", (uint8_t)comn_registers::RAX);
 				// Prepare recast arguments
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -1802,16 +1773,16 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				// Pop first char of SR from stack
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
 				// Set first 8 bytes of memory to 0
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
 				// Set value of CR into 7th byte of memory
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, std::to_string(sizeof(size_t) - 1));
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, std::to_string(sizeof(size_t) - 1), (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
 
 				// Fetch first 8 bytes of memory and leave them on stack
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
 
 				CRToNum(out_actions, true); // Convert CR to ULL and leave its value on stack
@@ -1828,10 +1799,10 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				}
 
 				pushAction(out_actions, virtual_actions::pushCR, tokenTypes::reg, ""); // Save cr
-				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::str, args[1].element, (uint8_t)comn_registers::SR);
 
 				// Get first char of SR
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "2");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "2", (uint8_t)comn_registers::RAX);
 				// Prepare recast arguments
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -1840,16 +1811,16 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				// Pop first char of SR from stack
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
 				// Set first 8 bytes of memory to 0
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::movsm, tokenTypes::reg, "rax");
 				// Set value of CR into 7th byte of memory
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "7");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "7", (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movsmCR, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, ""); // Restore cr
 
 				// Fetch first 8 bytes of memory and leave them on stack
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, "0");
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, "0", (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::movgm, tokenTypes::reg, "rax");
 
 				CRToNum(out_actions, true); // Convert CR to ULL and leave its value on stack
@@ -1870,7 +1841,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax"); // Save rax
 
-				pushAction(out_actions, virtual_actions::setRAX, args[1].type, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, args[1].type, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
 				CRToNum(out_actions, true);
@@ -1916,7 +1887,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
 
-				pushAction(out_actions, virtual_actions::setSR, tokenTypes::str, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::str, args[1].element, (uint8_t)comn_registers::SR);
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
@@ -1937,7 +1908,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 
-				pushAction(out_actions, virtual_actions::setRFPR2, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR2);
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr2");
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 				pushAction(out_actions, virtual_actions::cmpdbl, tokenTypes::reg, "");
@@ -1949,7 +1920,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 
-				pushAction(out_actions, virtual_actions::setRFPR3, tokenTypes::double_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
 				pushAction(out_actions, virtual_actions::cmpdbl, tokenTypes::reg, "");
@@ -1970,7 +1941,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				if (!unsafe_flag)
 					pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
-				pushAction(out_actions, virtual_actions::setRAX, tokenTypes::unsigned_n, args[1].element);
+				pushAction(out_actions, virtual_actions::gset, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RAX);
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
@@ -2103,6 +2074,105 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 	if (opt_arg_ops.find(comp_action) != opt_arg_ops.end())
 		out_bytes.push_back(v_opt);
 
+	if (comp_action == ops[virtual_actions::gset]) {
+		if (comn_registers_table::is_num_reg((comn_registers)out_bytes.back())) {
+			if (v_type != tokenTypes::signed_n && v_type != tokenTypes::unsigned_n) {
+				assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
+					{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
+			}
+
+			if (v_type == tokenTypes::unsigned_n) {
+				const size_t value = std::stoull(v_raw);
+				byte* uc_n = nullptr;
+
+				ULLTOA(value, &uc_n);
+				const size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
+
+				for (byte i = 0; i < compressed_len; ++i)
+					out_bytes.push_back(uc_n[i]);
+
+				delete[] uc_n;
+				return OK;
+			}
+			else if (v_type == tokenTypes::signed_n) {
+				const long long value = std::stoll(v_raw);
+				byte* uc_n = nullptr;
+
+				ULLTOA((size_t)value, &uc_n);
+				const size_t compressed_len = COMPBA(uc_n, sizeof(size_t));
+
+				for (byte i = 0; i < compressed_len; ++i)
+					out_bytes.push_back(uc_n[i]);
+
+				delete[] uc_n;
+				return OK;
+			}
+		}
+		else if (comn_registers_table::is_fp_reg((comn_registers)out_bytes.back())) {
+			if (v_type != tokenTypes::double_n) {
+				assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
+					{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
+			}
+
+			auto uc_a = std::make_unique<uint8_t[]>(sizeof(long double));
+			long double d = std::stold(v_raw);
+			mp_memcpy(&d, uc_a.get(), sizeof(long double));
+
+			for (size_t i = 0; i < sizeof(long double); i++)
+				out_bytes.push_back(uc_a[i]);
+			return OK;
+		}
+		else if ((comn_registers)out_bytes.back() == comn_registers::SR) {
+			if (v_type != tokenTypes::str) {
+				assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
+					{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
+			}
+
+			v_raw = v_raw.substr(1, v_raw.size() - 2);
+			size_t str_size = v_raw.size() + 1;
+
+			byte* b_str_size = nullptr;
+			ULLTOA(str_size, &b_str_size);
+
+			size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
+
+			for (byte i = 0; i < compressed_len; ++i)
+				out_bytes.push_back(b_str_size[i]);
+			delete[] b_str_size;
+
+			byte* b_str = new byte[str_size];
+#if defined(ISWIN)
+			memcpy_s(b_str, str_size, v_raw.c_str(), str_size);
+#else
+			std::memcpy(b_str, v_raw.c_str(), str_size);
+#endif
+
+			for (size_t i = 0; i < str_size; ++i)
+				out_bytes.push_back(b_str[i]);
+			delete[] b_str;
+
+			return OK;
+		}
+		else if ((comn_registers)out_bytes.back() == comn_registers::CR) {
+			if (v_type != tokenTypes::str) {
+				assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
+					{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
+			}
+
+
+			v_raw = v_raw.substr(1, v_raw.size() - 2);
+			byte c;
+
+			if (v_raw.empty() || v_raw.size() < 1)
+				c = 0;
+			else
+				c = (byte)v_raw[0];
+
+			out_bytes.push_back(c);
+			return OK;
+		}
+	}
+
 	if (zero_args_opcodes.find(comp_action) != zero_args_opcodes.end())		
 		return OK;
 	else if (uint64_args_opcodes.find(comp_action) != uint64_args_opcodes.end()) {
@@ -2138,91 +2208,19 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 			return OK;
 		}
 	}
-	else if (comp_action == instructions_set[virtual_actions::setSR]) {
-		if (v_type != tokenTypes::str) {
-			assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
-				{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
-		}
-
-		v_raw = v_raw.substr(1, v_raw.size() - 2);
-		size_t str_size = v_raw.size() + 1;
-
-		byte* b_str_size = nullptr;
-		ULLTOA(str_size, &b_str_size);
-
-		size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
-
-		for (byte i = 0; i < compressed_len; ++i)
-			out_bytes.push_back(b_str_size[i]);
-		delete[] b_str_size;
-
-		byte* b_str = new byte[str_size];
-#if defined(ISWIN)
-		memcpy_s(b_str, str_size, v_raw.c_str(), str_size);
-#else
-		std::memcpy(b_str, v_raw.c_str(), str_size);
-#endif
-
-		for (size_t i = 0; i < str_size; ++i)
-			out_bytes.push_back(b_str[i]);
-		delete[] b_str;
-
-		return OK;
-	}
-	else if (comp_action == instructions_set[virtual_actions::setCR]) {
-		if (v_type != tokenTypes::str) {
-			assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
-				{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
-		}
-			
-
-		v_raw = v_raw.substr(1, v_raw.size() - 2);
-		byte c;
-
-		if (v_raw.empty() || v_raw.size() < 1)
-			c = 0;
-		else
-			c = (byte)v_raw[0];
-
-		out_bytes.push_back(c);
-
-		return OK;
-	}
 	else if (reg_args_opcodes.find(comp_action) != reg_args_opcodes.end()) {
 		if (v_type != tokenTypes::reg && v_type != tokenTypes::fp_reg) {
 			assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
 				{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
 		}
 
-		byte comp_reg;
-
-		if (v_type == tokenTypes::reg)
-			comp_reg = registers_set[storeg.at(v_raw)];
-		else
-			comp_reg = fp_registers_set[xstoreg.at(v_raw)];
+		byte comp_reg = (byte)strreg_to_reg.at(v_raw);
 
 		out_bytes.push_back(comp_reg);
 		return OK;
 	}
 	else if (parted_opcodes.find(comp_action) != parted_opcodes.end()) {
-		if (comp_action == instructions_set[virtual_actions::setFPR0]) {// All set(E|R|)FPRs have the same first opc
-			if (v_type != tokenTypes::double_n) {
-				assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
-					{ v_raw + ":" + std::to_string((uint64_t)v_type) }, cur_line, ARGV_ERROR);
-			}
-
-			out_bytes.push_back(map_FPR_set_2nd_opc[raw_action.getAction()]);
-
-			auto uc_a = std::make_unique<uint8_t[]>(sizeof(long double));
-			long double d = std::stold(v_raw);
-			mp_memcpy(&d, uc_a.get(), sizeof(long double));
-
-			for (size_t i = 0; i < sizeof(long double); i++)
-				out_bytes.push_back(uc_a[i]);
-		}
-		else if (comp_action == instructions_set[virtual_actions::movFPR0]) // All mov(E|R|)FPRs have the same first opc
-			ASMBL_FP_NMATHS(out_bytes, map_FPR_mov_2nd_opc, raw_action, fp_registers_set[xstoreg.at(v_raw)]);
-		else if (comp_action == instructions_set[virtual_actions::mulFPR0])
+		if (comp_action == instructions_set[virtual_actions::mulFPR0])
 			ASMBL_FP_NMATHS(out_bytes, map_FPR_mul_2nd_opc, raw_action, fp_registers_set[xstoreg.at(v_raw)]);
 		else if (comp_action == instructions_set[virtual_actions::divFPR0])
 			ASMBL_FP_NMATHS(out_bytes, map_FPR_div_2nd_opc, raw_action, fp_registers_set[xstoreg.at(v_raw)]);
