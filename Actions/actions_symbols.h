@@ -16,16 +16,16 @@ enum class virtual_actions {
 	_int = 1,
 
 	// Registers
-	gset,
-	gmov,
+	set,
+	mov,
 
-	ginc,
-	gdec,
+	inc,
+	dec,
 
-	gmul,
-	gdiv,
-	gadd,
-	gsub,
+	mul,
+	div,
+	add,
+	sub,
 
 	// Extended
 	toString,
@@ -182,16 +182,16 @@ private:
 	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m);
 
 	void init() {
-		a_db[(size_t)virtual_actions::gset] = b_setGP;
-		a_db[(size_t)virtual_actions::gmov] = b_movGP;
+		a_db[(size_t)virtual_actions::set] = b_setGP;
+		a_db[(size_t)virtual_actions::mov] = b_movGP;
 
-		a_db[(size_t)virtual_actions::ginc] = b_incGP;
-		a_db[(size_t)virtual_actions::gdec] = b_decGP;
+		a_db[(size_t)virtual_actions::inc] = b_incGP;
+		a_db[(size_t)virtual_actions::dec] = b_decGP;
 
-		a_db[(size_t)virtual_actions::gmul] = b_mulGP;
-		a_db[(size_t)virtual_actions::gdiv] = b_divGP;
-		a_db[(size_t)virtual_actions::gadd] = b_addGP;
-		a_db[(size_t)virtual_actions::gsub] = b_subGP;
+		a_db[(size_t)virtual_actions::mul] = b_mulGP;
+		a_db[(size_t)virtual_actions::div] = b_divGP;
+		a_db[(size_t)virtual_actions::add] = b_addGP;
+		a_db[(size_t)virtual_actions::sub] = b_subGP;
 #pragma region b_extended
 		a_db[(size_t)virtual_actions::toString] = b_toString;
 		a_db[(size_t)virtual_actions::castreg] = b_castreg;

@@ -234,8 +234,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 #pragma region map_decl
 	{"int", virtual_actions::_int},
 
-	{"inc", virtual_actions::ginc},
-	{"dec", virtual_actions::gdec},
+	{"inc", virtual_actions::inc},
+	{"dec", virtual_actions::dec},
 
 	{"toString", virtual_actions::toString},
 	{"castreg", virtual_actions::castreg},
@@ -635,18 +635,18 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 				sec_opr = (uint8_t)comn_registers::SR;
 			else
 				sec_opr = (uint8_t)STOREGID(dest);
-			converted.emplace_back(virtual_actions::gset, sec_opr);
+			converted.emplace_back(virtual_actions::set, sec_opr);
 		}
 		else if (parsed[i][0].starts_with("mov"))
-			std_margs_operations(parsed[i], virtual_actions::gmov, converted);
+			std_margs_operations(parsed[i], virtual_actions::mov, converted);
 		else if (parsed[i][0].starts_with("mul"))
-			std_margs_operations(parsed[i], virtual_actions::gmul, converted);
+			std_margs_operations(parsed[i], virtual_actions::mul, converted);
 		else if (parsed[i][0].starts_with("div"))
-			std_margs_operations(parsed[i], virtual_actions::gdiv, converted);
+			std_margs_operations(parsed[i], virtual_actions::div, converted);
 		else if (parsed[i][0].starts_with("add"))
-			std_margs_operations(parsed[i], virtual_actions::gadd, converted);
+			std_margs_operations(parsed[i], virtual_actions::add, converted);
 		else if (parsed[i][0].starts_with("sub"))
-			std_margs_operations(parsed[i], virtual_actions::gsub, converted);
+			std_margs_operations(parsed[i], virtual_actions::sub, converted);
 		else
 			converted.emplace_back(symbols_converter[parsed[i][0]], (uint8_t)std::stoul(parsed[i][2]));		
 	}

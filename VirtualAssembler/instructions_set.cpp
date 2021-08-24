@@ -70,16 +70,16 @@ std::map<comn_registers, byte> fp_registers_set = {
 std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::_int,   0x00},
 
-	{virtual_actions::gset,	  0x01},
-	{virtual_actions::gmov,	  0x02},
+	{virtual_actions::set,	  0x01},
+	{virtual_actions::mov,	  0x02},
 
-	{virtual_actions::ginc,	  0x03},
-	{virtual_actions::gdec,	  0x04},
+	{virtual_actions::inc,	  0x03},
+	{virtual_actions::dec,	  0x04},
 
-	{virtual_actions::gmul,	  0x2F},
-	{virtual_actions::gdiv,	  0x30},
-	{virtual_actions::gadd,   0x31},
-	{virtual_actions::gsub,   0x32},
+	{virtual_actions::mul,	  0x2F},
+	{virtual_actions::div,	  0x30},
+	{virtual_actions::add,   0x31},
+	{virtual_actions::sub,   0x32},
 
 	{virtual_actions::toString,	0x65},
 	{virtual_actions::castreg,  0x66},
@@ -216,15 +216,15 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::rfwrite]
 };
 std::unordered_set<byte> reg_args_opcodes = {
-	ops[virtual_actions::gmov],
+	ops[virtual_actions::mov],
 
-	ops[virtual_actions::ginc],
-	ops[virtual_actions::gdec],
+	ops[virtual_actions::inc],
+	ops[virtual_actions::dec],
 
-	ops[virtual_actions::gmul],
-	ops[virtual_actions::gdiv],
-	ops[virtual_actions::gadd],
-	ops[virtual_actions::gsub],
+	ops[virtual_actions::mul],
+	ops[virtual_actions::div],
+	ops[virtual_actions::add],
+	ops[virtual_actions::sub],
 
 	ops[virtual_actions::sdzs],
 
@@ -274,11 +274,11 @@ std::unordered_set<byte> opt_arg_ops = {
 	ops[virtual_actions::movsm],
 	ops[virtual_actions::movgm],
 
-	ops[virtual_actions::gset],
-	ops[virtual_actions::gmov],
+	ops[virtual_actions::set],
+	ops[virtual_actions::mov],
 
-	ops[virtual_actions::gmul],
-	ops[virtual_actions::gdiv],
-	ops[virtual_actions::gadd],
-	ops[virtual_actions::gsub]
+	ops[virtual_actions::mul],
+	ops[virtual_actions::div],
+	ops[virtual_actions::add],
+	ops[virtual_actions::sub]
 };

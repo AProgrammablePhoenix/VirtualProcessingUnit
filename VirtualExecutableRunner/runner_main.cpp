@@ -58,9 +58,9 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 		else
 			has_opt_arg = false;
 
-		if (data[i] == ops[virtual_actions::gset]) {
+		if (data[i] == ops[virtual_actions::set]) {
 			i += 2; // Skip optional arg byte and instruction byte
-			action _action(virtual_actions::gset, nullptr);
+			action _action(virtual_actions::set, nullptr);
 
 			if (comn_registers_table::is_num_reg((comn_registers)opt_arg.raw_byte)) {
 				byte* b_value = new byte[sizeof(size_t) + 1];
@@ -86,14 +86,14 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 
 				delete[] b_value;
 
-				_action = action(virtual_actions::gset, std::make_shared<arg_tuple>(std::make_tuple(addr, reallen, opt_arg)));
+				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, reallen, opt_arg)));
 			}
 			else if (comn_registers_table::is_fp_reg((comn_registers)opt_arg.raw_byte)) {
 				size_t addr = mem->_SDZTOP();
 				mem->_SDZS(byteArray->data() + i, sizeof(long double));
 				i += sizeof(long double) - 1;
 
-				_action = action(virtual_actions::gset, std::make_shared<arg_tuple>(std::make_tuple(addr, sizeof(long double), opt_arg)));
+				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, sizeof(long double), opt_arg)));
 			}
 			else if ((comn_registers)opt_arg.raw_byte == comn_registers::CR) {
 				byte _arg = data[i];
@@ -107,7 +107,7 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 
 				delete[] uc_c;
 
-				_action = action(virtual_actions::gset, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
+				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 			}
 			else if ((comn_registers)opt_arg.raw_byte == comn_registers::SR) {
 				byte* b_str_size = new byte[sizeof(size_t) + 1];
@@ -141,10 +141,10 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 
 				delete[] b_str;
 
-				_action = action(virtual_actions::gset, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
+				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 			}
 			else
-				throw std::runtime_error("Specified an unknown operand to gset operand\n");
+				throw std::runtime_error("Specified an unknown operand to set operand\n");
 			
 			actions.push_back(_action);
 

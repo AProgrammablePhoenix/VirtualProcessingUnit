@@ -20,9 +20,8 @@ namespace {
 	void ulongToByteArray(size_t value, byte** const output) {
 		*output = new byte[8];
 
-		for (long long j = 0, i = 7; i >= 0; i--, j++) {
+		for (long long j = 0, i = 7; i >= 0; i--, j++)
 			(*output)[j] = (value >> (i * 8)) & 0xff;
-		}
 	}
 	void doubleToByteArray(double value, byte** const output) {
 		*output = new byte[8];
@@ -56,7 +55,7 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 	if (opt_arg_ops.find(out[0]) != opt_arg_ops.end())
 		out.push_back(std::get<2>(*std::static_pointer_cast<arg_tuple>(_action.getValuePtr())).raw_byte);
 
-	if (_action.getAction() == virtual_actions::gset) {
+	if (_action.getAction() == virtual_actions::set) {
 		if (comn_registers_table::is_num_reg((comn_registers)out.back())) {
 			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 
