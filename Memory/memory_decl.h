@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "dyn_vars.h"
-#include "mem_arrays.h"
-#include "mem_structs.h"
+#include "../Registers/regs_decl.h"
 #include "../Networking/netman.h"
 
 struct memory {
@@ -36,10 +34,6 @@ public:
 	size_t _SDZS() const;
 
 	void destroy();
-
-	mem_arrays _arrays = mem_arrays();
-	mem_dyn_vars _dynvars = mem_dyn_vars();
-	mem_structs _structs = mem_structs();
 	netman _netman;
 
 	static constexpr size_t stacksize = 0x8000; // 32 KB of stack

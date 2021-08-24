@@ -37,7 +37,6 @@ void interrupts::pass(unsigned char interrupt) {
 	}
 }
 void interrupts::init() {
-#pragma region int_extended
 	ints_db[(size_t)int_codes::rdstdin] = b_getInput;
 	ints_db[(size_t)int_codes::mergeString] = b_mergeString;
 	ints_db[(size_t)int_codes::substring] = b_substring;
@@ -52,19 +51,4 @@ void interrupts::init() {
 	ints_db[(size_t)int_codes::FPToSR] = b_FPToSR;
 	ints_db[(size_t)int_codes::FPToULL] = b_FPToULL;
 	ints_db[(size_t)int_codes::FPToLL] = b_FPToLL;
-#pragma endregion
-#pragma region int_memory
-	ints_db[(size_t)int_codes::declArray] = m_declArray;
-	ints_db[(size_t)int_codes::setAt] = m_setAt;
-	ints_db[(size_t)int_codes::getAt] = m_getAt;
-	ints_db[(size_t)int_codes::getDynSize] = m_getDynSize;
-	ints_db[(size_t)int_codes::dyndecl] = m_dyndecl;
-	ints_db[(size_t)int_codes::dynset] = m_dynset;
-	ints_db[(size_t)int_codes::dynget] = m_dynget;
-	ints_db[(size_t)int_codes::_struct] = m_structdecl;
-	ints_db[(size_t)int_codes::_struct_declprop] = m_structdeclprop;
-	ints_db[(size_t)int_codes::_struct_select] = m_structselect;
-	ints_db[(size_t)int_codes::_struct_get] = m_structget;
-	ints_db[(size_t)int_codes::_struct_set] = m_structset;
-#pragma endregion
 }

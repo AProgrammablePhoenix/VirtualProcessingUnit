@@ -18,19 +18,7 @@ enum class int_codes {
 	RevSR		= 0x0B,
 	FPToSR		= 0x0C,
 	FPToULL		= 0x0D,
-	FPToLL		= 0x0E,
-	declArray   = 0x0F,
-	setAt       = 0x10,
-	getAt       = 0x11,
-	getDynSize  = 0x12,
-	dyndecl     = 0x13,
-	dynset      = 0x14,
-	dynget		= 0x15,
-	_struct		= 0x16,
-	_struct_declprop = 0x17,
-	_struct_select	 = 0x18,
-	_struct_get		 = 0x19,
-	_struct_set		 = 0x1A
+	FPToLL		= 0x0E
 };
 
 extern void (*ints_db[0xFF + 1])(std::shared_ptr<void>, regs*, memory*);

@@ -2,9 +2,6 @@
 #include <string>
 #include <vector>
 
-#include "dyn_vars.h"
-#include "mem_arrays.h"
-#include "mem_structs.h"
 #include "memory_decl.h"
 
 namespace {
@@ -36,9 +33,6 @@ memory::memory(regs* _registers) {
 	if (!_registers)
 		throw std::invalid_argument("Memory(constructor): Pointer to registers is invalid");
 
-	this->_arrays = mem_arrays(_registers);
-	this->_dynvars = mem_dyn_vars(_registers);
-	this->_structs = mem_structs(_registers, this);
 	this->registers = _registers;
 	this->init();
 }
@@ -133,7 +127,6 @@ size_t memory::_SDZS() const {
 }
 
 void memory::destroy() {
-	this->_arrays.destroy();
 	this->_netman.destroy();
 	delete[] this->_memory;
 }

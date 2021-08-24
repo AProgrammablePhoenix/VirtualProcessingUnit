@@ -13,10 +13,7 @@
 
 //RPH: Regs Preproc Header
 #ifndef RPH
-	#define RPH_MOV_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
-	#define RPH_NMATHS_ARGS RPH_MOV_ARGS
 	#define COMN_NMATHS_ARGS CUSTOM_STD_ARGS(reg, registers, mem)
-
 	#define RPH(...) (void)0
 #endif
 
