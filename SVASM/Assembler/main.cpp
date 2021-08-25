@@ -58,11 +58,6 @@ int main(int argc, char* argv[]) {
 
 	//setup requested memory
 	std::copy(out_bytes.begin(), out_bytes.begin() + 8, linked.begin());
-
-	// setup main header
-	linked.emplace_back(0);
-	for (byte i = 0; i < 8; i++)
-		linked.emplace_back(0);
 	byte* temp = nullptr;
 
 	ULLTOA(out_bytes.size() - sizeof(size_t), &temp); // take back bytes of requested memory (first 8 bytes normally)
