@@ -305,7 +305,6 @@ public:
 	unsigned char* cmp_out = &_cmp_out;
 	bool* stopRequested = &_stopRequested;
 	size_t *process_call_address = &_process_call_address;
-	std::map<size_t, int>* threadsStatuses = nullptr;
 
 	charReg* cr = &_cr;
 	stringReg* sr = &_sr;

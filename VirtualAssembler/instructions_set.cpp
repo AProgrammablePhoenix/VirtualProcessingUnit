@@ -145,10 +145,6 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::ncrtep,  0x9A},
 	{virtual_actions::nselep,  0x9B},
 
-	{virtual_actions::pcrtthread, 0x9C},
-	{virtual_actions::prstthread, 0x9D},
-	{virtual_actions::pendthread, 0x9E},
-
 	{virtual_actions::sdzs, 0x9F},
 
 	{virtual_actions::pushFP, subFPRs_opcode + 1},
@@ -207,10 +203,6 @@ std::unordered_set<byte> uint64_args_opcodes = {
 	ops[virtual_actions::nhrecv],
 	ops[virtual_actions::ncrtep],
 	ops[virtual_actions::nselep],
-
-	ops[virtual_actions::pcrtthread],
-	ops[virtual_actions::prstthread],
-	ops[virtual_actions::pendthread],
 
 	ops[virtual_actions::rfread],
 	ops[virtual_actions::rfwrite]

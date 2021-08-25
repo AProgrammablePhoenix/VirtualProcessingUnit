@@ -14,12 +14,8 @@ public:
 	process(const actions_engine& _engine);
 	process(const actions_engine& _engine, const std::vector<action>& _actions);
 
-	void updateStackRegs();
-
 	void addAction(action _action);
 	void addAction(virtual_actions _action, std::shared_ptr<void> value_ptr);
-
-	void addThread(const std::vector<action>& _actions, size_t threadId);
 
 	void start();
 	void execute1();
@@ -29,24 +25,10 @@ public:
 	memory* getMemoryPtr();
 	void destroy();
 private:
-	bool allThreadsTerminated();
-
 	actions_engine engine;
 	std::vector<action> actions;
 	size_t *step;
 	bool terminated;
-
-	std::vector<actions_engine*> threads;
-	std::vector<std::vector<action>> threadsActions;
-	
-	std::map<size_t, size_t> threadIdsMap;
-	std::map<size_t, int>* threadsStatuses = new std::map<size_t, int>();
-
-	std::vector<regs*> threadsRegisters;
-
-	size_t nThreads = 0;
-	size_t engineId = 0;
-	bool threadsTerminated = false;
 
 	void execute();
 };

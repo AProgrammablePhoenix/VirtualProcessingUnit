@@ -153,13 +153,8 @@ std::vector<byte> as(std::string filename) {
 	regs* registers = new regs();
 	memory* mem = new memory(registers);
 
-	// tuple: [0] : thread's actions ; [1] : thread id
-	std::vector<std::tuple<std::vector<action>, size_t>> threads;
-
-	std::vector<action> built_actions = build_actions_only(filename, p_mem, mem, threads);
+	std::vector<action> built_actions = build_actions_only(filename, p_mem, mem);
 	std::vector<byte> main_linked;
-	// tuple: [0] : thread's built actions ; [1] : thread id
-	std::vector<std::tuple<std::vector<byte>, size_t>> threads_linked;
 
 	// assemble main
 	for (size_t i = 0; i < built_actions.size(); i++) {
@@ -168,25 +163,12 @@ std::vector<byte> as(std::string filename) {
 			main_linked.push_back(temp[j]);
 		}
 	}
-	// assemble threads
-	for (size_t t = 0; t < threads.size(); t++) {
-		std::vector<action> tolink = std::get<0>(threads[t]);
-		std::vector<byte> tlinked;
-		for (size_t i = 0; i < tolink.size(); i++) {
-			std::vector<byte> temp = assembleAction(tolink[i], mem);
-			for (size_t j = 0; j < temp.size(); j++) {
-				tlinked.push_back(temp[j]);
-			}
-		}
-		threads_linked.push_back(std::make_tuple<std::vector<byte>&, size_t&>(tlinked, std::get<1>(threads[t])));
-	}
 
 	/* link everything
 	* code block format:
 	*	0x00 -> 0x07 => Requested memory by the program (set to default memory size if user haven't set new memory size)
-	*	0x08 => block type [0 -> main block | 1 -> thread block]
-	*   0x09 -> 0x10 (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
-	*	0x11 -> 0x17 (8 bytes) => code length
+	*   0x08 -> 0x0F (8 bytes) => thread id (only used if the block is a thread one, else 8 bytes are set to 0 and ignored)
+	*	0x10 -> 0x17 (8 bytes) => code length
 	*	0x18 -> (0x18 + [code length - 1]) => executable code
 	*/
 	std::vector<byte> linked;
@@ -199,27 +181,6 @@ std::vector<byte> as(std::string filename) {
 	delete[] req_mem;
 
 	byte* buffer = nullptr;
-
-	for (size_t i = 0; i < threads_linked.size(); i++) {
-		linked.push_back((byte)0x01);
-
-		ULLTOA(std::get<1>(threads_linked[i]), &buffer);
-		for (size_t j = 0; j < sizeof(size_t); j++)
-			linked.push_back(buffer[j]);
-		delete[] buffer;
-
-		std::vector<byte> prelinked = std::get<0>(threads_linked[i]);
-		ULLTOA(prelinked.size(), &buffer);
-		for (size_t j = 0; j < sizeof(size_t); j++)
-			linked.push_back(buffer[j]);
-		delete[] buffer;
-
-		for (size_t j = 0; j < prelinked.size(); j++)
-			linked.push_back(prelinked[j]);
-	}
-	linked.push_back((byte)0x00);
-	for (size_t i = 0; i < sizeof(size_t); i++)
-		linked.push_back((byte)0);
 
 	ULLTOA(main_linked.size(), &buffer);
 	for (size_t i = 0; i < sizeof(size_t); i++)

@@ -26,5 +26,4 @@ private:
 };
 
 void build_process(std::string filename, process* out_proc, engine* engine, process_memory* out_mem, memory*& mem);
-std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem,
-	std::vector<std::tuple<std::vector<action>, size_t>>& out_threads);
+std::vector<action> build_actions_only(std::string filename, process_memory* out_mem, memory*& mem);

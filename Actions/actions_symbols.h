@@ -107,14 +107,10 @@ enum class virtual_actions {
 
 	rfread,
 	rfwrite,
-	rflen,
-
-	pcrtthread,
-	prstthread,
-	pendthread
+	rflen
 };
 
-extern void (*a_db[(size_t)virtual_actions::pendthread + 1])(std::shared_ptr<void>, regs*, memory*);
+extern void (*a_db[(size_t)virtual_actions::rflen + 1])(std::shared_ptr<void>, regs*, memory*);
 
 struct actions_engine {
 public:
@@ -136,10 +132,6 @@ public:
 		this->self_regs = registers;
 		this->self_ints = interrupts(memory, registers);
 		this->init();
-	}
-
-	void setThreadsMap(std::map<size_t, int>*& _threadsStatuses) {
-		this->self_regs->threadsStatuses = _threadsStatuses;
 	}
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
@@ -275,11 +267,6 @@ private:
 		a_db[(size_t)virtual_actions::rfread] = ex_rfread;
 		a_db[(size_t)virtual_actions::rfwrite] = ex_rfwrite;
 		a_db[(size_t)virtual_actions::rflen] = ex_rflen;
-#pragma endregion
-#pragma region threading
-		a_db[(size_t)virtual_actions::pcrtthread] = p_crtthread;
-		a_db[(size_t)virtual_actions::prstthread] = p_rstthread;
-		a_db[(size_t)virtual_actions::pendthread] = p_endthread;
 #pragma endregion
 	}
 };
