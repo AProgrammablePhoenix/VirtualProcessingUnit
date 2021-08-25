@@ -1836,6 +1836,71 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 	return OK;
 }
 
+int preprocNetwork(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
+	for (const auto& t : args) { // All network operations only take unsigned numbers as arguments
+		if (t.type != tokenTypes::unsigned_n) {
+			assert_err_argv({ "unsigned_n", "[unsigned_n]", "[unsigned_n]", "[unsigned_n] (depending on instruction,"
+				"number of arguments may vary)" }, inst, args, cur_line);
+		}
+	}
+
+	if (inst == "nopn" || inst == "ncep") {
+		if (args.size() != 4)
+			assert_err_wrnargs(4, "nopn", args, cur_line);
+
+		if (!unsafe_flag) {
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rdx");
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rsi");
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rdi");
+		}
+
+		pushAction(out_actions, virtual_actions::set, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RDI);
+		pushAction(out_actions, virtual_actions::set, tokenTypes::unsigned_n, args[2].element, (uint8_t)comn_registers::RSI);
+		pushAction(out_actions, virtual_actions::set, tokenTypes::unsigned_n, args[3].element, (uint8_t)comn_registers::RDX);
+
+		if (inst == "nopn")
+			pushAction(out_actions, virtual_actions::nopen, tokenTypes::unsigned_n, args[0].element);
+		else
+			pushAction(out_actions, virtual_actions::ncrtep, tokenTypes::unsigned_n, args[0].element);
+
+		if (!unsafe_flag) {
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rdi");
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rsi");
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rdx");
+		}
+	}
+	else if (inst == "ncls") {
+		if (args.size() != 1)
+			assert_err_wrnargs(1, "ncls", args, cur_line);
+		pushAction(out_actions, virtual_actions::nclose, tokenTypes::unsigned_n, args[0].element);
+	}
+	else if (inst == "nsnd" || inst == "nget" || inst == "nsep") {
+		if (args.size() != 2)
+			assert_err_wrnargs(2, inst, args, cur_line);
+
+		if (!unsafe_flag)
+			pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rdi");
+
+		pushAction(out_actions, virtual_actions::set, tokenTypes::unsigned_n, args[1].element, (uint8_t)comn_registers::RDI);
+		if (inst == "nsnd")
+			pushAction(out_actions, virtual_actions::nsend, tokenTypes::unsigned_n, args[0].element);
+		else if (inst == "nget")
+			pushAction(out_actions, virtual_actions::nget, tokenTypes::unsigned_n, args[0].element);
+		else
+			pushAction(out_actions, virtual_actions::nselep, tokenTypes::unsigned_n, args[0].element);
+
+		if (!unsafe_flag)
+			pushAction(out_actions, virtual_actions::pop, tokenTypes::reg, "rdi");
+	}
+	else if (inst == "nrcv") {
+		if (args.size() != 1)
+			assert_err_wrnargs(1, "nrcv", args, cur_line);
+		pushAction(out_actions, virtual_actions::nhrecv, tokenTypes::unsigned_n, args[0].element);
+	}
+
+	return OK;
+}
+
 int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>& preprocLabels, std::vector<action>& out_actions) {
 	const std::string& inst = tokens.instruction;
 
@@ -1883,6 +1948,8 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 		return preprocCmpCalls(inst, tokens.arguments, out_actions);
 	else if (inst == "cmp")
 		return preprocComps(tokens.arguments, out_actions);
+	else if (inst == "nopn" || inst == "ncls" || inst == "nsnd" || inst == "nget" || inst == "nrcv" || inst == "ncep" || inst == "nsep")
+		return preprocNetwork(inst, tokens.arguments, out_actions);
 
 	return OK;
 }

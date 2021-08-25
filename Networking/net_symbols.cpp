@@ -23,7 +23,7 @@ size_t popMemNum(memory*& mem) {
 
 // Open a network stream
 // Argument: ID of stream to open
-// Stack: ... recvAddr recvPort thisPort
+// Registers: RDI:recvAddr(4 bytes) RSI:recvPort RDX:thisPort
 void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -32,15 +32,14 @@ void net_open(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
 
-	int thisPort = (int)popMemNum(mem);
-	int recvPort = (int)popMemNum(mem);
+	int32_t thisPort = (int32_t)registers->rdx->get();
+	int32_t recvPort = (int32_t)(*registers->rsi);
+	uint32_t bRAddr = (uint32_t)(*registers->rdi);
 
-	std::string saved_sr = registers->sr->get();
-
-	popMemSR(nullptr, registers, mem);
-	std::string recvAddr = registers->sr->get();
-
-	registers->sr->set(saved_sr);
+	std::string recvAddr;
+	for (uint32_t i = sizeof(uint32_t); i > 0; i--)
+		recvAddr += std::to_string((uint8_t)(bRAddr >> ((i - 1) * (uint32_t)8)) & ~(~0 << (uint32_t)8)) + '.';
+	recvAddr.pop_back();
 
 	unsigned char* streamBuffer = new unsigned char[256];
 	running_hdr** rhdr = new running_hdr*(new running_hdr(&streamBuffer, 256));
@@ -64,7 +63,7 @@ void net_close(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 }
 // Fetch received data from specified stream id
 // Argument: stream id
-// Stack: ... Output/Input addr (in memory ; length: 256)
+// Registers: RDI:Output/Input addr(in memory ; length: 256)
 void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -73,7 +72,7 @@ void net_get(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) 
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
 
-	size_t outAddr = popMemNum(mem);
+	size_t outAddr = registers->rdi->get();
 
 	net_stream* nstream = mem->_netman.getStream(stream_id);
 	if (!nstream)
@@ -105,7 +104,7 @@ void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
 
-	size_t inAddr = popMemNum(mem);
+	size_t inAddr = registers->rdi->get();
 	temp = new unsigned char[256];
 	mem->_MG(temp, 256, inAddr);
 
@@ -140,9 +139,9 @@ void net_send(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem)
 	rhdr->sent_mtx.unlock();
 	delete[] temp;
 }
-// Check if data has been recerived
+// Check if data has been rerceived
 // Argument: stream id
-// Output in stack: 1 (has received) | 0 (hasn't received anything)
+// Output in RDX: 1 (has received) | 0 (hasn't received anything)
 void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -168,16 +167,12 @@ void net_hrecv(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 	
 	rhdr->hrecv_mtx.unlock();
 
-	temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy<size_t, unsigned char>((size_t*)(&hrecvd), temp, sizeof(size_t));
-
-	mem->push(temp, sizeof(size_t));
-	delete[] temp;
+	registers->rdx->set(hrecvd);
 }
 
 // Create a network stream endpoint with a specified id (id used to select it)
 // Argument: stream id
-// Stack ... recvAddr(string) recvPort(unsigned number) endpoint_id
+// Registers: RDI:recvAddr(4 bytes) RSI:recvPort RDX:endpoint_id
 void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];
@@ -186,15 +181,14 @@ void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 	size_t stream_id = ATOULL(temp);
 	delete[] temp;
 
-	size_t ep_id = popMemNum(mem);
-	size_t recvPort = popMemNum(mem);
+	size_t ep_id = registers->rdx->get();
+	size_t recvPort = *registers->rsi;
+	uint32_t bRAddr = (uint32_t)(*registers->rdi);
 
-	std::string saved_sr = registers->sr->get();
-
-	popMemSR(nullptr, registers, mem);
-	std::string recvAddr = registers->sr->get();
-
-	registers->sr->set(saved_sr);
+	std::string recvAddr;
+	for (uint32_t i = sizeof(uint32_t); i > 0; i--)
+		recvAddr += std::to_string((uint8_t)(bRAddr >> ((i - 1) * (uint32_t)8)) & ~(~0 << (uint32_t)8)) + '.';
+	recvAddr.pop_back();
 
 	net_stream* nstream = mem->_netman.getStream(stream_id);
 	if (!nstream)
@@ -230,7 +224,7 @@ void net_crtep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem
 }
 // Select stream endpoint (used to send data)
 // Argument: stream id
-// Stack: ... endpoint_id
+// Registers: RDI:endpoint_id
 void net_selep(std::shared_ptr<void> stream_id_ptr, regs* registers, memory* mem) {
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(stream_id_ptr);
 	unsigned char* temp = new unsigned char[sizeof(size_t)];

@@ -4,53 +4,46 @@
 ; won't be processed since 4 KB is less than 1 MB (only shown as an example of usage)
 ; in a case without limitations, will resize memory to a size of 4 KB (which is impossible since one stack requires 32 KB)
 [MRES] 4096
-sdzs RDX
+sdzs RCX
 
 ; init network stream one
 ; receiver addr (localhost in this case)
-setSR ${{S"127.0.0.1"}}
-pushSR 0
+; decimal representation of 7F 00 00 01 being 127 0 0 1 (localhost addr)
+setRDI ${{N2130706433}}
 
 ; receiver port
-setEAX ${{N5014}}
-push EAX
+setRSI ${{N5014}}
 
 ; this stream port
-setEAX ${{N5013}}
-push EAX
+setRDX ${{N5013}}
 
 nopen ${{N0}}
 
 
 ; init network stream two
 ; receiver addr (localhost in this case)
-setSR ${{S"127.0.0.1"}}
-pushSR 0
+; decimal representation of 7F 00 00 01 being 127 0 0 1 (localhost addr)
+setRDI ${{N2130706433}}
 
 ; receiver port
-setEAX ${{N5013}}
-push EAX
+setRSI ${{N5013}}
 
 ; this stream port
-setEAX ${{N5014}}
-push EAX
+setRDX ${{N5014}}
 
 nopen ${{N1}}
 
 ; try creating a new ip endpoint on stream 1
-setSR ${{S"127.0.0.1"}}
-pushSR 0
-setEAX ${{N5015}}
-push EAX
-setEAX ${{N1}}
-push EAX
+setRDI ${{N2130706433}}
+setRSI ${{N5015}}
+setRDX ${{N1}}
+
 ncrtep ${{N0}}
 
 ; has no effect until eax is set to 1 (if eax is set to 1, process will run in a infinite loop,
 ; waiting for a network packet that will never be received by localhost on port 5014,
 ; indeed the packet would be sent to port 5015)
-setEAX ${{N0}}
-push EAX
+setRDI ${{N0}}
 nselep ${{N0}}
 
 ; send data from stream 1 to stream 2
@@ -58,13 +51,12 @@ nselep ${{N0}}
 ; (note that the 256 bytes after address 263 are only used as buffer and shouldn't be overwritten)
 setSR ${{S"Network test passed"}}
 setEBX ${{N256}}
-addEBX RDX
+addEBX RCX
 movsmSR EBX
 
 ; push buffer addr
-setEBX ${{N264}}
-addEBX RDX
-push EBX
+setRDI ${{N264}}
+addRDI RCX
 
 nsend ${{N0}}
 
@@ -73,6 +65,7 @@ decltag hrecv_loop
 
 ; loop until receive something
 nhrecv ${{N1}}
+push RDX
 push BX
 cmp 0
 
@@ -81,20 +74,19 @@ je ${{N1}}
 lcall hrecv_loop
 
 ; fetch received data
-setEAX ${{N1024}}
-addEAX RDX
-push EAX
+setRDI ${{N1024}}
+addRDI RCX
 
 nget ${{N1}}
 
 ; transform it to string by setting its length (8 bytes if 64 bit system (sizeof(size_t))) before the 256 bytes chunk of data
 setEAX ${{N256}}
-addEAX RDX
+addEAX RCX
 push EAX
 
 ; 1024 - 8 = 1016
 setEAX ${{N1016}}
-addEAX RDX
+addEAX RCX
 movsm EAX
 
 setSR ${{S"RECEIVED: "}}

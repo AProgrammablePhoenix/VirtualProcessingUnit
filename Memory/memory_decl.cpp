@@ -92,7 +92,7 @@ void memory::_MG(unsigned char* data, size_t count, size_t addr) {
 	}
 }
 
-void memory::_SDZRSZ() {
+void memory::_SDZRSZ() { // Extend SDZ by a 4KB memory frame
 	if (this->sdzsize + 0x1000 > this->sdzsize) { // In case there isn't enough memory
 		unsigned char* temp = new unsigned char[this->getMemLen() + 0x1000];
 		std::copy(this->_memory, this->_memory + this->getMemLen(), temp);

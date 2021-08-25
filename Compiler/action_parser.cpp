@@ -637,7 +637,7 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 				sec_opr = (uint8_t)STOREGID(dest);
 			converted.emplace_back(virtual_actions::set, sec_opr);
 		}
-		else if (parsed[i][0].starts_with("mov"))
+		else if (parsed[i][0].starts_with("mov") && !parsed[i][0].starts_with("movsm") && !parsed[i][0].starts_with("movgm"))
 			std_margs_operations(parsed[i], virtual_actions::mov, converted);
 		else if (parsed[i][0].starts_with("mul"))
 			std_margs_operations(parsed[i], virtual_actions::mul, converted);
