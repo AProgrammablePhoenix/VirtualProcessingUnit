@@ -147,7 +147,7 @@ namespace {
 		pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 		pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 		// Invoke recast inerrupt
-		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "7");
 		// Pop first char of SR from stack
 		pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
 		CRToNum(out_actions, true);
@@ -231,10 +231,10 @@ int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions)
 	if (args[0].element == "sr")
 		return OK;
 	else if (args[0].element == "cr")
-		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "8");
 	else if (args[0].type == tokenTypes::fp_reg) {
 		pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 	}
 	else
 		pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
@@ -893,7 +893,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 				else {
 					if (args[1].element.starts_with("rfpr")) {
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-						pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+						pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 						pushAction(out_actions, virtual_actions::_pow, tokenTypes::reg, args[0].element);
 					}
 					else {
@@ -902,7 +902,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 
 						pushAction(out_actions, virtual_actions::set, tokenTypes::fp_reg, args[1].element, (uint8_t)comn_registers::RFPR3);
 						pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-						pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+						pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 						pushAction(out_actions, virtual_actions::_pow, tokenTypes::reg, args[0].element);
 
 						if (!unsafe_flag)
@@ -1465,7 +1465,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 		else if (args[1].type == tokenTypes::fp_reg || args[1].type == tokenTypes::double_n) {
 			if (args[1].type == tokenTypes::fp_reg) {
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
 				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 			}
@@ -1475,7 +1475,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::set, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rfpr3");
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[0].element);
 				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 
@@ -1562,7 +1562,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 					pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, ""); // Save sr
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[1].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -1580,7 +1580,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				
 				pushAction(out_actions, virtual_actions::set, tokenTypes::double_n, args[1].element, (uint8_t)comn_registers::RFPR3);
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, "rpfr3");
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
@@ -1648,7 +1648,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 				// Invoke recast inerrupt
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "7");
 				// Pop first char of SR from stack
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
 				// Set first 8 bytes of memory to 0
@@ -1686,7 +1686,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 				// Invoke recast inerrupt
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "9");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "7");
 				// Pop first char of SR from stack
 				pushAction(out_actions, virtual_actions::popCR, tokenTypes::reg, "");
 				// Set first 8 bytes of memory to 0
@@ -1754,7 +1754,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
@@ -1770,7 +1770,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "12");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "10");
 				pushAction(out_actions, virtual_actions::pushSR, tokenTypes::reg, "");
 
 				pushAction(out_actions, virtual_actions::cmpstr, tokenTypes::reg, "");
@@ -1813,7 +1813,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, args[1].element);
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 			}
 			else {
@@ -1824,7 +1824,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 				pushAction(out_actions, virtual_actions::push, tokenTypes::reg, "rax");
 
 				pushAction(out_actions, virtual_actions::pushFP, tokenTypes::fp_reg, args[0].element);
-				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "13");
+				pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "11");
 				pushAction(out_actions, virtual_actions::cmp, tokenTypes::reg, "");
 
 				if (!unsafe_flag)
