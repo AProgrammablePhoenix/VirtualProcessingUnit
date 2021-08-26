@@ -87,7 +87,7 @@ target_link_libraries(svas registers)
 target_link_libraries(svas memory)
 target_link_libraries(svas virtual_engine)
 
-target_compile_features(registers PUBLIC cxx_std_17)
+target_compile_features(registers PUBLIC cxx_std_20)
 target_compile_features(memory PUBLIC cxx_std_20)
 target_compile_features(compiler PUBLIC cxx_std_17)
 target_compile_features(vas PUBLIC cxx_std_17)
