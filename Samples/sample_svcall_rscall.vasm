@@ -6,12 +6,14 @@
 ; function1 terminated
 ; Process terminated
 
+setRAX ${{N1}}
+
 setSR ${{S"Process launched"}}
-int ${{N6}}
+int ${{N5}}
 
 call function1
 setSR ${{S"Process terminated"}}
-int ${{N6}}
+int ${{N5}}
 
 hlt 0
 
@@ -19,21 +21,21 @@ decltag function1
 svcall 0
 
 setSR ${{S"function1 called"}}
-int ${{N6}}
+int ${{N5}}
 
 call function2
 rscall 0
 
 setSR ${{S"function1 terminated"}}
-int ${{N6}}
+int ${{N5}}
 
 ret 0
 
 decltag function2
 setSR ${{S"function2 called"}}
-int ${{N6}}
+int ${{N5}}
 
 setSR ${{S"function2 terminated"}}
-int ${{N6}}
+int ${{N5}}
 
 ret 0

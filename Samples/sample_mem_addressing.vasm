@@ -12,47 +12,50 @@
 ; get heap offset
 sdzs RDX
 
-setRAX ${{N4096}}
-push RAX
-setAX ${{N2}}
-addAX RDX
-movsm AX
-movgm AX
+; set display call 1 (println)
+setRAX ${{N1}}
 
-; RAX should not contain this value after memory get
-setRAX ${{N15000}}
+setRCX ${{N4096}}
+push RCX
+setCX ${{N2}}
+addCX RDX
+movsm CX
+movgm CX
 
-pop RAX
+; RCX should not contain this value after memory get
+setRCX ${{N15000}}
 
-toString RAX
-int ${{N6}} ; expected: 4096
+pop RCX
+
+toString RCX
+int ${{N5}} ; expected: 4096
 
 setSR ${{S"Hello World!"}}
-setAX ${{N10}}
-addAX RDX
-movsmSR AX
+setCX ${{N10}}
+addCX RDX
+movsmSR CX
 
 ; in case the program has unexpected behaviour
 setSR ${{S"Test failed!"}}
 
-movgmSR AX
-int ${{N6}}
+movgmSR CX
+int ${{N5}}
 
 setCR ${{C'P'}}
-setAX ${{N0}}
-addAX RDX
-movsmCR AX
+setCX ${{N0}}
+addCX RDX
+movsmCR CX
 
 ; in cas the program has unexpected behaviour
 setCR ${{C'F'}}
 
-movgmCR AX
-int ${{N10}}
-int ${{N6}}
+movgmCR CX
+int ${{N8}}
+int ${{N5}}
 
 setRFPR0 ${{D3.14}}
-setRAX ${{N31}}
-addRAX RDX
+setRCX ${{N31}}
+addRCX RDX
 movsmFP RFPR0
 
 ; in cas the program has unexpected behaviour
@@ -60,21 +63,21 @@ setRFPR0 ${{D-1}}
 
 movgmFP RFPR0
 pushFP RFPR0
-int ${{N12}}
-int ${{N6}}
+int ${{N10}}
+int ${{N5}}
 
 
 ; test of character replacement in stored string (addr = 10 => previous stored SR)
 setCR ${{C'_'}}
-setAX ${{N23}} ; location of character ' ' in "Hello World!" in heap memory
+setCX ${{N23}} ; location of character ' ' in "Hello World!" in heap memory
 ; calculate real address by adding heap offset
-addAX RDX
-movsmCR AX
+addCX RDX
+movsmCR CX
 
 ; reload new string in SR
-setAX ${{N10}}
-addAX RDX
-movgmSR AX
+setCX ${{N10}}
+addCX RDX
+movgmSR CX
 
 ; should print "Hello_World!" now
-int ${{N6}}
+int ${{N5}}

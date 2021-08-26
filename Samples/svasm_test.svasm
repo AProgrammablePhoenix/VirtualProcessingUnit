@@ -1,11 +1,16 @@
 #unsafe
 
 mov sr, "Testing comparison system..."
-int 0x6
-int 0x7
+mov ax, 1
+int 0x5
+mov ax, 2
+int 0x5
+
 mov sr, "Expected output: Success"
-int 0x6
+mov ax, 1
+int 0x5
 mov sr, "Output: "
+mov ax, 0
 int 0x5
 
 mov sr, "Char"
@@ -17,18 +22,24 @@ jmp failed
 
 failed:
 mov sr, "Failed"
-int 0x6
+mov ax, 1
+int 0x5
 jmp out_condition
 
 success:
 mov sr, "Success"
-int 0x6
+mov ax, 1
+int 0x5
 
 out_condition:
-int 0x7
+mov ax, 2
+int 0x5
 mov sr, "[DONE] Testing comparison system"
-int 0x6
-int 0x7
+mov ax, 1
+int 0x5
+mov ax, 2
+int 0x5
 
 mov sr, "[DONE] SVASM Test"
-int 0x6
+mov ax, 1
+int 0x5

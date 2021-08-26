@@ -1,6 +1,8 @@
 ; expected output:
 ; Test passed
 
+setRAX ${{N1}}
+
 setFPR0 ${{D3.14}}
 movFPR1 FPR0
 
@@ -11,4 +13,4 @@ popFP FPR3
 addFPR1 FPR0
 
 setSR ${{S"Test passed"}}
-int ${{N6}}
+int ${{N5}}

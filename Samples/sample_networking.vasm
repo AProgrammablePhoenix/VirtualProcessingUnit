@@ -89,13 +89,17 @@ setEAX ${{N1016}}
 addEAX RCX
 movsm EAX
 
+push RAX
 setSR ${{S"RECEIVED: "}}
+setRAX ${{N0}}
 int ${{N5}}
+pop RAX
 
 ; treat bytes chunk as string
 movgmSR EAX
 
-int ${{N6}}
+setRAX ${{N1}}
+int ${{N5}}
 
 ; these calls are recommeneded but could be avoided 
 ; since memory::destroy() calls netman::destroy() which destroys those network streams.

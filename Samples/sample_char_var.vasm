@@ -5,15 +5,17 @@
 [include] str_lib.vasm
 
 setCR ${{C'C'}}
-int ${{N10}}
+int ${{N8}}
 
-int ${{N6}}
+setRAX ${{N1}}
+int ${{N5}}
 
 setSR ${{S"Hello World!"}}
 call strtoca
 
 call catostr
 
-int ${{N6}}
+setRAX ${{N1}}
+int ${{N5}}
 
 hlt 0

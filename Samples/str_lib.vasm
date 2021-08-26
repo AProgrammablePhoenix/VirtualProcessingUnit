@@ -19,7 +19,7 @@ int ${{N3}}
 ; extract output and convert it to char
 push CX
 pushSR 0
-int ${{N9}}
+int ${{N7}}
 popCR 0
 
 ; restore original string
@@ -57,7 +57,7 @@ pop RDX
 
 ; init SR
 popCR 0
-int ${{N10}}
+int ${{N8}}
 
 ; set iterator
 setRAX ${{N1}}
@@ -70,7 +70,7 @@ popCR 0
 ; push base string
 pushSR 0
 
-int ${{N10}}
+int ${{N8}}
 
 ; merge base with new character
 int ${{N2}}
@@ -90,6 +90,6 @@ pop RAX
 lcall catostr_loop
 
 pop RAX
-int ${{N11}}
+int ${{N9}}
 
 ret 0

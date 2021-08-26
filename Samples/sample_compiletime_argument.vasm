@@ -3,19 +3,21 @@
 ; Compiletime values interpretation test: Passed
 ; 1024
 
-setRAX ${{_N-30}}
-movRDX RAX
-setRAX ${{N3}}
-push RAX
+setRAX ${{N1}}
+
+setRCX ${{_N-30}}
+movRDX RCX
+setRCX ${{N3}}
+push RCX
 push RDX
-int ${{N8}}
-popSR 0
 int ${{N6}}
+popSR 0
+int ${{N5}}
 
 setSR ${{S"Compiletime values interpretation test: Passed"}}
 pushSR 0
-int ${{N6}}
+int ${{N5}}
 
-setRAX ${{N1024}}
-toString RAX
-int ${{N6}}
+setRCX ${{N1024}}
+toString RCX
+int ${{N5}}

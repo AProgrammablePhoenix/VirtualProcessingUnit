@@ -11,38 +11,40 @@ decl signed_number d -3
 
 decl unsigned_number three 3
 
+setRAX ${{N1}}
+
 ; test basic positive signed number assignment
-setRAX a
-toString RAX
-int ${{N6}}
+setRCX a
+toString RCX
+int ${{N5}}
 
 ; test negative signed number assignment
-setAX three
-push AX
-setRAX b
-push RAX
-int ${{N8}}
-popSR 0
+setCX three
+push CX
+setRCX b
+push RCX
 int ${{N6}}
+popSR 0
+int ${{N5}}
 
 ; test addition between positive and negative signed numbers
-setAX three
-push AX
-setRAX b
+setCX three
+push CX
+setRCX b
 setRBX c
-addRAX RBX
-push RAX
-int ${{N8}}
-popSR 0
+addRCX RBX
+push RCX
 int ${{N6}}
+popSR 0
+int ${{N5}}
 
 ; test addition between two negative signed numbers
-setAX three
-push AX
-setRAX b
+setCX three
+push CX
+setRCX b
 setRBX d
-addRAX RBX
-push RAX
-int ${{N8}}
-popSR 0
+addRCX RBX
+push RCX
 int ${{N6}}
+popSR 0
+int ${{N5}}

@@ -7,6 +7,7 @@
 call function
 
 setSR ${{S"File inclusion test passed"}}
-int ${{N6}}
+setRAX ${{N1}}
+int ${{N5}}
 
 hlt 0

@@ -6,42 +6,45 @@
 ; 3840
 ; 2
 
-setRAX ${{N2}}
-push RAX
-setRAX ${{N2}}
-shl RAX
-toString RAX
-int ${{N6}}
+; set println interrupt call number (which is 1)
+setRAX ${{N1}}
 
-setRAX ${{_N-4}}
-not RAX
-toString RAX
-int ${{N6}}
+setRDX ${{N2}}
+push RDX
+setRDX ${{N2}}
+shl RDX
+toString RDX
+int ${{N5}}
 
-setRAX ${{N4095}}
-push RAX
-setRAX ${{N255}}
-and RAX
-toString RAX
-int ${{N6}}
+setRDX ${{_N-4}}
+not RDX
+toString RDX
+int ${{N5}}
 
-setRAX ${{N4095}}
-push RAX
-setRAX ${{N255}}
-or RAX
-toString RAX
-int ${{N6}}
+setRDX ${{N4095}}
+push RDX
+setRDX ${{N255}}
+and RDX
+toString RDX
+int ${{N5}}
 
-setRAX ${{N4095}}
-push RAX
-setRAX ${{N255}}
-xor RAX
-toString RAX
-int ${{N6}}
+setRDX ${{N4095}}
+push RDX
+setRDX ${{N255}}
+or RDX
+toString RDX
+int ${{N5}}
 
-setRAX ${{N8}}
-push RAX
-setRAX ${{N2}}
-shr RAX
-toString RAX
-int ${{N6}}
+setRDX ${{N4095}}
+push RDX
+setRDX ${{N255}}
+xor RDX
+toString RDX
+int ${{N5}}
+
+setRDX ${{N8}}
+push RDX
+setRDX ${{N2}}
+shr RDX
+toString RDX
+int ${{N5}}

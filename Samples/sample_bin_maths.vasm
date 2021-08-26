@@ -2,12 +2,16 @@
 ; 10
 ; 1024
 
-setRAX ${{N1024}}
-setRBX ${{N2}}
-log2 RAX
-push RAX
-pow RBX
-toString RAX
-int ${{N6}}
-toString RBX
-int ${{N6}}
+setRCX ${{N1024}}
+setRDX ${{N2}}
+log2 RCX
+push RDX
+pow RDX
+
+toString RCX
+setRAX ${{N1}}
+int ${{N5}}
+
+toString RDX
+; RAX is already set to 1
+int ${{N5}}

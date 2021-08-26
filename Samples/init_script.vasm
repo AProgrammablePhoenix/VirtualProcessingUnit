@@ -1,4 +1,7 @@
 decl string init_msg Threading engine initialized
 
 setSR init_msg
-int ${{N6}}
+
+; invoke display interrupt to call println
+setRAX ${{N1}}
+int ${{N5}}

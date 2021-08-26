@@ -6,26 +6,28 @@
 
 decl double a 33.333333
 
+setRAX ${{N1}}
+
 setRFPR0 a
 pushFP RFPR0
-int ${{N12}}
-int ${{N6}}
+int ${{N10}}
+int ${{N5}}
 
 pushFP RFPR0
-int ${{N13}}
-pop RAX
-toString RAX
-int ${{N6}}
+int ${{N11}}
+pop RCX
+toString RCX
+int ${{N5}}
 
 setRFPR0 ${{D1}}
 inc RFPR0
 pushFP RFPR0
 
-int ${{N12}}
-int ${{N6}}
+int ${{N10}}
+int ${{N5}}
 
 pushFP RFPR0
 dpow RFPR0
 pushFP RFPR0
-int ${{N12}}
-int ${{N6}}
+int ${{N10}}
+int ${{N5}}
