@@ -305,6 +305,8 @@ public:
 	unsigned char* cmp_out = &_cmp_out;
 	bool* stopRequested = &_stopRequested;
 	size_t *process_call_address = &_process_call_address;
+	uint8_t exec_level : 2 = 0; // 0: kernel mode | 1-2: intermediate | 3: user mode
+	bool IF = true; // Interrupts flag
 
 	charReg* cr = &_cr;
 	stringReg* sr = &_sr;
