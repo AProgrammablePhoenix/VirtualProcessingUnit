@@ -72,11 +72,13 @@ namespace {
 }
 
 void sdzsMem(GLOBL_ARGS) {
-	comn_registers reg_id = ATTOREGID(reg, mem);
-	if (!comn_registers_table::is_num_reg(reg_id))
-		return;
+	if (!registers->exec_level) {
+		comn_registers reg_id = ATTOREGID(reg, mem);
+		if (!comn_registers_table::is_num_reg(reg_id))
+			return;
 
-	((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->set(mem->_SDZS());
+		((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->set(mem->_SDZS());
+	}
 }
 
 // Memory stack symbols

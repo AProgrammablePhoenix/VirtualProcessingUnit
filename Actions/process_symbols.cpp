@@ -161,17 +161,21 @@ void p_jge(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 	}
 }
 
+// Will be soon removed, since this instruction is deprecated due to presence of labels (A RIP register may still be added in the future)
 // Get Current working Adress [GCA] (adress of the current action) Put it on stack memory
 void p_gca(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	size_t c_addr = *(registers->process_step);
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mp_memcpy(&c_addr, temp);
-	mem->push(temp, sizeof(size_t));
+	if (!registers->exec_level) {
+		size_t c_addr = *(registers->process_step);
+		unsigned char* temp = new unsigned char[sizeof(size_t)];
+		mp_memcpy(&c_addr, temp);
+		mem->push(temp, sizeof(size_t));
+	}
 }
 
 // Exit program
 void p_hlt(std::shared_ptr<void> unused_p, regs* registers, memory* unsused_m) {
-	*registers->stopRequested = true;
+	if (!registers->exec_level)
+		*registers->stopRequested = true;
 }
 
 // Get immediatly to pointed address (mainly used with tags and procedures)
@@ -211,4 +215,15 @@ void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m)
 		*registers->process_call_address = calling_tree[calling_tree.size() - 1];
 		calling_tree.pop_back();
 	}
+}
+
+// Enable interrupts (sets IF to 1)
+void p_sti(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	if (!registers->exec_level)
+		registers->IF = 1;
+}
+// Disable interrupts (set IF to 0)
+void p_cli(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
+	if (!registers->exec_level)
+		registers->IF = 0;
 }

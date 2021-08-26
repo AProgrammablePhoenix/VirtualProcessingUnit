@@ -33,3 +33,6 @@ void p_ret(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 
 void p_svcall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void p_rscall(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+
+void p_sti(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
+void p_cli(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
