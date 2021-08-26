@@ -295,6 +295,8 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"cmpdbl", virtual_actions::cmpdbl},
 
 	{"gca", virtual_actions::gca},
+	{"cli", virtual_actions::cli},
+	{"sti", virtual_actions::sti},
 	{"hlt", virtual_actions::hlt},
 
 	{"call", virtual_actions::call},

@@ -8,16 +8,6 @@
 
 typedef unsigned char byte;
 
-namespace {
-	constexpr byte setFPRs_opcode = 0xA0;
-	constexpr byte movFPRs_opcode = 0xA1;
-
-	constexpr byte mulFPRs_opcode = 0xA2;
-	constexpr byte divFPRs_opcode = 0xA3;
-	constexpr byte addFPRs_opcode = 0xA4;
-	constexpr byte subFPRs_opcode = 0xA5;
-}
-
 std::map<comn_registers, byte> registers_set = {
 	{comn_registers::AH,  (byte)comn_registers::AH},
 	{comn_registers::AL,  (byte)comn_registers::AL},
@@ -146,18 +136,20 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::nselep,  0x9B},
 
 	{virtual_actions::sdzs, 0x9F},
+	{virtual_actions::cli,	0xA0},
+	{virtual_actions::sti,	0xA1},
 
-	{virtual_actions::pushFP, subFPRs_opcode + 1},
-	{virtual_actions::popFP, subFPRs_opcode + 2},
+	{virtual_actions::pushFP,	0xA2},
+	{virtual_actions::popFP,	0xA3},
 
-	{virtual_actions::movsmFP, subFPRs_opcode + 3},
-	{virtual_actions::movgmFP, subFPRs_opcode + 4},
+	{virtual_actions::movsmFP,	0xA4},
+	{virtual_actions::movgmFP,	0xA5},
 
-	{virtual_actions::cmpdbl, subFPRs_opcode + 5},
+	{virtual_actions::cmpdbl,	0xA6},
 
-	{virtual_actions::rfread, subFPRs_opcode + 6},
-	{virtual_actions::rfwrite, subFPRs_opcode + 7},
-	{virtual_actions::rflen, subFPRs_opcode + 8}
+	{virtual_actions::rfread,	0xA7},
+	{virtual_actions::rfwrite,	0xA8},
+	{virtual_actions::rflen,	0xA9}
 };
 
 std::map<virtual_actions, byte>& ops = instructions_set;
@@ -174,6 +166,8 @@ std::unordered_set<byte> zero_args_opcodes = {
 	ops[virtual_actions::cmpdbl],
 
 	ops[virtual_actions::gca],
+	ops[virtual_actions::cli],
+	ops[virtual_actions::sti],
 	ops[virtual_actions::hlt],
 	ops[virtual_actions::ret],
 	ops[virtual_actions::svcall],

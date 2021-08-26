@@ -9,16 +9,14 @@ enum class int_codes {
 	mergeString = 0x02,
 	substring   = 0x03,
 	_strlen     = 0x04,
-	print		= 0x05,
-	println		= 0x06,
-	printEOL	= 0x07,
-	recast		= 0x08,
-	fromString  = 0x09,
-	CRToSR		= 0x0A,
-	RevSR		= 0x0B,
-	FPToSR		= 0x0C,
-	FPToULL		= 0x0D,
-	FPToLL		= 0x0E
+	display		= 0x05,
+	recast		= 0x06,
+	fromString  = 0x07,
+	CRToSR		= 0x08,
+	RevSR		= 0x09,
+	FPToSR		= 0x0A,
+	FPToULL		= 0x0B,
+	FPToLL		= 0x0C
 };
 
 extern void (*ints_db[0xFF + 1])(std::shared_ptr<void>, regs*, memory*);
@@ -31,7 +29,6 @@ public:
 private:
 	regs* self_regs;
 	memory* self_mem;
-	bool allowedToRun = false;
 
 	void init();
 };

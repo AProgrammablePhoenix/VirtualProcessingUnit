@@ -89,6 +89,8 @@ enum class virtual_actions {
 	cmpdbl,
 
 	gca,
+	cli,
+	sti,
 	hlt,
 
 	call,
@@ -136,7 +138,7 @@ public:
 
 	void execute(virtual_actions action, std::shared_ptr<void> value_ptr) {
 		if (action == virtual_actions::_int)
-			this->_intcall(value_ptr, nullptr, nullptr);
+			this->_intcall(value_ptr, this->self_regs, nullptr);
 		else
 			(a_db[(size_t)action])(value_ptr, this->self_regs, this->self_mem);
 	}
@@ -171,7 +173,7 @@ private:
 	interrupts self_ints;
 	inline static bool pre_destroyed = false;
 
-	void _intcall(std::shared_ptr<void> value_ptr, regs* unused_regs, memory* unused_m);
+	void _intcall(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m);
 
 	void init() {
 		a_db[(size_t)virtual_actions::set] = b_setGP;
@@ -246,6 +248,8 @@ private:
 		a_db[(size_t)virtual_actions::cmpdbl] = p_cmpdbl;
 
 		a_db[(size_t)virtual_actions::gca] = p_gca;
+		a_db[(size_t)virtual_actions::cli] = p_cli;
+		a_db[(size_t)virtual_actions::sti] = p_sti;
 		a_db[(size_t)virtual_actions::hlt] = p_hlt;
 
 		a_db[(size_t)virtual_actions::call] = p_call;
