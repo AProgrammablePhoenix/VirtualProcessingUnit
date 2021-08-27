@@ -12,11 +12,7 @@ enum class int_codes {
 	display		= 0x05,
 	recast		= 0x06,
 	fromString  = 0x07,
-	CRToSR		= 0x08,
-	RevSR		= 0x09,
-	FPToSR		= 0x0A,
-	FPToULL		= 0x0B,
-	FPToLL		= 0x0C
+	conversion	= 0x08
 };
 
 extern void (*ints_db[0xFF + 1])(std::shared_ptr<void>, regs*, memory*);

@@ -57,6 +57,8 @@ pop RDX
 
 ; init SR
 popCR 0
+
+setRAX ${{N0}}
 int ${{N8}}
 
 ; set iterator
@@ -70,7 +72,10 @@ popCR 0
 ; push base string
 pushSR 0
 
+push RAX
+setRAX ${{N0}}
 int ${{N8}}
+pop RAX
 
 ; merge base with new character
 int ${{N2}}
@@ -90,6 +95,7 @@ pop RAX
 lcall catostr_loop
 
 pop RAX
-int ${{N9}}
+setRAX ${{N1}}
+int ${{N8}}
 
 ret 0

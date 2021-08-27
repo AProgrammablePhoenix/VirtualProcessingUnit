@@ -10,24 +10,32 @@ setRAX ${{N1}}
 
 setRFPR0 a
 pushFP RFPR0
-int ${{N10}}
+setRAX ${{N2}}
+int ${{N8}}
+setRAX ${{N1}}
 int ${{N5}}
 
 pushFP RFPR0
-int ${{N11}}
+setRAX ${{N3}}
+int ${{N8}}
 pop RCX
 toString RCX
+setRAX ${{N1}}
 int ${{N5}}
 
 setRFPR0 ${{D1}}
 inc RFPR0
 pushFP RFPR0
 
-int ${{N10}}
+setRAX ${{N2}}
+int ${{N8}}
+setRAX ${{N1}}
 int ${{N5}}
 
 pushFP RFPR0
 dpow RFPR0
 pushFP RFPR0
-int ${{N10}}
+setRAX ${{N2}}
+int ${{N8}}
+setRAX ${{N1}}
 int ${{N5}}

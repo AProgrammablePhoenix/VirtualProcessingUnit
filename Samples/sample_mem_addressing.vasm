@@ -50,7 +50,9 @@ movsmCR CX
 setCR ${{C'F'}}
 
 movgmCR CX
+setRAX ${{N0}}
 int ${{N8}}
+setRAX ${{N1}}
 int ${{N5}}
 
 setRFPR0 ${{D3.14}}
@@ -58,12 +60,14 @@ setRCX ${{N31}}
 addRCX RDX
 movsmFP RFPR0
 
-; in cas the program has unexpected behaviour
+; in case the program has unexpected behaviour
 setRFPR0 ${{D-1}}
 
 movgmFP RFPR0
 pushFP RFPR0
-int ${{N10}}
+setRAX ${{N2}}
+int ${{N8}}
+setRAX ${{N1}}
 int ${{N5}}
 
 

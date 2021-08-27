@@ -8,6 +8,7 @@
 #include "interrupts.h"
 
 void handle_display(std::shared_ptr<void> unused_p, regs* const registers, memory* const unused_m);
+void handle_conversion(std::shared_ptr<void> unused_p, regs* const registers, memory* const mem);
 
 void actions_engine::_intcall(std::shared_ptr<void> value_ptr, regs* registers, memory* unused_m) {
 	if (registers->IF) {
@@ -45,11 +46,7 @@ void interrupts::init() {
 	ints_db[(size_t)int_codes::display] = handle_display;
 	ints_db[(size_t)int_codes::recast] = b_recast;
 	ints_db[(size_t)int_codes::fromString] = b_fromString;
-	ints_db[(size_t)int_codes::CRToSR] = b_CRToSR;
-	ints_db[(size_t)int_codes::RevSR] = b_RevSR;
-	ints_db[(size_t)int_codes::FPToSR] = b_FPToSR;
-	ints_db[(size_t)int_codes::FPToULL] = b_FPToULL;
-	ints_db[(size_t)int_codes::FPToLL] = b_FPToLL;
+	ints_db[(size_t)int_codes::conversion] = handle_conversion;
 }
 
 void handle_display(std::shared_ptr<void> unused_p, regs* const registers, memory* const unused_m) {
@@ -64,6 +61,27 @@ void handle_display(std::shared_ptr<void> unused_p, regs* const registers, memor
 			break;
 		case 2:
 			b_printEOL(nullptr, registers, nullptr);
+			break;
+	}
+}
+void handle_conversion(std::shared_ptr<void> unused_p, regs* const registers, memory* const mem) {
+	uint8_t int_call = registers->al->get();
+
+	switch (int_call) {
+		case 0:
+			b_CRToSR(nullptr, registers, nullptr);
+			break;
+		case 1:
+			b_RevSR(nullptr, registers, nullptr);
+			break;
+		case 2:
+			b_FPToSR(nullptr, registers, mem);
+			break;
+		case 3:
+			b_FPToULL(nullptr, registers, mem);
+			break;
+		case 4:
+			b_FPToLL(nullptr, registers, mem);
 			break;
 	}
 }

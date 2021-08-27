@@ -238,8 +238,7 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 *  With output set up on SR, and previous value of SR is lost (unless you pushed it on the stack before)
 */
 void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	char c = registers->cr->get();
-	registers->sr->set(std::string(1, c));
+	registers->sr->set(std::string(1, registers->cr->get()));
 }
 
 /* Reverse string in SR:

@@ -5,6 +5,7 @@
 [include] str_lib.vasm
 
 setCR ${{C'C'}}
+setRAX ${{N0}}
 int ${{N8}}
 
 setRAX ${{N1}}
