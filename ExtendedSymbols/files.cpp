@@ -12,6 +12,9 @@
 
 
 void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	if (registers->exec_level > 2)
+		return;
+
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
 	std::string filename = registers->sr->get();
@@ -61,6 +64,9 @@ void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 	}
 }
 void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
+	if (registers->exec_level > 2)
+		return;
+
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
 	std::string filename = registers->sr->get();
@@ -112,6 +118,9 @@ void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 }
 
 void ex_rflen(std::shared_ptr<void> reg, regs* registers, memory* mem) {
+	if (registers->exec_level > 2)
+		return;
+
 	comn_registers reg_id = ATTOREGID(reg, mem);
 	if (!comn_registers_table::is_num_reg(reg_id))
 		return;
