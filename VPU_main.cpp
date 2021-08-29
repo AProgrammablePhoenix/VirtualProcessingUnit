@@ -1,6 +1,8 @@
 ﻿#include <iostream>
 #include <string>
 
+#include "CursesWrapper/wrapper.hpp"
+
 #include "./Registers/regs_decl.h"
 #include "./Registers/registers_symbols.h"
 #include "./Memory/memory_decl.h"
@@ -26,7 +28,7 @@ namespace {
 		process_memory* proc_mem = new process_memory;
 
 		if (!regs_ptr || !mem_ptr || !proc_mem) {
-			std::cout << "Error while allocating new process memory" << std::endl;
+			nstd::ncout << "Error while allocating new process memory" << nstd::nendl;
 			delete regs_ptr;
 			delete mem_ptr;
 			delete proc_mem;
@@ -40,7 +42,7 @@ namespace {
 		actions_engine* engine_ptr = new actions_engine(mem, p_regs);
 
 		if (!engine_ptr) {
-			std::cout << "Error while allocating new process engine memory" << std::endl;
+			nstd::ncout << "Error while allocating new process engine memory" << nstd::nendl;
 			delete engine_ptr;
 		}
 
@@ -49,7 +51,7 @@ namespace {
 	void allocateProcess(const actions_engine& engine) {
 		process* new_proc = new process(engine);
 		if (!new_proc) {
-			std::cout << "Error while allocating new process instance memory" << std::endl;
+			nstd::ncout << "Error while allocating new process instance memory" << nstd::nendl;
 			delete new_proc;
 		}
 
@@ -94,7 +96,7 @@ namespace {
 				return 0;
 			}
 
-			std::cout << "Operation not allowed: loaded scripts have been built" << std::endl;
+			nstd::ncout << "Operation not allowed: loaded scripts have been built" << nstd::nendl;
 			return -1;
 		}
 		else if (input == "build") {
@@ -108,7 +110,7 @@ namespace {
 				return 2;
 			}
 
-			std::cout << "Operation not allowed: loaded scripts have already been built" << std::endl;
+			nstd::ncout << "Operation not allowed: loaded scripts have already been built" << nstd::nendl;
 			return -1;
 		}
 		else if (input == "start") {
@@ -124,7 +126,7 @@ namespace {
 				return 3;
 			}
 
-			std::cout << "Operation not allowed: you haven't built any script" << std::endl;
+			nstd::ncout << "Operation not allowed: you haven't built any script" << nstd::nendl;
 			return -1;
 		}
 		else if (input == "exit") {
@@ -132,13 +134,13 @@ namespace {
 			return 1;
 		}
 		else {
-			std::cout << "Unknown command" << std::endl << std::endl;
+			nstd::ncout << "Unknown command" << nstd::nendl << nstd::nendl;
 			return status;
 		}
 	}
 
 	inline void display_help() {
-		std::cout << "usage: vpu -sf <source file> [-h|--help]" << std::endl;
+		nstd::ncout << "usage: vpu -sf <source file> [-h|--help]" << nstd::nendl;
 	}
 }
 
@@ -147,22 +149,22 @@ int main(int argc, char* argv[])
 	engine threading_engine = engine();
 
 	if (argc < 2) {
-		std::cout << " ____________________________________ " << std::endl;
-		std::cout << "|  ________________________________  |" << std::endl;
-		std::cout << "| |     Virtual Processing Unit    | |" << std::endl;
-		std::cout << "| |________________________________| |" << std::endl;
-		std::cout << "|____________________________________|" << std::endl;
+		nstd::ncout << " ____________________________________ " << nstd::nendl;
+		nstd::ncout << "|  ________________________________  |" << nstd::nendl;
+		nstd::ncout << "| |     Virtual Processing Unit    | |" << nstd::nendl;
+		nstd::ncout << "| |________________________________| |" << nstd::nendl;
+		nstd::ncout << "|____________________________________|" << nstd::nendl;
 
-		std::cout << std::endl << "Engine usage: " << std::endl << std::endl;
+		nstd::ncout << nstd::nendl << "Engine usage: " << nstd::nendl << nstd::nendl;
 
-		std::cout << "Load script: " << std::endl;
-		std::cout << "\tload <filename>" << std::endl << std::endl;
-		std::cout << "Build loaded scripts: " << std::endl;
-		std::cout << "\tbuild" << std::endl << std::endl;
-		std::cout << "Start built scripts: " << std::endl;
-		std::cout << "\tstart" << std::endl << std::endl;
-		std::cout << "Termminate program: " << std::endl;
-		std::cout << "\texit" << std::endl << std::endl << std::endl;
+		nstd::ncout << "Load script: " << nstd::nendl;
+		nstd::ncout << "\tload <filename>" << nstd::nendl << nstd::nendl;
+		nstd::ncout << "Build loaded scripts: " << nstd::nendl;
+		nstd::ncout << "\tbuild" << nstd::nendl << nstd::nendl;
+		nstd::ncout << "Start built scripts: " << nstd::nendl;
+		nstd::ncout << "\tstart" << nstd::nendl << nstd::nendl;
+		nstd::ncout << "Termminate program: " << nstd::nendl;
+		nstd::ncout << "\texit" << nstd::nendl << nstd::nendl << nstd::nendl;
 
 
 		int status = 0;
@@ -171,8 +173,8 @@ int main(int argc, char* argv[])
 		int ret_code = 0;
 
 		while (true) {
-			std::cout << prompt;
-			std::getline(std::cin, input);
+			nstd::ncout << prompt;
+			nstd::ncin >> input;
 
 			ret_code = processInput(input, threading_engine, status);
 			if (ret_code == 0)
@@ -200,7 +202,7 @@ int main(int argc, char* argv[])
 
 		for (size_t i = 1; i < argc; i++) {
 			if (next_imm && argv[i][0] == '-') {
-				std::cerr << "Unable to parse immediate argument from a command line option: " << argv[i] << std::endl;
+				nstd::ncout << "Unable to parse immediate argument from a command line option: " << argv[i] << nstd::nendl;
 				return 1;
 			}
 			else if (next_imm && next_sf) {
@@ -220,13 +222,13 @@ int main(int argc, char* argv[])
 				return 0;
 			}
 			else {
-				std::cout << "Non recognized option: " << argv[i] << std::endl;
+				nstd::ncout << "Non recognized option: " << argv[i] << nstd::nendl;
 				display_help();
 				return 0;
 			}
 		}
 
-		std::cout << std::endl;
+		nstd::ncout << nstd::nendl;
 
 		if (!source_file.empty()) {
 			allocateNewProcessMem();
@@ -241,7 +243,7 @@ int main(int argc, char* argv[])
 			clearMemory(threading_engine);
 		}
 		else {
-			std::cerr << "No input file specified" << std::endl;
+			nstd::ncout << "No input file specified" << nstd::nendl;
 			return 1;
 		}
 	}

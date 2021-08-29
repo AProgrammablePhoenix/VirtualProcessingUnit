@@ -4,6 +4,8 @@
 #include <memory>
 #include <string>
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../ExtendedSymbols/files.h"
 #include "../Memory/memory_symbols.h"
 #include "../Networking/net_symbols.h"
@@ -121,7 +123,7 @@ public:
 		this->self_mem = new memory(this->self_regs);
 
 		if (!this->self_regs || !this->self_mem) {
-			std::cout << "Error while allocating new process memory" << std::endl;
+			nstd::ncout << "Error while allocating new process memory" << nstd::nendl;
 			delete this->self_regs;
 			delete this->self_mem;
 		}

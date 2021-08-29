@@ -27,7 +27,7 @@ int fetch_file(const std::string& filename, std::string& out_read) {
 		out_read = std::string(filesize, 0);
 		file.read(out_read.data(), filesize);
 
-		return OK;
+		return SVAS_OK;
 	}
 
 	assert_err("Error while opening file", 0, FILE_ERROR);
@@ -49,7 +49,7 @@ int fetch_lines(const std::string& content, std::vector<std::string>& lines) {
 		lines.push_back(line);
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int parse_line(const std::string& line, codeline& out_parsed, uint64_t nline) {
 	bool found = false;
@@ -67,7 +67,7 @@ int parse_line(const std::string& line, codeline& out_parsed, uint64_t nline) {
 		}
 		else if (c == ':' && !found) {
 			out_parsed.instruction = temp + c;
-			return OK;
+			return SVAS_OK;
 		}
 
 		temp.push_back(c);
@@ -75,7 +75,7 @@ int parse_line(const std::string& line, codeline& out_parsed, uint64_t nline) {
 
 	if (!found) {
 		out_parsed.instruction = temp;
-		return OK;
+		return SVAS_OK;
 	}
 
 	bool isstring = false;
@@ -110,7 +110,7 @@ int parse_line(const std::string& line, codeline& out_parsed, uint64_t nline) {
 	if (!temp.empty())
 		out_parsed.arguments.emplace_back(temp);
 
-	return OK;
+	return SVAS_OK;
 }
 
 int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, std::unordered_set<std::string>& labels) {
@@ -134,5 +134,5 @@ int main_parse(const std::string& filename, std::vector<codeline>& out_parsed, s
 		out_parsed.emplace_back(parsed);
 	}
 
-	return OK;
+	return SVAS_OK;
 }

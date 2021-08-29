@@ -12,6 +12,8 @@
 #include <stdio.h>
 #endif
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../utility.h"
 #include "../Compiler/action_parser.h"
 #include "assembler.h"
@@ -210,7 +212,7 @@ void asFinal(std::string filename, const std::vector<byte> linkedBytes) {
 
 int main(int argc, char* argv[]) {
 	if (argc < 3) {
-		std::cerr << "Usage: vas <inputFile> <outputFile>" << std::endl;
+		nstd::ncout << "Usage: vas <inputFile> <outputFile>" << nstd::nendl;
 		return 1;
 	}
 
@@ -219,7 +221,7 @@ int main(int argc, char* argv[]) {
 
 	asFinal(outputFile, as(inputFile));
 
-	std::cout << "Linking of '" << inputFile << "': done." << std::endl;
+	nstd::ncout << "Linking of '" << inputFile << "': done." << nstd::nendl;
 
 	return 0;
 }

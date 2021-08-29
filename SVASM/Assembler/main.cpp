@@ -9,6 +9,8 @@
 #include <stdio.h>
 #endif
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../../VirtualAssembler/assembler.h"
 #include "compiler.h"
 #include "parser.h"
@@ -19,14 +21,14 @@ std::string source_file = "";
 
 void test_exit(const int& ret_code) {
 	if (ret_code) {
-		std::cerr << "SVAS returned with code: " << ret_code << std::endl;
+		nstd::ncout << "SVAS returned with code: " << ret_code << nstd::nendl;
 		std::exit(ret_code);
 	}
 }
 
 int main(int argc, char* argv[]) {
 	if (argc < 3) {
-		std::cerr << "Usage: svas <inputFile> <outputFile>" << std::endl;
+		nstd::ncout << "Usage: svas <inputFile> <outputFile>" << nstd::nendl;
 		return 1;
 	}
 
@@ -74,15 +76,15 @@ int main(int argc, char* argv[]) {
 	std::ofstream output(outputFile, std::ios::out | std::ios::binary);
 
 	if (!output) {
-		std::cerr << "Error while opening output file for writing" << std::endl;
-		std::cerr << "SVAS returned with code: 2" << std::endl;
+		nstd::ncout << "Error while opening output file for writing" << nstd::nendl;
+		nstd::ncout << "SVAS returned with code: 2" << nstd::nendl;
 		std::exit(2);
 
 	}
 	output.write((const char*)linkedBytes, linked.size());
 	output.close();
 
-	std::cout << "Linking of '" << inputFile << "': done." << std::endl;
-	std::cout << "SVAS returned with code: " << exit_code << std::endl;
+	nstd::ncout << "Linking of '" << inputFile << "': done." << nstd::nendl;
+	nstd::ncout << "SVAS returned with code: " << exit_code << nstd::nendl;
 	return 0;
 }

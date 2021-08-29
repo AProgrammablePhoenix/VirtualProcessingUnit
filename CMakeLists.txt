@@ -34,18 +34,23 @@ add_library(netlib STATIC
 			"Networking/net_hdr.h" "Networking/unixnet.cpp" "Networking/winnet.cpp" "utility.h" "Networking/net_symbols.cpp"
 			"Networking/net_symbols.h" "Networking/netman.cpp" "Networking/netman.h")
 
+add_library(wrpcurses STATIC
+			"CursesWrapper/wrapper.hpp" "CursesWrapper/Wrapper.cpp")
+
+target_link_libraries(registers wrpcurses)
 target_link_libraries(memory registers)
 target_link_libraries(exSymbols memory)
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")    
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc")
 	target_link_libraries(netlib memory)
-	target_include_directories(registers PUBLIC "includes/")
-	target_link_libraries(registers "${CMAKE_SOURCE_DIR}/lib/pdcurses.lib")
+	target_include_directories(wrpcurses PUBLIC "${CMAKE_SOURCE_DIR}/includes/")
+	target_link_libraries(wrpcurses PUBLIC "${CMAKE_SOURCE_DIR}/lib/pdcurses.lib")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -lncurses")
 	find_package(Threads REQUIRED)
 	find_package(Curses REQUIRED)
+	target_link_libraries(wrpcurses PUBLIC Curses::Curses)
 	target_link_libraries(netlib PUBLIC Threads::Threads memory)
 endif()
 
@@ -90,6 +95,7 @@ target_link_libraries(svas registers)
 target_link_libraries(svas memory)
 target_link_libraries(svas virtual_engine)
 
+target_compile_features(wrpcurses PUBLIC cxx_std_20)
 target_compile_features(registers PUBLIC cxx_std_20)
 target_compile_features(memory PUBLIC cxx_std_20)
 target_compile_features(compiler PUBLIC cxx_std_17)

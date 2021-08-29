@@ -15,6 +15,8 @@
 #include <stdio.h>
 #endif
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../utility.h"
 #include "../Actions/threading.h"
 #include "../Actions/v_engine.h"
@@ -117,7 +119,7 @@ namespace {
 	}
 	comn_registers STOREGID(const std::string& str) {
 		if (num_registers.find(str) == num_registers.end() && fp_registers.find(str) == fp_registers.end()) {
-			std::cerr << "Can't use special register on an operation that requires a real register" << std::endl;
+			nstd::ncout << "Can't use special register on an operation that requires a real register" << nstd::nendl;
 			std::exit(1);
 			return (comn_registers)0; // Disables warnings
 		}
@@ -132,7 +134,7 @@ namespace {
 		ss >> dest >> std::ws >> src;
 
 		if (regs_names.find(dest) == regs_names.end()) {
-			std::cerr << "(" << line[1] << ") unknown operands : " << dest << ", " << line[1] << std::endl;
+			nstd::ncout << "(" << line[1] << ") unknown operands : " << dest << ", " << line[1] << nstd::nendl;
 			std::exit(1);
 			return;
 		}
@@ -221,7 +223,7 @@ std::shared_ptr<void> process_memory::getVarPtr(const std::string& var_name) {
 	if (this->data_ptrs.count(var_name))
 		return this->data_ptrs[var_name];
 	else {
-		std::cout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << std::endl;
+		nstd::ncout << "Warning: Symbol '" << var_name << "' unrecognized, replaced by NULL statement" << nstd::nendl;
 		return std::make_shared<size_t>(0);
 	}
 }
@@ -496,8 +498,8 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 		}
 	}
 	catch (const std::out_of_range&) {
-		std::cout << "Invalid compiletime value declaration: " << content << std::endl;
-		std::cout << "Replaced by NULL" << std::endl;
+		nstd::ncout << "Invalid compiletime value declaration: " << content << nstd::nendl;
+		nstd::ncout << "Replaced by NULL" << nstd::nendl;
 		return "NULL";
 	}
 }
@@ -583,7 +585,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 		return parsed;
 	}
 	else {
-		std::cout << "Unable to read secified code file" << std::endl;
+		nstd::ncout << "Unable to read secified code file" << nstd::nendl;
 		return parsed;
 	}
 }
@@ -599,7 +601,7 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 			ss >> dest >> std::ws >> src;
 
 			if (regs_names.find(dest) == regs_names.end()) {
-				std::cerr << "set: unknown operands: " << dest << ", " << parsed[i][1] << std::endl;
+				nstd::ncout << "set: unknown operands: " << dest << ", " << parsed[i][1] << nstd::nendl;
 				std::exit(1);
 				return converted; // won't be executed, used to disable warnings on some compilers
 			}
@@ -681,7 +683,7 @@ std::vector<std::vector<std::string>> makeCleanedParsed(std::string filename, bo
 		return parsed;
 	}
 	else {
-		std::cout << "Unable to read secified code file" << std::endl;
+		nstd::ncout << "Unable to read secified code file" << nstd::nendl;
 		return parsed;
 	}
 }

@@ -12,6 +12,8 @@
 	#include <stdio.h>
 #endif
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../utility.h"
 #include "../Compiler/variables.h"
 #include "../Memory/memory_symbols.h"
@@ -20,7 +22,7 @@
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string saved_sr = registers->sr->get(), input;
 
-	std::getline(std::cin, input);
+	nstd::ncin >> input;
 	registers->sr->set(input);
 
 	pushMemSR(unused_p, registers, mem);
@@ -63,14 +65,14 @@ void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
-	std::cout << sr;
+	nstd::ncout << sr;
 }
 void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	std::string sr = registers->sr->get();
-	std::cout << sr << std::endl;
+	nstd::ncout << sr << nstd::nendl;
 }
 void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m) {
-	std::cout << std::endl;
+	nstd::ncout << nstd::nendl;
 }
 
 void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {

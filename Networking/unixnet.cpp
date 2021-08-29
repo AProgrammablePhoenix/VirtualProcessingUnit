@@ -1,3 +1,4 @@
+#include "../CursesWrapper/wrapper.hpp"
 #include "../utility.h"
 
 #if defined(ISUNIX)
@@ -114,7 +115,7 @@ void addEndpoint(running_hdr*& rhdr, ip_endpoint& ep_data, inet_data*& idata) {
 	} else {
 		hostent* ep_recp = gethostbyname(ep_data.ipAddr->c_str());
 		if (ep_recp == NULL) {
-			std::cout << "No such external host: " << ep_data.ipAddr << std::endl;
+			nstd::ncout << "No such external host: " << (uintptr_t)ep_data.ipAddr << nstd::nendl;
 			return;
 		} else {
 			bcopy((char*)(ep_recp->h_addr), (char*)(&ep_sockaddr.sin_addr.s_addr), ep_recp->h_length);
@@ -143,7 +144,7 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 	else {
 		hostent* serv_recp = gethostbyname(startup_header->recvAddr.c_str());
 		if (serv_recp == NULL) {
-			std::cout << "No such external host: " << startup_header->recvAddr << std::endl;
+			nstd::ncout << "No such external host: " << startup_header->recvAddr << nstd::nendl;
 			return;
 		}
 		else {
@@ -152,7 +153,7 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 	}
 
 	if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
-		std::cout << "Error while binding connection" << std::endl;
+		nstd::ncout << "Error while binding connection" << nstd::nendl;
 		return;
 	}
 
@@ -203,13 +204,13 @@ void unixnet_poststartup(SOCKET& hSocket, startup_hdr*& startup_header, running_
 void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	SOCKET hSocket = socket(AF_INET, SOCK_DGRAM, 0);
 	if (hSocket == INVALID_SOCKET) {
-		std::cout << "Error while creating network socket" << std::endl;
+		nstd::ncout << "Error while creating network socket" << nstd::nendl;
 		return;
 	}
 	else {
 		const int opt = 1;
 		if (setsockopt(hSocket, SOL_SOCKET, SO_REUSEPORT | SO_REUSEADDR, &opt, sizeof(opt)) == SOCKET_ERROR) {
-			std::cout << "Error while setting socket options" << std::endl;
+			nstd::ncout << "Error while setting socket options" << nstd::nendl;
 			close(hSocket);
 			return;
 		}
@@ -218,7 +219,7 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 
 		unixnet_poststartup(hSocket, startup_header, net_run_hdr, idata);
 		if (close(hSocket))
-			std::cout << "Error while closing connection socket" << std::endl;
+			nstd::ncout << "Error while closing connection socket" << nstd::nendl;
 		
 		while (idata->receivedBytes.size() > 1) {
 			delete[] idata->receivedBytes[0];

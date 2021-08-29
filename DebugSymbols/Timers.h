@@ -1,5 +1,7 @@
 #pragma once
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include <chrono>
 #include <iostream>
 #include <string>
@@ -54,7 +56,7 @@ public:
 
 		auto time_diff = end - begin;
 
-		std::cout << this->end_msg << time_diff << std::endl;
+		nstd::ncout << this->end_msg << time_diff << nstd::nendl;
 	}
 private:
 	std::string end_msg = "Time to execute scope (microseconds): ";

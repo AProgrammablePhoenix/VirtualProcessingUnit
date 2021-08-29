@@ -197,7 +197,7 @@ int preprocInt(const std::vector<token>& args, std::vector<action>& out_actions)
 
 	pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, args[0].element);
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocMov(const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 2)
@@ -219,7 +219,7 @@ int preprocMov(const std::vector<token>& args, std::vector<action>& out_actions)
 		assert_err_argv({ "reg|fp_reg", "any" }, "mov", args, cur_line);
 
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 1)
@@ -229,7 +229,7 @@ int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions)
 		assert_err_argv({ "reg|fp_reg" }, "str", args, cur_line);
 
 	if (args[0].element == "sr")
-		return OK;
+		return SVAS_OK;
 	else if (args[0].element == "cr")
 		pushAction(out_actions, virtual_actions::_int, tokenTypes::unsigned_n, "8");
 	else if (args[0].type == tokenTypes::fp_reg) {
@@ -239,7 +239,7 @@ int preprocStr(const std::vector<token>& args, std::vector<action>& out_actions)
 	else
 		pushAction(out_actions, virtual_actions::toString, tokenTypes::reg, args[0].element);
 
-	return OK;
+	return SVAS_OK;
 }
 
 int preprocInc(const std::vector<token>& args, std::vector<action>& out_actions) {
@@ -260,7 +260,7 @@ int preprocInc(const std::vector<token>& args, std::vector<action>& out_actions)
 	else
 		pushAction(out_actions, virtual_actions::inc, tokenTypes::reg, args[0].element);
 	
-	return OK;
+	return SVAS_OK;
 }
 int preprocDec(const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 1)
@@ -280,7 +280,7 @@ int preprocDec(const std::vector<token>& args, std::vector<action>& out_actions)
 	else
 		pushAction(out_actions, virtual_actions::dec, tokenTypes::reg, args[0].element);
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocMath(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 2)
@@ -348,7 +348,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 				pushAction(out_actions, virtual_actions::mul, tokenTypes::fp_reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "div") {
 		if (args[0].type != tokenTypes::reg && args[0].type != tokenTypes::fp_reg)
@@ -412,7 +412,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 				pushAction(out_actions, virtual_actions::div, tokenTypes::fp_reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "add") {
 		if (args[0].type != tokenTypes::reg && args[0].type != tokenTypes::fp_reg)
@@ -476,7 +476,7 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 				pushAction(out_actions, virtual_actions::add, tokenTypes::fp_reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "sub") {
 		if (args[0].type != tokenTypes::reg && args[0].type != tokenTypes::fp_reg)
@@ -540,10 +540,10 @@ int preprocMath(const std::string& inst, const std::vector<token>& args, std::ve
 				pushAction(out_actions, virtual_actions::sub, tokenTypes::fp_reg, args[1].element, (uint8_t)strreg_to_reg.at(args[0].element));
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (inst == "not") {
@@ -561,7 +561,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 
 		pushAction(out_actions, virtual_actions::_not, tokenTypes::reg, args[0].element);
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "and") {
 		if (args.size() != 2)
@@ -789,7 +789,7 @@ int preprocLgclMath(const std::string& inst, const std::vector<token>& args, std
 		}
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (inst == "log") {
@@ -806,7 +806,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 		else
 			pushAction(out_actions, virtual_actions::_log, tokenTypes::reg, args[0].element);
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "log2") {
 		if (args.size() != 1)
@@ -822,7 +822,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 		else
 			pushAction(out_actions, virtual_actions::_log2, tokenTypes::reg, args[0].element);
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "log10") {
 		if (args.size() != 1)
@@ -838,7 +838,7 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 		else
 			pushAction(out_actions, virtual_actions::_log10, tokenTypes::reg, args[0].element);
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "pow") {
 		if (args.size() != 2)
@@ -936,9 +936,9 @@ int preprocAdvMath(const std::string& inst, const std::vector<token>& args, std:
 			}
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
-	return OK;
+	return SVAS_OK;
 }
 
 int preprocStack(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
@@ -1095,7 +1095,7 @@ int preprocStack(const std::string& inst, const std::vector<token>& args, std::v
 		}
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocHeap(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (inst == "mload") {
@@ -1311,13 +1311,13 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 			}
 		}
 		else {
-			std::cerr << "Incorrect usage of mload: " << std::endl;
-			std::cerr << "mload <imm_addr|reg_addr>, <reg|fp_reg|unsigned_n|signed_n|double_n>" << std::endl;
-			std::cerr << "mload <reg|fp_reg>, <imm_addr|reg_addr>" << std::endl;
+			nstd::ncout << "Incorrect usage of mload: " << nstd::nendl;
+			nstd::ncout << "mload <imm_addr|reg_addr>, <reg|fp_reg|unsigned_n|signed_n|double_n>" << nstd::nendl;
+			nstd::ncout << "mload <reg|fp_reg>, <imm_addr|reg_addr>" << nstd::nendl;
 			assert_err("Your usage of mload: ", "mov", args, cur_line, ARGV_ERROR);
 		}
 
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "sdzs") {
 		if (args.size() != 1)
@@ -1329,7 +1329,7 @@ int preprocHeap(const std::string& inst, const std::vector<token>& args, std::ve
 		pushAction(out_actions, virtual_actions::sdzs, tokenTypes::reg, args[0].element);
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 
 int preprocCalls(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
@@ -1340,7 +1340,7 @@ int preprocCalls(const std::string& inst, const std::vector<token>& args, std::v
 			else
 				assert_err_wrnargs(1, inst, args, cur_line);
 
-			return OK;
+			return SVAS_OK;
 		}
 		else
 			assert_err_wrnargs(1, inst, args, cur_line);
@@ -1370,7 +1370,7 @@ int preprocCalls(const std::string& inst, const std::vector<token>& args, std::v
 			pushAction(out_actions, virtual_actions::jmp, args[0].type, args[0].element);
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocCmpCalls(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 1)
@@ -1392,7 +1392,7 @@ int preprocCmpCalls(const std::string& inst, const std::vector<token>& args, std
 	else if (inst == "jge")
 		preprocJmpCmpCalls(out_actions, virtual_actions::jge, args[0]);
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocComps(const std::vector<token>& args, std::vector<action>& out_actions) {
 	if (args.size() != 2)
@@ -1833,7 +1833,7 @@ int preprocComps(const std::vector<token>& args, std::vector<action>& out_action
 		}
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 
 int preprocNetwork(const std::string& inst, const std::vector<token>& args, std::vector<action>& out_actions) {
@@ -1898,7 +1898,7 @@ int preprocNetwork(const std::string& inst, const std::vector<token>& args, std:
 		pushAction(out_actions, virtual_actions::nhrecv, tokenTypes::unsigned_n, args[0].element);
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 
 int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>& preprocLabels, std::vector<action>& out_actions) {
@@ -1906,21 +1906,21 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 
 	if (inst == "[labeldef]") {
 		preprocLabels[tokens.arguments[0].element] = out_actions.size() - 1;
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "[safety_control]" && tokens.arguments[0].type == tokenTypes::safety_directive) {
 		if (tokens.arguments[0].element == "safe")
 			unsafe_flag = false;
 		else
 			unsafe_flag = true;
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "[memory_control]" && tokens.arguments[0].type == tokenTypes::memory_directive) {
 		if (!memory_flags.mem_res_req) {
 			memory_flags.new_mem_size = std::stoull(tokens.arguments[0].element);
 			memory_flags.mem_res_req = true;
 		}
-		return OK;
+		return SVAS_OK;
 	}
 	else if (inst == "int")
 		return preprocInt(tokens.arguments, out_actions);
@@ -1951,7 +1951,7 @@ int preprocInst(const tokenized& tokens, std::unordered_map<std::string, size_t>
 	else if (inst == "nopn" || inst == "ncls" || inst == "nsnd" || inst == "nget" || inst == "nrcv" || inst == "ncep" || inst == "nsep")
 		return preprocNetwork(inst, tokens.arguments, out_actions);
 
-	return OK;
+	return SVAS_OK;
 }
 int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& out_actions) {
 	out_actions.reserve(tokens.size()); // Contains at least, as many elements as there are in "std::vector<tokenized> tokens"
@@ -1972,7 +1972,7 @@ int preprocTokenized(const std::vector<tokenized> tokens, std::vector<action>& o
 
 	unsafe_flag = false;
 
-	return OK;
+	return SVAS_OK;
 }
 
 int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
@@ -2038,7 +2038,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 					out_bytes.push_back(uc_n[i]);
 
 				delete[] uc_n;
-				return OK;
+				return SVAS_OK;
 			}
 			else if (v_type == tokenTypes::signed_n) {
 				const long long value = std::stoll(v_raw);
@@ -2051,7 +2051,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 					out_bytes.push_back(uc_n[i]);
 
 				delete[] uc_n;
-				return OK;
+				return SVAS_OK;
 			}
 		}
 		else if (comn_registers_table::is_fp_reg((comn_registers)out_bytes.back())) {
@@ -2066,7 +2066,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 
 			for (size_t i = 0; i < sizeof(long double); i++)
 				out_bytes.push_back(uc_a[i]);
-			return OK;
+			return SVAS_OK;
 		}
 		else if ((comn_registers)out_bytes.back() == comn_registers::SR) {
 			if (v_type != tokenTypes::str) {
@@ -2097,7 +2097,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 				out_bytes.push_back(b_str[i]);
 			delete[] b_str;
 
-			return OK;
+			return SVAS_OK;
 		}
 		else if ((comn_registers)out_bytes.back() == comn_registers::CR) {
 			if (v_type != tokenTypes::str) {
@@ -2115,12 +2115,12 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 				c = (byte)v_raw[0];
 
 			out_bytes.push_back(c);
-			return OK;
+			return SVAS_OK;
 		}
 	}
 
 	if (zero_args_opcodes.find(comp_action) != zero_args_opcodes.end())		
-		return OK;
+		return SVAS_OK;
 	else if (uint64_args_opcodes.find(comp_action) != uint64_args_opcodes.end()) {
 		if (v_type != tokenTypes::signed_n && v_type != tokenTypes::unsigned_n) {
 			assert_err("Can't compile opcode (" + std::to_string(comp_action) + "): ", "",
@@ -2138,7 +2138,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 				out_bytes.push_back(uc_n[i]);
 
 			delete[] uc_n;
-			return OK;
+			return SVAS_OK;
 		}
 		else if (v_type == tokenTypes::signed_n) {
 			const long long value = std::stoll(v_raw);
@@ -2151,7 +2151,7 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 				out_bytes.push_back(uc_n[i]);
 
 			delete[] uc_n;
-			return OK;
+			return SVAS_OK;
 		}
 	}
 	else if (reg_args_opcodes.find(comp_action) != reg_args_opcodes.end()) {
@@ -2163,10 +2163,10 @@ int compileInst(action& raw_action, std::vector<byte>& out_bytes) {
 		byte comp_reg = (byte)strreg_to_reg.at(v_raw);
 
 		out_bytes.push_back(comp_reg);
-		return OK;
+		return SVAS_OK;
 	}
 
-	return OK;
+	return SVAS_OK;
 }
 int compileAll(const std::vector<action>& raw_actions, std::vector<byte>& out_bytes) {
 	out_bytes.reserve(raw_actions.size() * 2); // In average, an action needs two bytes
@@ -2186,5 +2186,5 @@ int compileAll(const std::vector<action>& raw_actions, std::vector<byte>& out_by
 	for (action raw_a : raw_actions)
 		compileInst(raw_a, out_bytes);
 
-	return OK;
+	return SVAS_OK;
 }

@@ -1,3 +1,4 @@
+#include "../CursesWrapper/wrapper.hpp"
 #include "../utility.h"
 
 #if defined(ISWIN)
@@ -100,12 +101,12 @@ void addEndpoint(running_hdr*& rhdr, ip_endpoint& ep_data, inet_data*& idata) {
 	ep_sockaddr.sin_family = AF_INET;
 	ep_sockaddr.sin_port = htons(ep_data.port);
 
-	if (isIPAddr((char*)ep_data.ipAddr->c_str())) {
+	if (isIPAddr((char*)ep_data.ipAddr->c_str()))
 		ep_sockaddr.sin_addr.s_addr = inet_addr(ep_data.ipAddr->c_str());
-	} else {
+	else {
 		hostent* ep_recp = gethostbyname(ep_data.ipAddr->c_str());
 		if (ep_recp == NULL) {
-			std::cout << "No such external host: " << ep_data.ipAddr << std::endl;
+			nstd::ncout << "No such external host: " << (uintptr_t)ep_data.ipAddr << nstd::nendl;
 			return;
 		} else {
 			memmove((char*)(&ep_sockaddr.sin_addr.s_addr), (char*)(ep_recp->h_addr), ep_recp->h_length);
@@ -120,7 +121,7 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr,
 	hSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
 	if (hSocket == INVALID_SOCKET) {
-		std::cout << "Error while creating network socket" << std::endl;
+		nstd::ncout << "Error while creating network socket" << nstd::nendl;
 		return;
 	}
 	else {
@@ -133,13 +134,12 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr,
 		thisSockAddr.sin_port = htons(startup_header->thisPort);
 		thisSockAddr.sin_addr.S_un.S_addr = inet_addr(startup_header->thisAddr.c_str());
 
-		if (isIPAddr((char*)startup_header->recvAddr.c_str())) {
+		if (isIPAddr((char*)startup_header->recvAddr.c_str()))
 			recvSockAddr.sin_addr.s_addr = inet_addr(startup_header->recvAddr.c_str());
-		}
 		else {
 			hostent* serv_recp = gethostbyname(startup_header->recvAddr.c_str());
 			if (serv_recp == NULL) {
-				std::cout << "No such external host: " << startup_header->recvAddr << std::endl;
+				nstd::ncout << "No such external host: " << startup_header->recvAddr << nstd::nendl;
 				return;
 			}
 			else {
@@ -148,7 +148,7 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr,
 		}
 
 		if (bind(hSocket, (sockaddr*)(&thisSockAddr), sizeof(sockaddr_in)) != 0) {
-			std::cout << "Error while binding connection" << std::endl;
+			nstd::ncout << "Error while binding connection" << nstd::nendl;
 			closesocket(hSocket);
 			return;
 		}
@@ -159,12 +159,11 @@ void winnet_poststartup(startup_hdr*& startup_header, running_hdr*& net_run_hdr,
 			while (true) {
 				net_run_hdr->recv_mtx.lock();
 
-				if (net_run_hdr->msg_code == msg_codes::treatReceivedBuffer) {
+				if (net_run_hdr->msg_code == msg_codes::treatReceivedBuffer)
 					treatRcvMsg(net_run_hdr, idata);
-				}
-				else if (net_run_hdr->msg_code == msg_codes::sendBuffer) {
+				else if (net_run_hdr->msg_code == msg_codes::sendBuffer)
 					sendFct(hSocket, net_run_hdr, (*net_run_hdr->transferBuffer), net_run_hdr->trsfrBufferLen, idata);
-				} else if (net_run_hdr->msg_code == msg_codes::addEndpoint) {
+				else if (net_run_hdr->msg_code == msg_codes::addEndpoint) {
 					ip_endpoint ipe;
 					unsigned char* container = (*net_run_hdr->transferBuffer);
 
@@ -204,17 +203,16 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 	if (!WSAStartup(MAKEWORD(iMinWinsockVer, 0), &wsadata)) {
 		inet_data* idata = new inet_data;
 
-		if (LOBYTE(wsadata.wVersion) >= iMinWinsockVer) {
+		if (LOBYTE(wsadata.wVersion) >= iMinWinsockVer)
 			winnet_poststartup(startup_header, net_run_hdr, idata);
-		}
 		else {
-			std::cout << "Network API Version is not compatible" << std::endl;
+			nstd::ncout << "Network API Version is not compatible" << nstd::nendl;
 			delete idata;
 			return;
 		}
 
 		if (WSACleanup() != 0) {
-			std::cout << "Failed cleaning up networking interface" << std::endl;
+			nstd::ncout << "Failed cleaning up networking interface" << nstd::nendl;
 			delete idata;
 			return;
 		}
@@ -234,7 +232,7 @@ void netint_submain(startup_hdr*& startup_header, running_hdr*& net_run_hdr) {
 		delete idata;
 	}
 	else {
-		std::cout << "Failed launching networking interface startup" << std::endl;
+		nstd::ncout << "Failed launching networking interface startup" << nstd::nendl;
 		return;
 	}
 }

@@ -291,7 +291,7 @@ void runFile(std::string filename) {
 
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
-		std::cerr << "Usage: vexe <executableFile>" << std::endl;
+		nstd::ncout << "Usage: vexe <executableFile>" << nstd::nendl;
 		return 1;
 	}
 

@@ -27,31 +27,31 @@ extern std::string source_file;
 // General asserts
 
 [[noreturn]] inline void assert_err(const std::string& s, uint64_t nline, int ec) noexcept(false) {
-	std::cerr << __CASRTHDR(nline) << s << std::endl;
+	nstd::ncout << __CASRTHDR(nline) << s << nstd::nendl;
 	std::exit(ec);
 	__CEXIT();
 }
 [[noreturn]] inline void assert_err(const std::string& prefix, const std::string& inst, const std::vector<std::string>& args, uint64_t nline, int ec) noexcept(false) {
-	std::cerr << __CASRTHDR(nline) << prefix << inst << " ";
+	nstd::ncout << __CASRTHDR(nline) << prefix << inst << " ";
 	for (size_t i = 0; i < args.size(); ++i) {
 		if (!i)
-			std::cerr << args[i];
+			nstd::ncout << args[i];
 		else
-			std::cerr << "," << args[i];
+			nstd::ncout << "," << args[i];
 	}
-	std::cerr << std::endl;
+	nstd::ncout << nstd::nendl;
 	std::exit(ec);
 	__CEXIT();
 }
 [[noreturn]] inline void assert_err(const std::string& prefix, const std::string& inst, const std::vector<token>& args, uint64_t nline, int ec) noexcept(false) {
-	std::cerr << __CASRTHDR(nline) << prefix << inst << " ";
+	nstd::ncout << __CASRTHDR(nline) << prefix << inst << " ";
 	for (size_t i = 0; i < args.size(); ++i) {
 		if (!i)
-			std::cerr << args[i].element;
+			nstd::ncout << args[i].element;
 		else
-			std::cerr << "," << args[i].element;
+			nstd::ncout << "," << args[i].element;
 	}
-	std::cout << std::endl;
+	nstd::ncout << nstd::nendl;
 	std::exit(ec);
 	__CEXIT();
 }

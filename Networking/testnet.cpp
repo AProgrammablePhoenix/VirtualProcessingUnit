@@ -4,6 +4,8 @@
 #include <string>
 #include <thread>
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../utility.h"
 #include "net_hdr.h"
 
@@ -81,7 +83,7 @@ int main() {
 	submain1.join();
 	submain2.join();
 
-	std::cout << "RECEIVED: " << std::string((char*)buffer2) << std::endl;
+	nstd::ncout << "RECEIVED: " << std::string((char*)buffer2) << nstd::nendl;
 
 	delete[] buffer1, buffer2;
 	delete rhdr1, rhdr2, shdr1, shdr2;

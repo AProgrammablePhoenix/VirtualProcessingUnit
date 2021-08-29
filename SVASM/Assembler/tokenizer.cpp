@@ -165,38 +165,38 @@ static bool isTQ(const std::string& s) {
 int tokenizeArgument(const std::unordered_set<std::string> labels, const std::string& arg, token& out_tokenized, uint64_t nline) {
 	if (registers.find(arg) != registers.end()) {
 		out_tokenized = token(arg, tokenTypes::reg);
-		return OK;
+		return SVAS_OK;
 	}
 	else if (fp_regs.find(arg) != fp_regs.end()) {
 		out_tokenized = token(arg, tokenTypes::fp_reg);
-		return OK;
+		return SVAS_OK;
 	}
 	else {
 		tokenTypes tempType;
 		if (isNum(arg, tempType)) {
 			out_tokenized = token(arg, tempType);
-			return OK;
+			return SVAS_OK;
 		}
 		else if (isStr(arg)) {
 			out_tokenized = token(arg, tokenTypes::str);
-			return OK;
+			return SVAS_OK;
 		}
 		else if (isRegAddr(arg)) {
 			out_tokenized = token(arg, tokenTypes::stored_addr_reg);
-			return OK;
+			return SVAS_OK;
 		}
 		else if (isImmAddr(arg)) {
 			out_tokenized = token(arg, tokenTypes::stored_addr_raw);
-			return OK;
+			return SVAS_OK;
 		}
 		else if (isTQ(arg)) {
 			out_tokenized = token(arg, tokenTypes::type_quantifier);
-			return OK;
+			return SVAS_OK;
 		}
 		else {
 			if (labels.find(arg) != labels.end()) {
 				out_tokenized = token(arg, tokenTypes::label);
-				return OK;
+				return SVAS_OK;
 			}
 		}
 
@@ -207,12 +207,12 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 	if (parsed.instruction.back() == ':' && parsed.arguments.size() == 0) {
 		out_tokenized.instruction = "[labeldef]";
 		out_tokenized.arguments.emplace_back(parsed.instruction.substr(0, parsed.instruction.size() - 1), tokenTypes::label);
-		return OK;
+		return SVAS_OK;
 	}
 	else if ((parsed.instruction == "#safe" || parsed.instruction == "#unsafe") && parsed.arguments.size() == 0) {
 		out_tokenized.instruction = "[safety_control]";
 		out_tokenized.arguments.emplace_back(parsed.instruction.substr(1, parsed.instruction.size() - 1), tokenTypes::safety_directive);
-		return OK;
+		return SVAS_OK;
 	}
 	else if ((parsed.instruction == "#resmem") && parsed.arguments.size() == 1) {
 		tokenTypes arg_type;
@@ -252,7 +252,7 @@ int tokenizeCodeline(const std::unordered_set<std::string>& labels, const codeli
 	}
 	out_tokenized.instruction = parsed.instruction;
 
-	return OK;
+	return SVAS_OK;
 }
 int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<codeline>& parsed,
 		std::vector<tokenized>& out_tokenized) {
@@ -266,5 +266,5 @@ int tokenizer(const std::unordered_set<std::string>& labels, const std::vector<c
 		out_tokenized.emplace_back(temp);
 	}
 
-	return OK;
+	return SVAS_OK;
 }

@@ -14,6 +14,8 @@
 #include <stdio.h>
 #endif
 
+#include "../CursesWrapper/wrapper.hpp"
+
 #include "../utility.h"
 #include "../Memory/memory_decl.h"
 #include "variables.h"
@@ -134,8 +136,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
 				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
-			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
-			std::cout << "Variable not compiled" << std::endl;
+			nstd::ncout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << nstd::nendl;
+			nstd::ncout << "Variable not compiled" << nstd::nendl;
 			decl_data.decl_name = "<parsing-error>";
 		}
 
@@ -158,8 +160,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
 				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
-			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
-			std::cout << "Variable not compiled" << std::endl;
+			nstd::ncout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << nstd::nendl;
+			nstd::ncout << "Variable not compiled" << nstd::nendl;
 			decl_data.decl_name = "<parsing-error>";
 		}
 
@@ -175,8 +177,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
 				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
-			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
-			std::cout << "Variable not compiled" << std::endl;
+			nstd::ncout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << nstd::nendl;
+			nstd::ncout << "Variable not compiled" << nstd::nendl;
 			decl_data.decl_name = "<parsing-error>";
 		}
 	}
@@ -190,8 +192,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
 				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
-			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
-			std::cout << "Variable not compiled" << std::endl;
+			nstd::ncout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << nstd::nendl;
+			nstd::ncout << "Variable not compiled" << nstd::nendl;
 			decl_data.decl_name = "<parsing-error>";
 		}
 	}
@@ -205,8 +207,8 @@ code_file_decl_form processDeclCodeLine(std::string line) {
 
 		if (!decl_data.decl_name.rfind(RES_VAR_TAG, 0) || !decl_data.decl_name.rfind(RES_USR_VAR_TAG, 0) ||
 				!decl_data.decl_name.rfind(RES_TAG_VAR_TAG, 0) || regs_names.find(decl_data.decl_name) != regs_names.end()) {
-			std::cout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << std::endl;
-			std::cout << "Variable not compiled" << std::endl;
+			nstd::ncout << "Denied variable name (starts with restricted name): " << decl_data.decl_name << nstd::nendl;
+			nstd::ncout << "Variable not compiled" << nstd::nendl;
 			decl_data.decl_name = "<parsing-error>";
 		}
 	}
@@ -237,8 +239,8 @@ std::vector<code_file_decl_form> parse_code_file(std::string filename, std::vect
 				tag.value = 0;
 
 				if (regs_names.find(tag.tagname) != regs_names.end()) {
-					std::cout << "Denied tag name (starts with restricted name): " << tag.tagname << std::endl;
-					std::cout << "tag not compiled" << std::endl;
+					nstd::ncout << "Denied tag name (starts with restricted name): " << tag.tagname << nstd::nendl;
+					nstd::ncout << "tag not compiled" << nstd::nendl;
 				}
 				else {
 					tagsvec->push_back(tag);
@@ -251,7 +253,7 @@ std::vector<code_file_decl_form> parse_code_file(std::string filename, std::vect
 		}
 	}
 	else {
-		std::cout << "Unable to read secified code file" << std::endl;
+		nstd::ncout << "Unable to read secified code file" << nstd::nendl;
 		return decl_lines;
 	}
 
@@ -283,8 +285,8 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 				}
 				else if (parsed[i].decl_type == "char") {
 					if (parsed[i].decl_value.size() < 1) {
-						std::cout << "Error at declaration of variable: '" << parsed[i].decl_name 
-							<< "' (type: char) :: invalid value length" << std::endl;
+						nstd::ncout << "Error at declaration of variable: '" << parsed[i].decl_name 
+							<< "' (type: char) :: invalid value length" << nstd::nendl;
 						continue;
 					}
 

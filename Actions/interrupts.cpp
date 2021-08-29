@@ -50,7 +50,7 @@ void interrupts::init() {
 }
 
 void handle_display(std::shared_ptr<void> unused_p, regs* const registers, memory* const unused_m) {
-	uint8_t int_call = registers->rax->get(); // Change to AH when this register will be unlocked
+	uint8_t int_call = (uint8_t)registers->rax->get(); // Change to AH when this register will be unlocked
 
 	switch (int_call) {
 		case 0:
