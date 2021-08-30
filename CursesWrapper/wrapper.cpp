@@ -234,6 +234,9 @@ namespace nstd {
 				ch = getch();
 			}
 
+			if (ch == KEY_ENTER)
+				nstd::ncout << nstd::nendl;
+
 			return nistream;
 #endif
 		}
