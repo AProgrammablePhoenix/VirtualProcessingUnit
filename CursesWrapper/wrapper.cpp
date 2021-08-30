@@ -202,32 +202,8 @@ namespace nstd {
 
 			return nistream;
 #else
-			while ((char)ch != '\n' && ch != PADENTER) {
+			while ((char)ch != '\n' && ch != KEY_ENTER) {
 				switch (ch) {
-					case PADPLUS:
-						str.push_back('+');
-						waddch(stdscr, '+');
-						++n_chrs;
-						++max_chrs;
-						break;
-					case PADMINUS:
-						str.push_back('-');
-						waddch(stdscr, '-');
-						++n_chrs;
-						++max_chrs;
-						break;
-					case PADSTAR:
-						str.push_back('*');
-						waddch(stdscr, '*');
-						++n_chrs;
-						++max_chrs;
-						break;
-					case PADSLASH:
-						str.push_back('/');
-						waddch(stdscr, '/');
-						++max_chrs;
-						++n_chrs;
-						break;
 					case KEY_LEFT:
 						int x, y;
 						getyx(stdscr, y, x);
@@ -257,9 +233,6 @@ namespace nstd {
 				wrefresh(stdscr);
 				ch = getch();
 			}
-
-			if (ch == PADENTER)
-				nstd::ncout << nstd::nendl;
 
 			return nistream;
 #endif
