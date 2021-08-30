@@ -15,8 +15,7 @@ add_library(registers STATIC
 			"Registers/mov.cpp" "Registers/native_maths.cpp" "Registers/extended_symbols.cpp" "Registers/native_binary.cpp" "utility.h")
 
 add_library(memory STATIC
-			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" 
-			    
+			"Memory/memory_decl.h" "Memory/memory_symbols.h" "Memory/memory_symbols.cpp" 			    
 			"Memory/memory_decl.cpp" "utility.h")
 
 add_library(exSymbols STATIC
@@ -35,7 +34,7 @@ add_library(netlib STATIC
 			"Networking/net_symbols.h" "Networking/netman.cpp" "Networking/netman.h")
 
 add_library(wrpcurses STATIC
-			"CursesWrapper/wrapper.hpp" "CursesWrapper/Wrapper.cpp")
+			"CursesWrapper/wrapper.hpp" "CursesWrapper/wrapper.cpp")
 
 target_link_libraries(registers wrpcurses)
 target_link_libraries(memory registers)
@@ -50,7 +49,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fpermissive -lncurses")
 	find_package(Threads REQUIRED)
 	find_package(Curses REQUIRED)
-	target_link_libraries(wrpcurses PUBLIC Curses::Curses)
+	target_link_libraries(wrpcurses PUBLIC ${CURSES_LIBRARIES})
 	target_link_libraries(netlib PUBLIC Threads::Threads memory)
 endif()
 
