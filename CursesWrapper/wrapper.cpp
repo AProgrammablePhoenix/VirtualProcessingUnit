@@ -135,12 +135,12 @@ namespace nstd {
 		}
 
 		basic_nistream& operator>>(basic_nistream& nistream, std::string& str) {
-#if defined(ISWIN)
 			str.clear();
 			int ch = getch();
 			size_t n_chrs = 0;
 			size_t max_chrs = 0;
 
+#if defined(ISWIN)
 			while ((char)ch != '\n' && ch != PADENTER) {
 				switch (ch) {
 					case PADPLUS:
@@ -167,6 +167,11 @@ namespace nstd {
 						++max_chrs;
 						++n_chrs;
 						break;
+					case KEY_LEFT:
+						int x, y;
+						getyx(stdscr, y, x);
+						wmove(stdscr, y, --x);
+						[[fallthrough]];
 					case KEY_BACKSPACE:
 					case 0x8:
 					case 0x7F:
@@ -180,22 +185,6 @@ namespace nstd {
 							int x, y;
 							getyx(stdscr, y, x);
 							wmove(stdscr, y, ++x);
-						}
-						break;
-					case KEY_LEFT:
-						if (n_chrs) {
-							int x, y;
-							getyx(stdscr, y, x);
-							wmove(stdscr, y, --x);
-							--n_chrs;
-						}
-						break;
-					case KEY_RIGHT:
-						if (n_chrs < max_chrs) {
-							int x, y;
-							getyx(stdscr, y, x);
-							wmove(stdscr, y, ++x);
-							++n_chrs;
 						}
 						break;
 					default:
@@ -213,10 +202,65 @@ namespace nstd {
 
 			return nistream;
 #else
-			char temp[256] = { 0 };
-			getnstr(temp, 256);
+			while ((char)ch != '\n' && ch != PADENTER) {
+				switch (ch) {
+					case PADPLUS:
+						str.push_back('+');
+						waddch(stdscr, '+');
+						++n_chrs;
+						++max_chrs;
+						break;
+					case PADMINUS:
+						str.push_back('-');
+						waddch(stdscr, '-');
+						++n_chrs;
+						++max_chrs;
+						break;
+					case PADSTAR:
+						str.push_back('*');
+						waddch(stdscr, '*');
+						++n_chrs;
+						++max_chrs;
+						break;
+					case PADSLASH:
+						str.push_back('/');
+						waddch(stdscr, '/');
+						++max_chrs;
+						++n_chrs;
+						break;
+					case KEY_LEFT:
+						int x, y;
+						getyx(stdscr, y, x);
+						wmove(stdscr, y, --x);
+						[[fallthrough]];
+					case KEY_BACKSPACE:
+					case 0x8:
+					case 0x7F:
+						if (n_chrs) {
+							wdelch(stdscr);
+							str.pop_back();
+							--n_chrs;
+							--max_chrs;
+						}
+						else {
+							int x, y;
+							getyx(stdscr, y, x);
+							wmove(stdscr, y, ++x);
+						}
+						break;
+					default:
+						str.push_back((char)ch);
+						++n_chrs;
+						++max_chrs;
+						break;
+				}
+				wrefresh(stdscr);
+				ch = getch();
+			}
 
-			str = std::string(temp);
+			if (ch == PADENTER)
+				nstd::ncout << nstd::nendl;
+
 			return nistream;
 #endif
 		}
