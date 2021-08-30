@@ -66,9 +66,6 @@ namespace nstd {
 		~nostream();
 
 		void clear();
-
-		operator base::basic_nostream() const;
-		operator base::basic_nostream& ();
 	};
 
 	nostream& operator<<(nstd::nostream& nostream, nstd::nostream& (*_Pfn)(nstd::nostream&));
@@ -88,9 +85,6 @@ namespace nstd {
 	public:
 		nistream();
 		~nistream();
-
-		operator base::basic_nistream() const;
-		operator base::basic_nistream& ();
 	};
 
 	static nistream ncin;

@@ -295,13 +295,6 @@ namespace nstd {
 		*this << nflush;
 	}
 
-	nostream::operator base::basic_nostream() const {
-		return nstd::base::ncout;
-	}
-	nostream::operator base::basic_nostream& () {
-		return nstd::base::ncout;
-	}
-
 	nostream& operator<<(nostream& nostream, const char* str) {
 		printw(str);
 		return nostream;
@@ -349,12 +342,5 @@ namespace nstd {
 	}
 	nistream::~nistream() {
 		nstd::base::ncin.close();
-	}
-
-	nistream::operator base::basic_nistream() const {
-		return nstd::base::ncin;
-	}
-	nistream::operator base::basic_nistream& () {
-		return nstd::base::ncin;
 	}
 }
