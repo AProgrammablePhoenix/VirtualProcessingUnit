@@ -30,7 +30,11 @@ namespace nstd {
 				initscr();
 				scrollok(stdscr, TRUE);
 				keypad(stdscr, TRUE);
+#ifdef ISWIN
 				cbreak();
+#else
+				nocbreak();
+#endif
 				echo();
 				comn_initialized = true;
 			}
@@ -114,7 +118,11 @@ namespace nstd {
 				initscr();
 				scrollok(stdscr, TRUE);
 				keypad(stdscr, TRUE);
+#ifdef ISWIN
 				cbreak();
+#else
+				nocbreak();
+#endif
 				echo();
 				comn_initialized = true;
 			}
