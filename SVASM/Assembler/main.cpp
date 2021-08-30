@@ -9,7 +9,7 @@
 #include <stdio.h>
 #endif
 
-#include "../CursesWrapper/wrapper.hpp"
+#include "../../CursesWrapper/wrapper.hpp"
 
 #include "../../VirtualAssembler/assembler.h"
 #include "compiler.h"
