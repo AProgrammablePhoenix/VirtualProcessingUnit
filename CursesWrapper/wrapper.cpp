@@ -42,6 +42,11 @@ namespace nstd {
 		void basic_nostream::close() {
 			if (comn_initialized) {
 				comn_initialized = false;
+
+				waddstr(stdscr, "Press any key to leave...");
+				noecho();
+				getch();
+
 				endwin();
 			}
 		}
@@ -117,6 +122,11 @@ namespace nstd {
 		void basic_nistream::close() {
 			if (comn_initialized) {
 				comn_initialized = false;
+
+				waddstr(stdscr, "Press any key to leave...");
+				noecho();
+				getch();
+
 				endwin();
 			}
 		}
