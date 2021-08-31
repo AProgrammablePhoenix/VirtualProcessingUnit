@@ -74,15 +74,15 @@ void variables_decl::set(std::string var_name, unsigned char* value, size_t leng
 
 	this->vars[var_name] = std::make_tuple(addr, length, nbyte(0));
 }
-void variables_decl::get(std::string var_name, unsigned char** out) {
+void variables_decl::get(std::string var_name, unsigned char*& out) {
 	if (!this->vars.count(var_name)) {
 		out = nullptr;
 		return;
 	}
 	const auto [vaddr, vsize, vopt] = this->vars[var_name];
 
-	*out = new unsigned char[vsize];
-	this->mem->_MG(*out, vsize, vaddr);
+	out = new unsigned char[vsize];
+	this->mem->_MG(out, vsize, vaddr);
 }
 
 void variables_decl::setVariablesTree(code_file_decl_form branch) {
@@ -278,9 +278,19 @@ variables_decl build_variables_decl_tree(std::string filename, memory* mem) {
 #else
 					std::memcpy(uc_s, parsed[i].decl_value.c_str(), parsed[i].decl_value.size() + 1);
 #endif
-					storage.set(parsed[i].decl_name, uc_s, parsed[i].decl_value.size() + 1);
+					unsigned char* temp = nullptr;
+					if (storage.get(parsed[i].decl_name, temp); temp != nullptr)
+						continue;
+
+					size_t addr = mem->_SDZTOP();
+					mem->_SDZS(uc_s, parsed[i].decl_value.size() + 1);
+
+					ULLTOA(addr, &temp);
+
+					storage.set(parsed[i].decl_name, temp, sizeof(size_t));
 					storage.setVariablesTree(parsed[i]);
 
+					delete[] temp;
 					delete[] uc_s;
 				}
 				else if (parsed[i].decl_type == "char") {

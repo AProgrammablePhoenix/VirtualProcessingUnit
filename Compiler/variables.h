@@ -30,7 +30,7 @@ public:
 	variables_decl(memory* _mem);
 
 	void set(std::string var_name, unsigned char* value, size_t length);;
-	void get(std::string var_name, unsigned char** out);
+	void get(std::string var_name, unsigned char*& out);
 
 	void setVariablesTree(code_file_decl_form branch);
 

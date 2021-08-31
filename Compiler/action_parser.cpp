@@ -329,7 +329,7 @@ static std::vector<std::string> global_include_list;
 static bool mem_resizing_req = false;
 static bool is_mem_resized = false;
 
-std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
+std::string processCompiletimeArg(std::string argument, variables_decl* vars, memory* mem) {
 	std::string content = argument.substr(3, argument.size() - 5);
 	std::string prefix = std::string(1, content[0]);
 	if (prefix == "_") {
@@ -479,17 +479,24 @@ std::string processCompiletimeArg(std::string argument, variables_decl* vars) {
 
 			size_t str_size = value.size() + 1;
 
-			unsigned char* uc_s = new unsigned char[str_size];
+			auto buffer = std::make_unique<uint8_t[]>(str_size);
 #if defined(ISWIN)
-			memcpy_s(uc_s, str_size, value.c_str(), str_size);
+			memcpy_s(buffer.get(), str_size, value.c_str(), str_size);
 #else
-			std::memcpy(uc_s, value.c_str(), str_size);
+			std::memcpy(buffer.get(), value.c_str(), str_size);
 #endif
-			vars->set(var_name, uc_s, str_size);
+
+			size_t addr = mem->_SDZTOP();
+			mem->_SDZS(buffer.get(), str_size);
+
+			unsigned char* buffer_2 = nullptr;
+			ULLTOA(addr, &buffer_2);
+
+			vars->set(var_name, buffer_2, sizeof(size_t));
 			vars->setVariablesTree(decl_form);
 			vars->sys_vars_count += 1;
 
-			delete[] uc_s;
+			delete[] buffer_2;
 
 			return var_name;
 		}
@@ -554,7 +561,7 @@ std::vector<std::vector<std::string>> parseCodeLines(std::string filename, varia
 
 			if (!argument.find("${{", 0) && argument.find("}}", argument.size() - 2) > 2
 				&& argument.find("}}", argument.size() - 2 < argument.size())) {
-				argument = processCompiletimeArg(argument, vars);
+				argument = processCompiletimeArg(argument, vars, memptr);
 			}
 
 			uint8_t opt_flag = 0b000;
