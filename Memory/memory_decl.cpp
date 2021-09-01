@@ -46,15 +46,18 @@ size_t memory::getMemLen() const {
 	return this->sdzsize + this->_memlen;
 }
 
-void memory::push(unsigned char* data, size_t count = 8) {
+void memory::push(unsigned char* data, size_t count = 8, bool swap_endianness) {
 	if (isvalidpush(*this->registers->rbp, *this->registers->rsp, *this->registers->rsend, *this->registers->rsbgn, count)) {
+		if (swap_endianness)
+			swap_endian(data, data + count);
+
 		for (size_t addr = *this->registers->rsp, iaddr = 0; addr >= *this->registers->rsp - count && iaddr < count; addr--, iaddr++) {
 			this->_memory[addr] = data[iaddr];
 		}
 		*this->registers->rsp = *this->registers->rsp - count;
 	}
 }
-void memory::pop(unsigned char* data, size_t count = 8) {
+void memory::pop(unsigned char* data, size_t count = 8, bool swap_endianness) {
 	if (isvalidpop(*this->registers->rbp, *this->registers->rsp, *this->registers->rsend, *this->registers->rsbgn, count)) {
 		for (size_t addr = *this->registers->rsp + 1, oaddr = count; addr <= *this->registers->rsp + count && oaddr > 0;
 				addr++, oaddr--) {
@@ -62,6 +65,9 @@ void memory::pop(unsigned char* data, size_t count = 8) {
 			this->_memory[addr] = 0;
 		}
 		*this->registers->rsp = *this->registers->rsp + count;
+
+		if (swap_endianness)
+			swap_endian(data, data + count);
 	}
 }
 

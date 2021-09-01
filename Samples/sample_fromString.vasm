@@ -8,59 +8,126 @@ decl string prompt1 input1:
 decl string prompt2 input2: 
 decl string prompt3 input3: 
 
+decl unsigned_number prefix_len 9
+
 decl unsigned_number swap_id 1
 decl unsigned_number sec_swap_id 3
 
-setSR prompt1
+decl unsigned_number buffer_rel_addr 0
+decl unsigned_number buffer_len 64
+
+sdzs RBX
+
+
+; first input
+setRSI prompt1
+setRDI prefix_len
 setRAX ${{N0}}
 int ${{N5}}
+
+setRDI buffer_rel_addr
+addRDI RBX
+setRSI buffer_len
 int ${{N1}}
-popSR 0
+
 setRCX swap_id
 push RCX
-pushSR 0
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 int ${{N7}}
 pop RDX
+
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 setRCX sec_swap_id
 push RCX
 push RDX
 int ${{N6}}
-popSR 0
+
+setRSI buffer_rel_addr
+addRSI RBX
+setRDI buffer_len
 setRAX ${{N1}}
 int ${{N5}}
 
-setSR prompt2
+
+; second input
+setRSI prompt2
+setRDI prefix_len
 setRAX ${{N0}}
 int ${{N5}}
+
+setRDI buffer_rel_addr
+addRDI RBX
+setRSI buffer_len
 int ${{N1}}
-popSR 0
+
 setRCX swap_id
 push RCX
-pushSR 0
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 int ${{N7}}
 pop RDX
+
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 setRCX sec_swap_id
 push RCX
 push RDX
 int ${{N6}}
-popSR 0
+
+setRSI buffer_rel_addr
+addRSI RBX
+setRDI buffer_len
 setRAX ${{N1}}
 int ${{N5}}
 
-setSR prompt3
+
+; third input
+setRSI prompt3
+setRDI prefix_len
 setRAX ${{N0}}
 int ${{N5}}
+
+setRDI buffer_rel_addr
+addRDI RBX
+setRSI buffer_len
 int ${{N1}}
-popSR 0
+
 setRCX swap_id
 push RCX
-pushSR 0
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 int ${{N7}}
 pop RDX
+
+setRCX buffer_rel_addr
+addRCX RBX
+push RCX
+setRCX buffer_len
+push RCX
 setRCX sec_swap_id
 push RCX
 push RDX
 int ${{N6}}
-popSR 0
+
+setRSI buffer_rel_addr
+addRSI RBX
+setRDI buffer_len
 setRAX ${{N1}}
 int ${{N5}}

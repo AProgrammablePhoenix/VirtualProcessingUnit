@@ -19,28 +19,45 @@
 #include "../Memory/memory_symbols.h"
 #include "registers_symbols.h"
 
+// RDI: destination address
+// RSI: maximum length of input/output
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string saved_sr = registers->sr->get(), input;
+	uint64_t dest_addr = *registers->rdi;
+	uint64_t dest_len = *registers->rsi;
 
+	std::string input;
 	nstd::ncin >> input;
-	registers->sr->set(input);
 
-	pushMemSR(unused_p, registers, mem);
-	registers->sr->set(saved_sr);
+	if (input.size() >= dest_len)
+		input = input.substr(0, dest_len - 1);
+
+	auto temp = std::make_unique<uint8_t[]>(dest_len);
+	mp_memcpy<uint8_t, uint8_t>((uint8_t*)input.data(), temp.get(), input.size() + 1);
+
+	mem->_MS(temp.get(), dest_len, dest_addr);
 }
 void b_toString(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	comn_registers reg_id = ATTOREGID(reg, mem);
 	if (!comn_registers_table::is_num_reg(reg_id))
 		return;
 
+	uint64_t dest_addr = *registers->rdi;
+	uint64_t dest_len = *registers->rsi;
+
 	comn_registers_table ptr_table = comn_registers_table(registers);
 	size_t value = ((reg_int<size_t>*)comn_registers_table(registers).access(reg_id))->get();
 
-	std::stringstream ss;
-	ss << value;
+	std::string str = std::to_string(value);
+	if (str.size() >= dest_len)
+		str = str.substr(0, dest_len - 1);
 
-	registers->sr->set(ss.str());
+	auto temp = std::make_unique<uint8_t[]>(dest_len);
+	mp_memcpy<uint8_t, uint8_t>((uint8_t*)str.data(), temp.get(), str.size() + 1);
+
+	mem->_MS(temp.get(), dest_len, dest_addr);
 }
+
+// Will be deleted
 void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string pushed = registers->sr->get();
 	popMemSR(NULL, registers, mem);
@@ -51,6 +68,8 @@ void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem)
 void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
 	registers->sr->set(registers->sr->get().substr(registers->rax->get(), registers->rbx->get()));
 }
+
+// Will be updated to be compliant to new strings management system
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	std::string sr = registers->sr->get();
 
@@ -63,13 +82,19 @@ void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	delete[] uc_n;
 }
 
-void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	std::string sr = registers->sr->get();
-	nstd::ncout << sr;
+// RDI: source length
+// RSI: source address
+void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	size_t len = *registers->rdi;
+
+	auto temp = std::make_unique<uint8_t[]>(len);
+	mem->_MG(temp.get(), len, *registers->rsi);
+
+	nstd::ncout << std::string((char*)temp.get()) << nstd::nflush;
 }
-void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	std::string sr = registers->sr->get();
-	nstd::ncout << sr << nstd::nendl;
+void b_println(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	b_print(nullptr, registers, mem);
+	nstd::ncout << nstd::nendl;
 }
 void b_printEOL(std::shared_ptr<void> unused_p, regs* unused_r, memory* unused_m) {
 	nstd::ncout << nstd::nendl;
@@ -96,8 +121,8 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 }
 
 /* STACK before calling:
-*	... RECAST_TYPE VALUE
-*	With output pushed in stack
+*	... (only if recast_type = 3)[STR_ADDR STR_LEN] RECAST_TYPE VALUE
+*	With output pushed in stack (only if recast_type != 3, otherwise, output is set on given target address)
 * 
 *	RECAST TYPES:
 *	- 0 = unsigned number -> signed number
@@ -106,7 +131,7 @@ void b_castreg(std::shared_ptr<void> receiver, regs* registers, memory* mem) {
 *	- 3 = unsigned_number -> signed_number -> string
 * 
 *	Excluded conversions:
-*	- unsigned_number -> string (reason: handled by "toString" instruction
+*	- [un]signed number -> string (reason: handled by "toString" instruction
 *	- string -> unsigned number | signed number (reason: handled by "fromString" instruction)
 */
 void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
@@ -145,21 +170,30 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 		delete[] temp;
 	}
 	else if (recast_type == 3) {
+		uint64_t str_len, str_addr;
+		auto buffer = std::make_unique<uint8_t[]>(sizeof(size_t));
+
+		mem->pop(buffer.get(), sizeof(size_t));
+		mp_memcpy(buffer.get(), &str_len);
+
+		mem->pop(buffer.get(), sizeof(size_t));
+		mp_memcpy(buffer.get(), &str_addr);
+
 		long long n_value = (long long)value;
 		std::stringstream ss;
 		ss << n_value;
 		std::string output;
 		ss >> output;
 
-		std::string saved_sr = registers->sr->get();
-		registers->sr->set(output);
-		pushMemSR(unused_p, registers, mem);
-		registers->sr->set(saved_sr);
+		if (output.size() > str_len)
+			output = output.substr(0, str_len);
+
+		mem->_MS((unsigned char*)output.c_str(), str_len, str_addr);
 	}
 }
 
 /* STACK before calling:
-*	... CAST_TYPE VALUE
+*	... CAST_TYPE STR_ADDR STR_SIZE
 *
 *	CAST TYPES:
 *	- 0 = string -> unsigned number
@@ -168,47 +202,46 @@ void b_recast(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	- 3 = string -> long double (retrieve value by popFP RFPRx (where x varies from 0 to 3 included)
 */
 void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string saved_sr = registers->sr->get();
+	auto temp = std::make_unique<uint8_t[]>(sizeof(size_t));
 
-	popMemSR(nullptr, registers, mem);
-	std::string value = registers->sr->get();
+	mem->pop(temp.get(), sizeof(uint64_t));
+	uint64_t str_size = 0;
+	mp_memcpy(temp.get(), &str_size);
 
-	unsigned char* temp = new unsigned char[sizeof(size_t)];
-	mem->pop(temp, sizeof(size_t));
-	size_t cast_type = 0;
+	mem->pop(temp.get(), sizeof(uint64_t));
+	uint64_t str_addr = 0;
+	mp_memcpy(temp.get(), &str_addr);
 
-	mp_memcpy(temp, &cast_type);
-	delete[] temp;
+	mem->pop(temp.get(), sizeof(uint64_t));
+	uint64_t cast_type = 0;
+	mp_memcpy(temp.get(), &cast_type);
+
+	auto str_buffer = std::make_unique<uint8_t[]>(str_size);
+	mem->_MG(str_buffer.get(), str_size, str_addr);
+	std::string value((char*)str_buffer.get(), str_size);
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
 		size_t n_value = 0;
 		ss >> n_value;
 
-		temp = new unsigned char[sizeof(size_t)];		
-		mp_memcpy(&n_value, temp);
-		mem->push(temp, sizeof(size_t));
-		registers->sr->set(saved_sr);
-		delete[] temp;
+		mp_memcpy(&n_value, temp.get());
+		mem->push(temp.get(), sizeof(size_t));
 	}
 	else if (cast_type == 1) {
 		std::stringstream ss(value);
 		long long n_value = 0;
 		ss >> n_value;
 
-		temp = new unsigned char[sizeof(long long)];
-		mp_memcpy(&n_value, temp, sizeof(long long));
-		mem->push(temp, sizeof(long long));
-		delete[] temp;
-
-		registers->sr->set(saved_sr);
+		temp = std::make_unique<uint8_t[]>(sizeof(int64_t));
+		mp_memcpy(&n_value, temp.get(), sizeof(int64_t));
+		mem->push(temp.get(), sizeof(int64_t));
 	}
 	else if (cast_type == 2) {
 		char saved_cr = registers->cr->get();
 		if (value.size() < 1) {
 			registers->cr->set('\0');
 			pushMemCR(NULL, registers, mem);
-			registers->sr->set(saved_sr);
 			registers->cr->set(saved_cr);
 			return;
 		}
@@ -216,24 +249,21 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 		char c = value[0];
 		registers->cr->set(c);
 		pushMemCR(NULL, registers, mem);
-		registers->sr->set(saved_sr);
 		registers->cr->set(saved_cr);
 	}
 	else if (cast_type == 3) {
-		long double saved_rfpr0 = *registers->rfpr0, d_value = 0;
+		long double d_value = 0;
 		std::stringstream ss(value);
 		ss >> d_value;
-
+		
 		auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
 		mp_memcpy(&d_value, uc_ld.get(), sizeof(long double));
 
 		mem->push(uc_ld.get(), sizeof(long double));
-
-		registers->sr->set(saved_sr);
-		*registers->rfpr0 = saved_rfpr0;
 	}
 }
 
+// Will be updated
 /* Registers before calling:
 *  CR: input value
 *  SR: any value
@@ -243,6 +273,7 @@ void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(std::string(1, registers->cr->get()));
 }
 
+// Will be updated
 /* Reverse string in SR:
 *	- Input/Output in SR
 */
@@ -252,6 +283,7 @@ void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	registers->sr->set(vstr);
 }
 
+// Will be updated
 /*	Stack before calling:
 *	... FP_VALUE
 *	

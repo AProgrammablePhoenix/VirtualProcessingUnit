@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <iostream>
 #include <map>
 #include <memory>
@@ -93,9 +94,16 @@ inline long double ATOLD(unsigned char* _array) {
 	return ret;
 }
 
+// Swap endianness of current chars array, only used if hardware-supported endianness is little one,
+// because VCPU is in Big Endian mode by default.
+inline void swap_endian(uint8_t* first, uint8_t* last) {
+	if constexpr (std::endian::native == std::endian::little)
+		std::reverse(first, last);
+}
+
 // convert optional arg to type quantifier
 inline uint8_t VOPTTOTQ(const nbyte& vopt) {
-	const unsigned lref = vopt.nibbles.low & 0xfff; // Only first 3 bits are used for QT
+	const unsigned lref = vopt.raw_byte & 0xfff; // Only first 3 bits are used for QT
 	if (lref == 0)
 		return lref;
 	else if (lref == 1)

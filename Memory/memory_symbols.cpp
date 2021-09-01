@@ -98,10 +98,17 @@ void pushMem(GLOBL_ARGS) {
 	else
 		temp_sz = qt_det;
 
-	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+	size_t mask = 0;
+	for (size_t i = 0; i < temp_sz; ++i)
+		mask |= (size_t)0xff << (i * 8);
 
-	mp_memcpy(&value, temp.get());
-	mem->push(temp.get(), temp_sz);
+	value &= mask;
+
+	auto temp = std::make_unique<uint8_t[]>(temp_sz);
+	for (size_t j = 0, i = temp_sz; i > 0; --i, ++j)
+		temp[j] = (value >> ((i - 1) * 8)) & 0xff;
+
+	mem->push(temp.get(), temp_sz, false);
 }
 void popMem(GLOBL_ARGS) {
 	comn_registers reg_id = ATTOREGID(reg, mem);
@@ -224,7 +231,7 @@ void movsm(GLOBL_ARGS_D2) {
 		temp_sz = qt_det;
 
 	auto temp = std::make_unique<uint8_t[]>(temp_sz);
-	mem->pop(temp.get(), temp_sz);
+	mem->pop(temp.get(), temp_sz);	
 	mem->_MS(temp.get(), temp_sz, _addr);
 }
 void movgm(GLOBL_ARGS_D2) {

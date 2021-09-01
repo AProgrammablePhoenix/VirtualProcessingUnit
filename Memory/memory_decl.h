@@ -14,8 +14,8 @@ public:
 	void update(regs* _registers);
 	size_t getMemLen()const ;
 
-	void push(unsigned char* data, size_t count);
-	void pop(unsigned char* data, size_t count);
+	void push(unsigned char* data, size_t count, bool swap_endianness = true);
+	void pop(unsigned char* data, size_t count, bool swap_endianness = true);
 
 	// Resize memory
 	void _MRSZ(size_t newlen);
