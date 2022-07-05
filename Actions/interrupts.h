@@ -6,8 +6,6 @@
 
 enum class int_codes {
 	rdstdin     = 0x01, // Get input from command line
-	mergeString = 0x02,
-	substring   = 0x03,
 	_strlen     = 0x04,
 	display		= 0x05,
 	recast		= 0x06,

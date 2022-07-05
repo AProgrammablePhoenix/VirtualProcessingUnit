@@ -39,9 +39,6 @@ enum class virtual_actions {
 	push,
 	pop,
 
-	pushSR,
-	popSR,
-
 	pushCR,
 	popCR,
 
@@ -50,9 +47,6 @@ enum class virtual_actions {
 
 	movsm,
 	movgm,
-
-	movsmSR,
-	movgmSR,
 
 	movsmCR,
 	movgmCR,
@@ -87,7 +81,6 @@ enum class virtual_actions {
 	jg,
 	jle,
 	jge,
-	cmpstr,
 	cmpdbl,
 
 	gca,
@@ -214,9 +207,6 @@ private:
 		a_db[(size_t)virtual_actions::push] = pushMem;
 		a_db[(size_t)virtual_actions::pop] = popMem;
 
-		a_db[(size_t)virtual_actions::pushSR] = pushMemSR;
-		a_db[(size_t)virtual_actions::popSR] = popMemSR;
-
 		a_db[(size_t)virtual_actions::pushCR] = pushMemCR;
 		a_db[(size_t)virtual_actions::popCR] = popMemCR;
 
@@ -225,9 +215,6 @@ private:
 
 		a_db[(size_t)virtual_actions::movsm] = movsm;
 		a_db[(size_t)virtual_actions::movgm] = movgm;
-
-		a_db[(size_t)virtual_actions::movsmSR] = movsmSR;
-		a_db[(size_t)virtual_actions::movgmSR] = movgmSR;
 
 		a_db[(size_t)virtual_actions::movsmCR] = movsmCR;
 		a_db[(size_t)virtual_actions::movgmCR] = movgmCR;
@@ -246,7 +233,6 @@ private:
 		a_db[(size_t)virtual_actions::jg] = p_jg;
 		a_db[(size_t)virtual_actions::jle] = p_jle;
 		a_db[(size_t)virtual_actions::jge] = p_jge;
-		a_db[(size_t)virtual_actions::cmpstr] = p_cmpstr;
 		a_db[(size_t)virtual_actions::cmpdbl] = p_cmpdbl;
 
 		a_db[(size_t)virtual_actions::gca] = p_gca;

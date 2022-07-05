@@ -23,7 +23,6 @@ static const std::unordered_set<std::string> registers = {
 	"rbp",
 	"rsp",
 
-	"sr",
 	"cr"
 };
 static const std::unordered_set<std::string> fp_regs = {
@@ -129,7 +128,7 @@ static bool isRegAddr(const std::string& s) {
 
 	std::string potential_reg = s.substr(1, s.size() - 2);
 	if (registers.find(potential_reg) != registers.end()) {
-		if (potential_reg != "sr" && potential_reg != "cr" && potential_reg != "dr")
+		if (potential_reg != "cr")
 			return true;
 	}
 

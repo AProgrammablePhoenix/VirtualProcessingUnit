@@ -309,7 +309,6 @@ public:
 	bool IF = true; // Interrupts flag
 
 	charReg* cr = &_cr;
-	stringReg* sr = &_sr;
 	stringReg* structPtr = &_structPtr;
 private:
 	unsigned char c_al, c_ah, c_bl, c_bh, c_cl, c_ch, c_dl, c_dh;
@@ -378,6 +377,5 @@ private:
 	size_t _process_call_address = 0;
 
 	charReg _cr = charReg();
-	stringReg _sr = stringReg();
 	stringReg _structPtr = stringReg();
 };

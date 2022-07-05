@@ -48,7 +48,6 @@ enum class comn_registers {
 	RDI,
 	RSI,
 
-	SR,
 	CR,
 
 	FPR0,
@@ -94,8 +93,6 @@ void b_subGP(COMN_NMATHS_ARGS);
 #pragma region extended_ops
 void b_getInput(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 void b_toString(std::shared_ptr<void> reg, regs* registers, memory* mem);
-void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
-void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem);
 
 void b_print(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m);
@@ -146,7 +143,7 @@ public:
 	}
 
 	static bool is_num_reg(comn_registers reg_id) {
-		if ((size_t)reg_id < (size_t)comn_registers::SR)
+		if ((size_t)reg_id < (size_t)comn_registers::CR)
 			return true;
 		else
 			return false;
@@ -182,7 +179,6 @@ private:
 		table[(size_t)comn_registers::RDI] = registers->rdi;
 		table[(size_t)comn_registers::RSI] = registers->rsi;
 
-		table[(size_t)comn_registers::SR] = registers->sr;
 		table[(size_t)comn_registers::CR] = registers->cr;
 
 		table[(size_t)comn_registers::FPR0] = registers->fpr0;
@@ -220,22 +216,6 @@ inline void b_set_num(const std::shared_ptr<void>& args_ptr, regs*& registers, m
 	catch (...) {
 		if (uc_n)
 			delete[] uc_n;
-	}
-}
-inline void b_set_str(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem) {
-	unsigned char* uc_s = nullptr;
-	try {
-		const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_ptr);
-
-		uc_s = new unsigned char[vsize];
-		mem->_MG(uc_s, vsize, vaddr);
-
-		registers->sr->set(std::string((const char*)uc_s));
-		delete[] uc_s;
-	}
-	catch (...) {
-		if (uc_s)
-			delete[] uc_s;
 	}
 }
 inline void b_set_chr(const std::shared_ptr<void>& args_ptr, regs*& registers, memory* const& mem) {

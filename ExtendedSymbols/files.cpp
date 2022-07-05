@@ -10,17 +10,21 @@
 #include "files.h"
 
 
-
 void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 	if (registers->exec_level > 2)
 		return;
 
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
-	std::string filename = registers->sr->get();
+	size_t _namelen = *registers->rdi;
+
+	auto _tempname = std::make_unique<uint8_t[]>(_namelen);
+	mem->_MG(_tempname.get(), _namelen, *registers->rsi);
+
+	std::string filename = std::string((char*)_tempname.get());
 	size_t nBytes, oaddr, file_offset;
 	
-	auto temp = std::make_unique<unsigned char[]>(sizeof(size_t));
+	auto temp = std::make_unique<uint8_t[]>(sizeof(size_t));
 	mem->_MG(temp.get(), sizeof(size_t), vaddr);
 	nBytes = ATOULL(temp.get());
 
@@ -69,7 +73,12 @@ void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem) {
 
 	const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(args_p);
 
-	std::string filename = registers->sr->get();
+	size_t _namelen = *registers->rdi;
+
+	auto _tempname = std::make_unique<uint8_t[]>(_namelen);
+	mem->_MG(_tempname.get(), _namelen, *registers->rsi);
+
+	std::string filename = std::string((char*)_tempname.get());
 	size_t nBytes, iaddr, file_offset;
 
 	auto temp = std::make_unique<unsigned char[]>(sizeof(size_t));
@@ -127,8 +136,15 @@ void ex_rflen(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 
 	void* ptr = comn_registers_table(registers).access(reg_id);
 
+	size_t _namelen = *registers->rdi;
+
+	auto _tempname = std::make_unique<uint8_t[]>(_namelen);
+	mem->_MG(_tempname.get(), _namelen, *registers->rsi);
+
+	std::string filename = std::string((char*)_tempname.get());
+
 	std::error_code ec;
-	((reg_int<size_t>*)ptr)->set(std::filesystem::file_size(registers->sr->get(), ec));
+	((reg_int<size_t>*)ptr)->set(std::filesystem::file_size(filename, ec));
 
 	if (ec)
 		registers->rax->set(1);

@@ -1,3 +1,4 @@
+#include <array>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -200,7 +201,6 @@ void process_memory::setRegisters(variables_decl* vars) {
 	SETREG(comn_registers::RDI, "RDI", uc_r, vars, this->data_ptrs);
 	SETREG(comn_registers::RSI, "RSI", uc_r, vars, this->data_ptrs);
 
-	SETREG(comn_registers::SR, "SR", uc_r, vars, this->data_ptrs);
 	SETREG(comn_registers::CR, "CR", uc_r, vars, this->data_ptrs);
 
 	SETREG(comn_registers::FPR0, "FPR0", uc_r, vars, this->data_ptrs);
@@ -247,9 +247,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"push", virtual_actions::push},
 	{"pop", virtual_actions::pop},
 
-	{"pushSR", virtual_actions::pushSR},
-	{"popSR", virtual_actions::popSR},
-
 	{"pushCR", virtual_actions::pushCR},
 	{"popCR", virtual_actions::popCR},
 
@@ -258,9 +255,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 
 	{"movsm", virtual_actions::movsm},
 	{"movgm", virtual_actions::movgm},
-
-	{"movsmSR", virtual_actions::movsmSR},
-	{"movgmSR", virtual_actions::movgmSR},
 
 	{"movsmCR", virtual_actions::movsmCR},
 	{"movgmCR", virtual_actions::movgmCR},
@@ -293,7 +287,6 @@ std::map<std::string, virtual_actions> symbols_converter =
 	{"jg", virtual_actions::jg},
 	{"jle", virtual_actions::jle},
 	{"jge", virtual_actions::jge},
-	{"cmpstr", virtual_actions::cmpstr},
 	{"cmpdbl", virtual_actions::cmpdbl},
 
 	{"gca", virtual_actions::gca},
@@ -616,8 +609,6 @@ std::vector<std::tuple<virtual_actions, uint8_t>> convertSymbols(std::vector<std
 			uint8_t sec_opr;
 			if (dest == "CR")
 				sec_opr = (uint8_t)comn_registers::CR;
-			else if (dest == "SR")
-				sec_opr = (uint8_t)comn_registers::SR;
 			else
 				sec_opr = (uint8_t)STOREGID(dest);
 			converted.emplace_back(virtual_actions::set, sec_opr);

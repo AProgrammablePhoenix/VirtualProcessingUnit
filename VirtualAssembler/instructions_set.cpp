@@ -77,9 +77,6 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::push, 0x67},
 	{virtual_actions::pop,  0x68},
 
-	{virtual_actions::pushSR, 0x69},
-	{virtual_actions::popSR,  0x6A},
-
 	{virtual_actions::pushCR, 0x6B},
 	{virtual_actions::popCR,  0x6C},
 
@@ -103,7 +100,6 @@ std::map<virtual_actions, byte> instructions_set = {
 	{virtual_actions::jg,     0x7E},
 	{virtual_actions::jle,    0x7F},
 	{virtual_actions::jge,    0x80},
-	{virtual_actions::cmpstr, 0x81},
 	
 	{virtual_actions::gca,    0x82},
 	{virtual_actions::hlt,    0x83},
@@ -120,9 +116,6 @@ std::map<virtual_actions, byte> instructions_set = {
 
 	{virtual_actions::movsm,   0x8D},
 	{virtual_actions::movgm,   0x8E},
-
-	{virtual_actions::movsmSR, 0x8F},
-	{virtual_actions::movgmSR, 0x90},
 
 	{virtual_actions::movsmCR, 0x91},
 	{virtual_actions::movgmCR, 0x92},
@@ -155,14 +148,11 @@ std::map<virtual_actions, byte> instructions_set = {
 std::map<virtual_actions, byte>& ops = instructions_set;
 
 std::unordered_set<byte> zero_args_opcodes = {
-	ops[virtual_actions::pushSR],
-	ops[virtual_actions::popSR],
 	ops[virtual_actions::pushCR],
 	ops[virtual_actions::popCR],
 
 
 	ops[virtual_actions::cmp],
-	ops[virtual_actions::cmpstr],
 	ops[virtual_actions::cmpdbl],
 
 	ops[virtual_actions::gca],
@@ -222,9 +212,6 @@ std::unordered_set<byte> reg_args_opcodes = {
 
 	ops[virtual_actions::movsm],
 	ops[virtual_actions::movgm],
-
-	ops[virtual_actions::movsmSR],
-	ops[virtual_actions::movgmSR],
 
 	ops[virtual_actions::movsmCR],
 	ops[virtual_actions::movgmCR],

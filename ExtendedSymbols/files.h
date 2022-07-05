@@ -10,7 +10,9 @@
 #include "../Memory/memory_symbols.h"
 
 /* Registers statuses/values before call:
-*	SR: input filename
+*	RDI: string length
+*	RSI: string address
+*		where string is a string representing the path to a file
 *  Stack:
 *	... file_offset output_addr
 *  Arg:
@@ -28,5 +30,8 @@ void ex_rfread(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 */
 void ex_rfwrite(std::shared_ptr<void> args_p, regs* registers, memory* mem);
 
-// SR: file which size has to be computed
+/* Registers statuses/values before call:
+*	RDI: string length
+*	RSI: string address
+*/
 void ex_rflen(std::shared_ptr<void> reg, regs* registers, memory* mem);

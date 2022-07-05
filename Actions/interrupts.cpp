@@ -40,8 +40,6 @@ void interrupts::pass(unsigned char interrupt) {
 }
 void interrupts::init() {
 	ints_db[(size_t)int_codes::rdstdin] = b_getInput;
-	ints_db[(size_t)int_codes::mergeString] = b_mergeString;
-	ints_db[(size_t)int_codes::substring] = b_substring;
 	ints_db[(size_t)int_codes::_strlen] = b_strlen;
 	ints_db[(size_t)int_codes::display] = handle_display;
 	ints_db[(size_t)int_codes::recast] = b_recast;

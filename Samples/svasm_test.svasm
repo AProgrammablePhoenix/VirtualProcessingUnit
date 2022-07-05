@@ -1,45 +1,45 @@
 #unsafe
 
-mov sr, "Testing comparison system..."
+; mov sr, "Testing comparison system..."
 mov ax, 1
 int 0x5
 mov ax, 2
 int 0x5
 
-mov sr, "Expected output: Success"
+; mov sr, "Expected output: Success"
 mov ax, 1
 int 0x5
-mov sr, "Output: "
+; mov sr, "Output: "
 mov ax, 0
 int 0x5
 
-mov sr, "Char"
+; mov sr, "Char"
 mov cr, "C"
 
-cmp sr, cr
+; cmp sr, cr
 je success
 jmp failed
 
 failed:
-mov sr, "Failed"
+; mov sr, "Failed"
 mov ax, 1
 int 0x5
 jmp out_condition
 
 success:
-mov sr, "Success"
+; mov sr, "Success"
 mov ax, 1
 int 0x5
 
 out_condition:
 mov ax, 2
 int 0x5
-mov sr, "[DONE] Testing comparison system"
+; mov sr, "[DONE] Testing comparison system"
 mov ax, 1
 int 0x5
 mov ax, 2
 int 0x5
 
-mov sr, "[DONE] SVASM Test"
+; mov sr, "[DONE] SVASM Test"
 mov ax, 1
 int 0x5

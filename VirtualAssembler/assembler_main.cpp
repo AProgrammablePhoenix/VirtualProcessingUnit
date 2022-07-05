@@ -83,28 +83,6 @@ std::vector<byte> assembleAction(action _action, memory* const mem) {
 
 			return out;
 		}
-		else if ((comn_registers)out.back() == comn_registers::SR) {
-			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
-			const size_t& str_size = vsize;
-
-			byte* b_str_size = nullptr;
-			ulongToByteArray(str_size, &b_str_size);
-
-			size_t compressed_len = COMPBA(b_str_size, sizeof(size_t));
-
-			for (byte i = 0; i < compressed_len; i++)
-				out.push_back(b_str_size[i]);
-			delete[] b_str_size;
-
-			byte* b_str = new byte[str_size];
-			mem->_MG(b_str, str_size, vaddr);
-
-			for (size_t i = 0; i < str_size; i++)
-				out.push_back(b_str[i]);
-
-			delete[] b_str;
-			return out;
-		}
 		else if ((comn_registers)out.back() == comn_registers::CR) {
 			const auto [vaddr, vsize, vopt] = *std::static_pointer_cast<arg_tuple>(_action.getValuePtr());
 			byte* uc_c = new byte[1];

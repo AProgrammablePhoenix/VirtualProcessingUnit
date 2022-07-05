@@ -61,31 +61,6 @@ void p_cmp(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	delete[] temp;
 }
-void p_cmpstr(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string saved_sr = registers->sr->get();
-	std::string s1, s2;
-
-	popMemSR(unused_p, registers, mem);
-	s1 = registers->sr->get();
-	popMemSR(unused_p, registers, mem);
-	s2 = registers->sr->get();
-
-	if (s1 == s2) {
-		*(registers->cmp_out) = 0;
-	}
-	else if (s1 < s2) {
-		*(registers->cmp_out) = 1;
-	}
-	else if (s1 > s2) {
-		*(registers->cmp_out) = 2;
-	}
-	else {
-		// Undefined behavior: unknown comparison
-		*(registers->cmp_out) = 0xFE;
-	}
-
-	registers->sr->set(saved_sr);
-}
 void p_cmpdbl(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 	long double d1, d2;
 

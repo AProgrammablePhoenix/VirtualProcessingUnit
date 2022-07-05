@@ -57,29 +57,22 @@ void b_toString(std::shared_ptr<void> reg, regs* registers, memory* mem) {
 	mem->_MS(temp.get(), dest_len, dest_addr);
 }
 
-// Will be deleted
-void b_mergeString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string pushed = registers->sr->get();
-	popMemSR(NULL, registers, mem);
-	std::string base = registers->sr->get();
-
-	registers->sr->set(base + pushed);
-}
-void b_substring(std::shared_ptr<void> unused_p, regs* registers, memory* unused_m) {
-	registers->sr->set(registers->sr->get().substr(registers->rax->get(), registers->rbx->get()));
-}
-
-// Will be updated to be compliant to new strings management system
+// RDI: str address
+// RSI: str length
+// Output in RSI
 void b_strlen(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string sr = registers->sr->get();
+	uint64_t src_addr = *registers->rdi;
+	uint64_t src_len = *registers->rsi;
+	auto temp = std::make_unique<uint8_t[]>(src_len);
 
-	size_t value = sr.size();
-	unsigned char* uc_n = new unsigned char[sizeof(size_t)];
+	mem->_MG(temp.get(), src_len, src_addr);
+	size_t j = 0;
+	for (size_t i = 0; i < *registers->rsi; ++i, ++j) {
+		if (temp[i] == 0)
+			break;
+	}
 
-	mp_memcpy(&value, uc_n);
-
-	mem->push(uc_n, sizeof(size_t));
-	delete[] uc_n;
+	*registers->rsi = j;
 }
 
 // RDI: source length
@@ -222,15 +215,15 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 
 	if (cast_type == 0) {
 		std::stringstream ss(value);
-		size_t n_value = 0;
+		uint64_t n_value = 0;
 		ss >> n_value;
 
 		mp_memcpy(&n_value, temp.get());
-		mem->push(temp.get(), sizeof(size_t));
+		mem->push(temp.get(), sizeof(uint64_t));
 	}
 	else if (cast_type == 1) {
 		std::stringstream ss(value);
-		long long n_value = 0;
+		int64_t n_value = 0;
 		ss >> n_value;
 
 		temp = std::make_unique<uint8_t[]>(sizeof(int64_t));
@@ -263,24 +256,27 @@ void b_fromString(std::shared_ptr<void> unused_p, regs* registers, memory* mem) 
 	}
 }
 
-// Will be updated
-/* Registers before calling:
-*  CR: input value
-*  SR: any value
-*  With output set up on SR, and previous value of SR is lost (unless you pushed it on the stack before)
-*/
+// Copy value of CR to specified address
+// RDI: output address
 void b_CRToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	registers->sr->set(std::string(1, registers->cr->get()));
+	uint8_t data[] = { static_cast<uint8_t>(registers->cr->get()) };
+	mem->_MS(data, 1, *registers->rdi);
 }
 
-// Will be updated
-/* Reverse string in SR:
-*	- Input/Output in SR
+/* Reverse string located at address:
+*	RDI: I/O buffer address
+*	RSI: I/O buffer length
 */
 void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
-	std::string vstr = registers->sr->get();
-	std::reverse(vstr.begin(), vstr.end());
-	registers->sr->set(vstr);
+	uint64_t addr = *registers->rdi;
+	uint64_t len = *registers->rsi;
+
+	auto temp = std::make_unique<uint8_t[]>(len);
+	mem->_MG(temp.get(), len, addr);
+
+	std::reverse(temp.get(), temp.get() + len);
+
+	mem->_MS(temp.get(), len, addr);
 }
 
 // Will be updated
@@ -288,10 +284,13 @@ void b_RevSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 *	... FP_VALUE
 *	
 *	Registers before calling:
-*	SR: any value
-*	With output set up on SR, and previous value of SR is lost (unlss you pushed it on the stack before)
+*		RDI: address to output string
+*		RSI: output string length
 */
 void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
+	uint64_t dest_addr = *registers->rdi;
+	uint64_t dest_len = *registers->rsi;
+
 	auto uc_ld = std::make_unique<unsigned char[]>(sizeof(long double));
 	mem->pop(uc_ld.get(), sizeof(long double));
 
@@ -300,9 +299,9 @@ void b_FPToSR(std::shared_ptr<void> unused_p, regs* registers, memory* mem) {
 
 	std::ostringstream ss;
 	ss << std::setprecision(std::numeric_limits<long double>::digits10) << std::fixed << d;
-	std::string s_value = ss.str();
+	std::string s_value = ss.str().substr(0, dest_len - 1);
 
-	registers->sr->set(s_value);
+	mem->_MS((uint8_t*)s_value.data(), s_value.size() + 1, dest_addr);
 }
 
 /*  Stack statis before calling:

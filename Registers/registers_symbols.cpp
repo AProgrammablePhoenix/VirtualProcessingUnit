@@ -16,8 +16,6 @@ void b_setGP(GLOBL_ARGS) {
 	const comn_registers& reg_id = (comn_registers)std::get<2>(*std::static_pointer_cast<arg_tuple>(a)).raw_byte;
 	if (comn_registers_table::is_num_reg(reg_id))
 		b_set_num<size_t>(a, registers, mem, reg_id);
-	else if (reg_id == comn_registers::SR)
-		b_set_str(a, registers, mem);
 	else if (reg_id == comn_registers::CR)
 		b_set_chr(a, registers, mem);
 	else if (comn_registers_table::is_fp_reg(reg_id)) {

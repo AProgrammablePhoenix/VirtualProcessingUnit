@@ -109,40 +109,6 @@ std::vector<action> decodeByteArray(std::vector<uint8_t>* byteArray, memory*& me
 
 				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
 			}
-			else if ((comn_registers)opt_arg.raw_byte == comn_registers::SR) {
-				byte* b_str_size = new byte[sizeof(size_t) + 1];
-				b_str_size[0] = data[i];
-				++i;
-
-				size_t complen;
-
-				if ((size_t)b_str_size[0] < sizeof(size_t)) {
-					for (size_t j = 0; j < sizeof(size_t) - b_str_size[0]; ++j, ++i)
-						b_str_size[j + 1] = data[i];
-
-					complen = EXTDBA(b_str_size, sizeof(size_t) - b_str_size[0] + 1);
-				}
-				else {
-					b_str_size[1] = data[i];
-					complen = EXTDBA(b_str_size, 2);
-				}
-
-				size_t str_size = ATOULL(b_str_size);
-				delete[] b_str_size;
-
-				byte* b_str = new byte[str_size];
-				for (size_t j = 0; j < str_size; ++i, ++j)
-					b_str[j] = data[i];
-				--i;
-
-				size_t addr = mem->_SDZTOP();
-				size_t& len = str_size;
-				mem->_SDZS(b_str, len);
-
-				delete[] b_str;
-
-				_action = action(virtual_actions::set, std::make_shared<arg_tuple>(std::make_tuple(addr, len, opt_arg)));
-			}
 			else
 				throw std::runtime_error("Specified an unknown operand to set operand\n");
 			

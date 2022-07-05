@@ -40,7 +40,7 @@ int fetch_lines(const std::string& content, std::vector<std::string>& lines) {
 		assert_err("Trying to assemble an empty file", 0, EMPTY_FILE);
 
 	while (std::getline(ss, line)) {
-		if (line.empty() || line.size() < 1) {
+		if (line.empty() || line.size() < 1 || line[0] == ';') {
 			++n_emlines;
 			continue;
 		}

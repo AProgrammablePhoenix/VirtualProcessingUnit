@@ -126,50 +126,14 @@ void popMem(GLOBL_ARGS) {
 		temp_sz = qt_det;
 
 	auto temp = std::make_unique<uint8_t[]>(temp_sz);
-
-	mem->pop(temp.get(), temp_sz);
 	size_t value = 0;
+	mem->pop(temp.get(), temp_sz, true);
+
+	for (size_t i = 0, j = temp_sz; j > 0; ++i, --j) 
+		value |= ((uint64_t)temp[j - 1] << (i * 8));
 
 	mp_memcpy(temp.get(), &value);
 	((reg_int<size_t>*)regptr)->set(value);
-}
-
-void pushMemSR(GLOBL_ARGS_D1) {
-	std::string value = registers->sr->get();
-
-	size_t rssize = value.size() + 1;
-
-	unsigned char* ssize = new unsigned char[sizeof(size_t)];
-	unsigned char* uc_s = new unsigned char[rssize];
-	mp_memcpy(&rssize, ssize);
-
-#if defined(ISWIN)
-	memcpy_s(uc_s, rssize, value.c_str(), rssize);
-#else
-	std::memcpy(uc_s, value.c_str(), value.size() + 1);
-#endif
-
-	mem->push(uc_s, rssize);
-	mem->push(ssize, sizeof(size_t));
-
-	delete[] uc_s;
-	delete[] ssize;
-}
-void popMemSR(GLOBL_ARGS_D1) {
-	unsigned char* ssize = new unsigned char[sizeof(size_t)];
-	unsigned char* value = nullptr;
-
-	mem->pop(ssize, sizeof(size_t));
-	size_t rssize = 0;
-
-	mp_memcpy(ssize, &rssize);
-	value = new unsigned char[rssize];
-	mem->pop(value, rssize);
-
-	registers->sr->set(std::string((const char*)value));
-
-	delete[] value;
-	delete[] ssize;
 }
 
 void pushMemCR(GLOBL_ARGS_D1) {
@@ -253,53 +217,6 @@ void movgm(GLOBL_ARGS_D2) {
 	auto temp = std::make_unique<uint8_t[]>(temp_sz);
 	mem->_MG(temp.get(), temp_sz, _addr);
 	mem->push(temp.get(), temp_sz);
-}
-
-void movsmSR(GLOBL_ARGS_D2) {
-	comn_registers _reg = ATTOREGID(reg_addr, mem);
-	if (!comn_registers_table::is_num_reg(_reg))
-		return;
-
-	void* ptr = comn_registers_table(registers).access(_reg);
-	size_t _addr = ((reg_int<size_t>*)ptr)->get();
-
-	std::string value = registers->sr->get();
-	size_t rt_size = value.size() + 1;
-
-	unsigned char* temp = new unsigned char[rt_size];
-	unsigned char* t_size = new unsigned char[sizeof(size_t)];
-
-	mp_memcpy(&rt_size, t_size, sizeof(size_t));
-#if defined(ISWIN)
-	memcpy_s(temp, rt_size, value.c_str(), rt_size);
-#else
-	std::memcpy(temp, value.c_str(), rt_size);
-#endif
-	mem->_MS(t_size, sizeof(size_t), _addr);
-	mem->_MS(temp, rt_size, _addr + sizeof(size_t));
-	delete[] t_size;
-	delete[] temp;
-}
-void movgmSR(GLOBL_ARGS_D2) {
-	comn_registers _reg = ATTOREGID(reg_addr, mem);
-	if (!comn_registers_table::is_num_reg(_reg))
-		return;
-
-	void* ptr = comn_registers_table(registers).access(_reg);
-	size_t _addr = ((reg_int<size_t>*)ptr)->get();
-	size_t rt_size = 0;
-
-	unsigned char* t_size = new unsigned char[sizeof(size_t)];
-	mem->_MG(t_size, sizeof(size_t), _addr);
-	mp_memcpy(t_size, &rt_size);
-	delete[] t_size;
-
-	unsigned char* temp = new unsigned char[rt_size];
-	mem->_MG(temp, rt_size, _addr + sizeof(size_t));
-	std::string value = std::string(reinterpret_cast<char*>(temp));
-	delete[] temp;
-
-	registers->sr->set(value);
 }
 
 void movsmCR(GLOBL_ARGS_D2) {
